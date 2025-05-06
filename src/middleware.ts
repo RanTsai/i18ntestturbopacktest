@@ -1,25 +1,7 @@
-// import createMiddleware from 'next-intl/middleware';
-// import {routing} from './i18n/routing';
-// import { clerkMiddleware } from '@clerk/nextjs/server';
-
-// const intlMiddleware = createMiddleware(routing);
-
-// export default clerkMiddleware(async (auth, request) => {
-//     // ✅ 多語言處理
-//     return intlMiddleware(request);
-//   });
-
-// export const config = {
-//     matcher: [
-//       '/((?!_next|.*\\..*).*)',  // 忽略 static 檔案與 next internal
-//       '/(api|trpc)(.*)'          // API 也保護起來
-//     ]
-//   }; 
 
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
-import { NextResponse } from 'next/server';
 
 // 多語言中介
 const intlMiddleware = createMiddleware(routing);
