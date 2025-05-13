@@ -1,3 +1,6 @@
 {
-    "greeting": "こんにちは世界!"
+    "greeting": "こんにちは世界!",
+    "signin": "サインイン",
+    "signup": "サインアップ",
+    "signout": "サインアウト"
 }

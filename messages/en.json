@@ -1,3 +1,6 @@
 {
-    "greeting": "Hello world!"
+    "greeting": "Hello world!",
+    "signin": "Sign In",
+    "signup": "Sign Up",
+    "signout": "Sign Out"
 }
