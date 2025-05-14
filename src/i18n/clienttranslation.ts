@@ -1,3 +1,4 @@
+"use server";
 import { getTranslations } from 'next-intl/server';
 
 export async function getCommonTranslations() {

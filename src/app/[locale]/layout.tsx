@@ -2,15 +2,16 @@
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
-import LanguageSwitcher from '../components/languageSwitcher';
+import LanguageSwitcher from '@/app/components/languageSwitcher';
 import {
-    ClerkProvider,
     SignInButton,
     SignUpButton,
     SignedIn,
     SignedOut,
     UserButton,
 } from '@clerk/nextjs'
+import PrivateLayout from './(private)/privateLayout';
+import PublicLayout from './(public)/publicLayout';
 
 export default async function LocaleLayout({
     children,
@@ -20,13 +21,16 @@ export default async function LocaleLayout({
     params: Promise<{ locale: string }>;
 }) {
     // Ensure that the incoming `locale` is valid
-    const { locale } = await params;
+    const resolvedParams = await params;
+    const locale = resolvedParams.locale;
+
     if (!hasLocale(routing.locales, locale)) {
         notFound();
     }
 
     return (
-        <><NextIntlClientProvider>
+        <><NextIntlClientProvider locale={locale}>
+
             <header className="p-4 border-b">
                 <SignedOut>
                     <SignInButton />
@@ -38,9 +42,12 @@ export default async function LocaleLayout({
 
                 <LanguageSwitcher />
             </header>
-            <main>
-                {children}
-            </main>
+
+                <PrivateLayout>
+                    {children}
+                </PrivateLayout>
+            
+
         </NextIntlClientProvider>
         </>
     );

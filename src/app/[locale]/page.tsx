@@ -10,7 +10,7 @@ export default function HomePage() {
   const t = useTranslations();
   return (
     <div>
-      <h1>{t('greeting')}</h1>      
+      <h1>{t('common.greeting')}</h1>      
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use server";
 import React from 'react';
-import { getCommonTranslations } from '../../../i18n/clienttranslation';
+
 import { currentUser } from '@clerk/nextjs/server';
 import userGlobalStore , { IUserGlobalStore } from '@/app/global-store/users-store';
 import UserDashboard from './userdashboard';
@@ -8,7 +8,7 @@ import UserDashboard from './userdashboard';
 
 export default async function Page() {
   //const { user } = userGlobalStore() as IUserGlobalStore;
-  const translations = await getCommonTranslations();
+
   //const user = await currentUser();
 
   // const plainUser = user
@@ -21,6 +21,6 @@ export default async function Page() {
   //   : null;
 
   return (
-    <UserDashboard t={translations} />
+    <UserDashboard />
   )
 }

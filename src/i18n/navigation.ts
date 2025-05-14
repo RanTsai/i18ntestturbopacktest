@@ -1,3 +1,4 @@
+"use client";
 import {createNavigation} from 'next-intl/navigation';
 import {routing} from './routing';
  
