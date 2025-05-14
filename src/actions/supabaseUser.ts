@@ -38,6 +38,7 @@ export const saveClerkUserToSupabase = async (clerkUser: any) => {
 
 export const getClerkUserFromSupabase = async () => {
     try {
+        
         const clerkUser = await currentUser();
         const { data, error } = await supabase
             .from("user_profile")

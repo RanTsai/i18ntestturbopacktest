@@ -1,6 +1,9 @@
 {
+    "common": 
+    {
     "greeting": "こんにちは世界!",
     "signin": "サインイン",
     "signup": "サインアップ",
     "signout": "サインアウト"
+}
 }

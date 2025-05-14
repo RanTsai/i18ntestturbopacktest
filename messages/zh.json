@@ -1,6 +1,8 @@
 {
+    "common": {
     "greeting": "哈囉世界!",
     "signin": "登入",
     "signup": "註冊",
     "signout": "登出"
+    }
 }

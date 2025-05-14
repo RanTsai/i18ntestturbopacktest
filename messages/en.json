@@ -1,6 +1,8 @@
 {
-    "greeting": "Hello world!",
-    "signin": "Sign In",
-    "signup": "Sign Up",
-    "signout": "Sign Out"
+    "common": {
+        "greeting": "Hello",
+        "signin": "Sign In",
+        "signup": "Sign Up",
+        "signout": "Sign Out"
+    }
 }
