@@ -1,9 +1,15 @@
 {
-    "common": 
-    {
-    "greeting": "こんにちは世界!",
-    "signin": "サインイン",
-    "signup": "サインアップ",
-    "signout": "サインアウト"
-}
+    "common": {
+        "greeting": "こんにちは世界!",
+        "signin": "サインイン",
+        "signup": "サインアップ",
+        "signout": "サインアウト"
+    },
+    "subscription": {
+        "cardheader": "サブスクリプションページ",
+        "upgrade": "アップグレード",
+        "credit_balance": "現在のクレジット残高は",
+        "credits": "クレジット",
+        "cardmessage": "サブスクリプションをアップグレードしましょう"
+    }
 }

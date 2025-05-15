@@ -3,7 +3,7 @@ import React from 'react';
 import Header from '../../../layout-provider/components/header';
 import toast from 'react-hot-toast'
 import { getClerkUserFromSupabase } from '@/actions/supabaseUser';
-import Spinner from '@/app/components/ui/spinner';
+import Spinner from '@/components/ui/spinner';
 import userGlobalStore, { IUserGlobalStore } from '@/app/global-store/users-store';
 import { currentUser } from '@clerk/nextjs/server';
 import UserInitializer from '@/app/global-store/userinitializer';
@@ -17,7 +17,6 @@ async function PrivateLayout({ children }: { children: React.ReactNode }) {
       
       if (response.data) {
         theUser = response.data;
-        console.log("my user ", theUser);
       }
       else {
         console.error(response.message);
@@ -26,11 +25,8 @@ async function PrivateLayout({ children }: { children: React.ReactNode }) {
     } catch (error: any) {
       throw new Error(error.message);
   }
- 
 
-  console.log(theUser);
-  console.log("supabaseUser:", theUser);
-  console.log("supabaseUser.length:", Array.isArray(theUser) ? theUser.length : 'Not an array');
+
   return (
     <>
       <div>

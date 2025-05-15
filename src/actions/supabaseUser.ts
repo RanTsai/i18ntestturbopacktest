@@ -2,25 +2,152 @@
 import supabase from "@/config/supabase.config";
 import { currentUser } from "@clerk/nextjs/server";
 
+//When user sign up, this method is called to initialise user setting
+async function saveNewUserSettingsToSupabase(supabase_user_id: number) {
+    try {
+        const userSettings = {
+            supabase_user_id: supabase_user_id,
+            is_saving_chat_history: true,
+            is_auto_renew_subscription: true,
+            language: "en",
+            stripe_status: ""
+        };
+
+        const { data, error } = await supabase.from("user_settings").insert([userSettings]).select("*");
+        if (error) {
+            throw new Error(error.message);
+        }
+        console.log("user_settings insert : ", data[0]);
+
+        return {
+            success: true,
+            data: data[0],
+        }
+
+    } catch (error: any) {
+        return {
+            success: false,
+            message: error.message,
+        }
+    }
+
+}
+
+//When user sign up, this method is called to grant the user free trial
+async function saveFirstPurchaseOfFreePlanToSupabase(supabase_user_id: number) {
+    try {
+        const firstPurchase = {
+            supabase_user_id: supabase_user_id,
+            subscription_plan_id: 0,
+            amount: 0,
+            currency: "",
+            credit_amount: 100,
+            balance: 100
+        };
+
+        const { data, error } = await supabase.from("user_purchase_history").insert([firstPurchase]).select("*");
+        if (error) {
+            throw new Error(error.message);
+        } else {
+            console.log("user_purchase_history insert : ", data[0]);
+            const { data: newPurchase } = await insertNewPurchaseToUserCreditHistory(
+                supabase_user_id, 
+                data[0].user_purchase_id,
+                "Free Trial",
+                0,
+                firstPurchase.credit_amount,
+                "New User First trial",
+                firstPurchase.balance,
+                0
+            )
+            console.log("New purchase ", newPurchase);
+            return {
+                success: true,
+                data: data[0],
+            }
+        }
+    } catch (error: any) {
+        return {
+            success: false,
+            message: error.message,
+        }
+    }
+}
+
+//When any purchase is made, this should be called in the purchase function, so credit history get updatedNew purchase
+async function insertNewPurchaseToUserCreditHistory(
+    supabase_user_id: number,
+    user_purchase_id: number,
+    actionType: string,
+    debit_amount: number,
+    credit_amount: number,
+    description: string,
+    balance: number,
+    user_usage_id: number
+) {
+    try {
+        const purchaseDetails = {
+            action_type: actionType,
+            debit_amount: debit_amount,
+            credit_amount: credit_amount,
+            description: description,
+            balance: balance,
+            user_purchase_id: user_purchase_id === 0 ? null : user_purchase_id,            
+            user_usage_id: user_usage_id === 0 ? null : user_usage_id,
+            supabase_user_id: supabase_user_id
+        };
+
+        const { data:newCredit, error } = await supabase.from("user_credit_history").insert([purchaseDetails]).select("*");
+        console.log("error : ", error?.message);
+        if (error) {
+            throw new Error(error.message);
+        }
+        console.log("user_purchase_history insert : ", newCredit[0]);
+
+        return {
+            success: true,
+            data: newCredit[0],
+        }
+
+    } catch (error: any) {
+        return {
+            success: false,
+            message: error.message,
+        }
+    }
+}
+
+
+//Insert a new row into the supabase user_basic table.
+//Better check if the user id exisit before insert.
 export const saveClerkUserToSupabase = async (clerkUser: any) => {
     try {
         const supabaseUserObj = {
             username: clerkUser.firstName + " " + clerkUser.lastName,
-            nickname: "",
+            language: "en",
             credit_balance: 0,
-            last_login_at: new Date(),
-            last_update: new Date(),
             is_active: true,
             is_deleted: false,
             email: clerkUser.emailAddresses[0].emailAddress,
-            profile_pic: clerkUser.imageUrl,
+            profile_pic_url: clerkUser.imageUrl,
             clerk_user_id: clerkUser.id,
-            language: "en"
+            surname: clerkUser.lastName,
+            user_role_id: 0,
+            active_plan_id: 0,
         };
+        const { data, error } = await supabase.from("user_basic").insert([supabaseUserObj]).select("*");
 
-        const { data, error } = await supabase.from("user_profile").insert([supabaseUserObj]).select("*");
         if (error) {
             throw new Error(error.message);
+        }
+        if (!data || data.length === 0 || !data[0].supabase_user_id) {
+            throw new Error("Failed to retrieve newly inserted user ID.");
+        } else {
+            const { success: saveSettingSuccess } = await saveNewUserSettingsToSupabase(data[0].supabase_user_id);
+            console.log("save settings:", saveSettingSuccess);
+
+            const { success: saveFirstPurchaseSuccess } = await saveFirstPurchaseOfFreePlanToSupabase(data[0].supabase_user_id);
+            console.log("save first purchase: ", saveFirstPurchaseSuccess);
         }
 
         return {
@@ -38,10 +165,14 @@ export const saveClerkUserToSupabase = async (clerkUser: any) => {
 
 export const getClerkUserFromSupabase = async () => {
     try {
-        
+
         const clerkUser = await currentUser();
+        if (!clerkUser) {
+            throw new Error("Clerk user not found");
+        }
+
         const { data, error } = await supabase
-            .from("user_profile")
+            .from("user_basic")
             .select("*")
             .eq("clerk_user_id", clerkUser?.id);
 

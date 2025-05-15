@@ -2,7 +2,7 @@
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
-import LanguageSwitcher from '@/app/components/languageSwitcher';
+import LanguageSwitcher from '@/components/languageSwitcher';
 import {
     SignInButton,
     SignUpButton,

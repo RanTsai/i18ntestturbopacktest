@@ -4,5 +4,12 @@
         "signin": "Sign In",
         "signup": "Sign Up",
         "signout": "Sign Out"
+    },
+    "subscription": {
+        "cardheader": "Subscription page",
+        "upgrade": "Upgrade",
+        "credit_balance": "You currently have",
+        "credits": "credits",
+        "cardmessage": "Upgrade your subscriptions"
     }
 }

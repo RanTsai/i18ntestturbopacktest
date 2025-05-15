@@ -1,8 +1,15 @@
 {
     "common": {
-    "greeting": "哈囉世界!",
-    "signin": "登入",
-    "signup": "註冊",
-    "signout": "登出"
+        "greeting": "哈囉世界!",
+        "signin": "登入",
+        "signup": "註冊",
+        "signout": "登出"
+    },
+    "subscription": {
+        "cardheader": "訂閱頁面",
+        "upgrade": "升級",
+        "credit_balance": "你目前擁有",
+        "credits": "點數",
+        "cardmessage": "升級你的訂閱方案"
     }
 }

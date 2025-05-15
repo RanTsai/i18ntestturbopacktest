@@ -1,11 +1,9 @@
 "use client";
 import React from 'react';
 import { UserButton } from '@clerk/nextjs';
-import { getClerkUserFromSupabase } from '@/actions/supabaseUser';
 import userGlobalStore, { IUserGlobalStore } from '@/app/global-store/users-store';
 import toast from 'react-hot-toast';
-import { IUser } from '@/app/interfaces';
-import Spinner from '@/app/components/ui/spinner';
+import Spinner from '@/components/ui/spinner';
 import { useTranslations } from 'next-intl';
 import { useUser } from '@clerk/nextjs';
 
@@ -57,10 +55,10 @@ export default function UserDashboard() {
           Object.keys(theUser).length > 0 && (
             <div>
               <p>showing supabase data (object)</p>
-              <h1>Supabase User ID: {theUser.id}</h1>
+              <h1>Supabase User ID: {theUser.supabase_user_id}</h1>
               <h1>Supabase User Email: {theUser.email}</h1>
               <h1>Supabase User Name: {theUser.username}</h1>
-              <img src={theUser.profile_pic}
+              <img src={theUser.profile_pic_url}
                 alt="User Profile Picture"
                 className="w-20 h-20 rounded-full" />
             </div>
