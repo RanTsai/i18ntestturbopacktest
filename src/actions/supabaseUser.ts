@@ -1,6 +1,7 @@
 'use server';
 import supabase from "@/config/supabase.config";
 import { currentUser } from "@clerk/nextjs/server";
+import { nanoid } from 'nanoid'
 
 //When user sign up, this method is called to initialise user setting
 async function saveNewUserSettingsToSupabase(supabase_user_id: number) {
@@ -10,7 +11,8 @@ async function saveNewUserSettingsToSupabase(supabase_user_id: number) {
             is_saving_chat_history: true,
             is_auto_renew_subscription: true,
             language: "en",
-            stripe_status: ""
+            stripe_status: "",
+            public_user_id:nanoid()
         };
 
         const { data, error } = await supabase.from("user_settings").insert([userSettings]).select("*");
@@ -75,7 +77,7 @@ async function saveFirstPurchaseOfFreePlanToSupabase(supabase_user_id: number) {
 }
 
 //When any purchase is made, this should be called in the purchase function, so credit history get updatedNew purchase
-async function insertNewPurchaseToUserCreditHistory(
+export async function insertNewPurchaseToUserCreditHistory(
     supabase_user_id: number,
     user_purchase_id: number,
     actionType: string,

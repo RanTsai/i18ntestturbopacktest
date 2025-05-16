@@ -11,5 +11,13 @@
         "credit_balance": "你目前擁有",
         "credits": "點數",
         "cardmessage": "升級你的訂閱方案"
+    },
+    "feedbackForm": {
+        "openfeedback": "用戶意見",
+        "feedbacktitle": "感謝您給我們寶貴的意見",
+        "usermessage": "我們會全力以赴，解決您的痛點！",
+        "subject": "新增功能...或改善...",
+        "feedback": "這會讓我的生活更輕鬆...",
+        "Confirm": "送出饋！"
     }
 }

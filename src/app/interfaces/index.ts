@@ -1,5 +1,5 @@
 export interface IUser{
-    supabase_user_id: string;
+    supabase_user_id: number;
     sign_up_date: string;
     last_login_at: string; //Use format converter in display
     name: string;
@@ -17,10 +17,11 @@ export interface IUser{
     profile_pic_url: string;
     is_active: boolean;
     is_deleted: boolean;
+    public_user_id:string;
 };
 
 export interface IUserSettings{
-    user_setting_id: string;
+    user_setting_id: number;
     supabase_user_id: string;
     is_saving_chat_history: boolean;
     is_auto_renew_subscription: boolean;
@@ -30,7 +31,7 @@ export interface IUserSettings{
 };
 
 export interface IUserCreditHistory{
-    user_credit_history_id: string;
+    user_credit_history_id: number;
     
     action_type: string;
     debit_amount: number; 
@@ -43,9 +44,9 @@ export interface IUserCreditHistory{
 };
 
 export interface IUserPurchaseHistory{
-    user_purchase_id: string;
+    user_purchase_id: number;
     created_at:string;
-    supabase_user_id: string;
+    supabase_user_id: number;
     subscription_plan_id: Number;
     amount: number;
     currency: string;
@@ -54,7 +55,7 @@ export interface IUserPurchaseHistory{
 };
 
 export interface IUserUsageHistory{
-    user_usage_id: string;
+    user_usage_id: number;
     created_at:string;
     supabase_user_id: string;
     action_type:string;
@@ -65,6 +66,28 @@ export interface IUserUsageHistory{
 };
 
 export interface IProduct{
+    product_id: number;
+    language:string;
+    period: string;
+    credit:number;
+    comment: string;
+    price:number;
+    currency: string;
+    product_feature_id: number; //??To check if it works
+    is_active:boolean;
+    disabled_at:string;
+    created_at:string;
+    product_revenue_type:string;
+    product_name:string;
+    product_translated_name:string;
+    product_description:string;
+    is_disabled:boolean;
+    disabled_by:string;
+    product_category:string;
+};
+
+
+export interface IUserFeedback{
     product_id: number;
     language:string;
     period: string;

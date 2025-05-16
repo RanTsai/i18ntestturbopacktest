@@ -3,6 +3,7 @@ import React from 'react'
 import { getSubscriptionsFromSupabase } from '@/actions/supabaseSubscription';
 import { IProduct } from '@/app/interfaces';
 import UpgradeSelector from './upgradeSelector'
+import PaypalProvider from '@/context/paypalprovider';
 
 async function page({ params }: { params: { locale: string } }) {
   let subscriptions: IProduct[] = [];
@@ -25,7 +26,9 @@ async function page({ params }: { params: { locale: string } }) {
   return (
     <>
       <div>
+        <PaypalProvider>
        <UpgradeSelector subscriptions={subscriptions}/>
+       </PaypalProvider>
       </div>
     </>
 

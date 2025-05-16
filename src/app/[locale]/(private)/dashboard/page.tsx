@@ -4,7 +4,7 @@ import React from 'react';
 import { currentUser } from '@clerk/nextjs/server';
 import userGlobalStore , { IUserGlobalStore } from '@/app/global-store/users-store';
 import UserDashboard from './userdashboard';
-
+import Userfeedback from '@/components/userfeedback';
 
 export default async function Page() {
   //const { user } = userGlobalStore() as IUserGlobalStore;
@@ -21,6 +21,9 @@ export default async function Page() {
   //   : null;
 
   return (
+    <div>
     <UserDashboard />
+    <Userfeedback />
+    </div>
   )
 }
