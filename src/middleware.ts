@@ -8,13 +8,17 @@ const intlMiddleware = createMiddleware(routing);
 
 // Clerk 要保護的路徑
 const isProtectedRoute = createRouteMatcher([
-    '/(en|zh|ja)/dashboard(.*)', // 根據你的 locales 動態語系
-    '/dashboard(.*)'             // 若有預設語系或 fallback
+    '/(en|zh|ja)/(dashboard|thumbnails|upgrade)(.*)', // 根據你的 locales 動態語系
+    '/(dashboard|thumbnails|upgrade)(.*)'             // 若有預設語系或 fallback
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
     const { userId, redirectToSignIn } = await auth()
     // 若為受保護路由，且尚未登入 → 導向 Clerk 登入頁面
+
+    if (req.nextUrl.pathname === '/api/get-user') {
+    return;
+  }
     if (isProtectedRoute(req) && !userId) {
         return redirectToSignIn();
     }
@@ -25,7 +29,10 @@ export default clerkMiddleware(async (auth, req) => {
 export const config = {
     matcher: [
         // 讓所有頁面都會經過 middleware（不代表都被保護）
-        '/((?!_next|.*\\..*).*)',
-        '/(api|trpc)(.*)',
+        // '/((?!_next|.*\\..*).*)',
+        '/((?!_next|.*\\..*).*)'
+        // '/(api|trpc)(.*)',
+        //'/((?!api|trpc|_next|.*\\..*).*)'
+
     ]
 };

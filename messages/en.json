@@ -1,3 +1,23 @@
 {
-    "greeting": "Hello world!"
+    "common": {
+        "greeting": "Hello",
+        "signin": "Sign In",
+        "signup": "Sign Up",
+        "signout": "Sign Out"
+    },
+    "subscription": {
+        "cardheader": "Subscription page",
+        "upgrade": "Upgrade",
+        "credit_balance": "You currently have",
+        "credits": "credits",
+        "cardmessage": "Upgrade your subscriptions"
+    },
+    "feedbackForm": {
+        "openfeedback": "Subscription page",
+        "feedbacktitle": "Thank you for giving us your opinions",
+        "usermessage": "We will do anything to solve your pain points!",
+        "subject": "Add... or improve...",
+        "feedback": "This will make my life easier...",
+        "confirm": "Send the feedback!"
+    }
 }
