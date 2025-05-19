@@ -3,14 +3,17 @@
 import {create} from "zustand";
 import { IUser } from "../interfaces";
 
-const userGlobalStore = create((set) => ({
+const userGlobalStore = create<IUserGlobalStore>((set) => ({
 theUser:null,
-setUser:(myuser: IUser) => set({ theUser: myuser }),
+isInitialized:false,
+setUser:(myuser: IUser) => set({ theUser: myuser, isInitialized: true }),
+
 }))
 
 export default userGlobalStore;
 export interface IUserGlobalStore{
-    theUser: IUser;
+    theUser: IUser | null;
     setUser: (theUser: IUser) => void;
+    isInitialized:boolean;
 }
 

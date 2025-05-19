@@ -85,25 +85,3 @@ export interface IProduct{
     disabled_by:string;
     product_category:string;
 };
-
-
-export interface IUserFeedback{
-    product_id: number;
-    language:string;
-    period: string;
-    credit:number;
-    comment: string;
-    price:number;
-    currency: string;
-    product_feature_id: number; //??To check if it works
-    is_active:boolean;
-    disabled_at:string;
-    created_at:string;
-    product_revenue_type:string;
-    product_name:string;
-    product_translated_name:string;
-    product_description:string;
-    is_disabled:boolean;
-    disabled_by:string;
-    product_category:string;
-};

@@ -85,21 +85,19 @@ const [title, setTitle] = React.useState<string>("");
                             toast.error("取得圖片 URL 失敗");
                         }
                     });
-                }}>Get Review
-
+                }}>
+                    Get Review
                 </Button>
                 {loading ? (
                     <div>
-                    <p>🤖 正在分析縮圖與標題中，請稍候...</p>
+                    <ReactMarkdown>🤖 正在分析縮圖與標題中，請稍候...</ReactMarkdown>
                     <Spinner height={60}/>
                     </div>
                 ) : (
-                    message && <p>{message}</p>
+                    message && <ReactMarkdown>{message}</ReactMarkdown>
                 )}
                 
             </div>
         </>
-    )
-
-        ;
+    )        
 }

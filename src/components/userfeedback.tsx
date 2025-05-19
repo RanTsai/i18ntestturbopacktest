@@ -38,17 +38,19 @@ function Userfeedback() {
         try {
             const { success, data } = await insertUserFeedback(
                 subject,
-                theUser.language,
+                theUser!.language,
                 5,
                 feedback,
                 "", //AI analysis
                 "",
-                theUser.supabase_user_id, 5)
+                theUser!.supabase_user_id, 5)
 
             if (!success) {
                 toast.error("Submit feedback failed");
                 return;
             }
+
+            
             toast.success("Thank you for your valuable feedback!");
             console.log("User feedback success: ", data);
             setSubject("");
@@ -87,7 +89,7 @@ function Userfeedback() {
                     </DialogHeader>
                     <DialogFooter>
                         <Button type="submit" variant="outline" disabled={loading} onClick={handleSubmit}>
-                            {loading ? "Sending..." : t("feedbackForm.Confirm")}
+                            {loading ? "Sending..." : t("feedbackForm.confirm")}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
