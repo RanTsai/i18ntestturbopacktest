@@ -1,4 +1,4 @@
-// app/api/get-user/route.ts
+// src/app/api/get-user/route.ts
 import { NextResponse } from 'next/server';
 import { getClerkUserFromSupabase } from '@/actions/supabaseUser';
 

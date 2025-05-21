@@ -5,7 +5,8 @@ const nextConfig: NextConfig = {
    images: {
     domains: ['ijuyminrnhiekoxybhgm.supabase.co'], // ✅ 加入你的 Supabase domain
     },
-     experimental: {
+    appDir:'src/app',
+     experimental: {      
     serverActions: {
       bodySizeLimit: '5mb',
     },
