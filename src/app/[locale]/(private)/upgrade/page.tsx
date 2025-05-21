@@ -1,3 +1,4 @@
+//\app\[locale]\(private)\upgrade\page.tsx
 "use server"
 import React from 'react'
 import { getSubscriptionsFromSupabase } from '@/actions/supabaseSubscription';
@@ -26,9 +27,9 @@ async function page({ params }: { params: { locale: string } }) {
   return (
     <>
       <div>
-        <PaypalProvider>
-       <UpgradeSelector subscriptions={subscriptions}/>
-       </PaypalProvider>
+        <PaypalProvider currency={subscriptions[0]?.currency.toUpperCase() || "USD"}>
+          <UpgradeSelector subscriptions={subscriptions} />
+        </PaypalProvider>
       </div>
     </>
 

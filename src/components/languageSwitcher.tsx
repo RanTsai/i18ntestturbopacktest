@@ -3,6 +3,7 @@
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTransition } from 'react';
+import Image from 'next/image';
 
 const locales = [
   { code: 'en', label: 'English' },
@@ -12,34 +13,44 @@ const locales = [
 ];
 
 export default function LanguageSwitcher() {
-    const currentLocale = useLocale();
-    const pathname = usePathname();
-    const router = useRouter();
-    const [isPending, startTransition] = useTransition();
-  
-    const localeCodes = locales.map(({ code }) => code).join('|');
-    const basePath = pathname.replace(new RegExp(`^/(${localeCodes})(/|$)`), '/');
-    const cleanPath = basePath === '/' ? '' : basePath;
-  
-    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const selectedLocale = e.target.value;
-      startTransition(() => {
-        router.push(`/${selectedLocale}${cleanPath}`);
-      });
-    };
-  
-    return (
-      <select
-        className="p-2 border rounded"
-        value={currentLocale}
-        onChange={handleChange}
-        disabled={isPending}
-      >
-        {locales.map(({ code, label }) => (
-          <option key={code} value={code}>
-            {label}
-          </option>
-        ))}
-      </select>
-    );
-  }
+  const currentLocale = useLocale();
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  const localeCodes = locales.map(({ code }) => code).join('|');
+  const basePath = pathname.replace(new RegExp(`^/(${localeCodes})(/|$)`), '/');
+  const cleanPath = basePath === '/' ? '' : basePath;
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedLocale = e.target.value;
+    startTransition(() => {
+      router.push(`/${selectedLocale}${cleanPath}`);
+    });
+  };
+
+  return (
+
+    <div className="relative inline-block">
+  <select
+    className="appearance-none pl-8 pr-4 py-2 border rounded bg-white text-gray-700"
+    value={currentLocale}
+    onChange={handleChange}
+    disabled={isPending}
+  >
+    {locales.map(({ code, label }) => (
+      <option key={code} value={code}>
+        {label}
+      </option>
+    ))}
+  </select>
+  <Image
+    src="/globe.svg"
+    width={20}
+    height={20}
+    alt="Globe"
+    className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none"
+  />
+</div>
+  );
+}

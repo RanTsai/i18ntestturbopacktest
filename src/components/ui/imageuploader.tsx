@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ImagePlus } from "lucide-react";
 
-const ImageUploader: React.FC<{ onUpload: (files: File[], title:string) => void }> = ({ onUpload }) => {
+const ImageUploader: React.FC<{ onUpload: (files: File[], title: string) => void }> = ({ onUpload }) => {
     const [preview, setPreview] = React.useState<string | ArrayBuffer | null>("");
 
 
@@ -64,7 +64,7 @@ const ImageUploader: React.FC<{ onUpload: (files: File[], title:string) => void 
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         console.log(values);
-        onUpload([values.image],values.title);
+        onUpload([values.image], values.title);
     };
 
     return (
@@ -126,13 +126,13 @@ const ImageUploader: React.FC<{ onUpload: (files: File[], title:string) => void 
                                     )}
                                 </div>
                             </FormControl>
-                            <FormMessage>
-                                {fileRejections.length !== 0 && (
-                                    <p>
-                                        Image must be less than 1MB and of type png, jpg, or jpeg
-                                    </p>
-                                )}
-                            </FormMessage>
+                            {fileRejections.length !== 0 ? (
+                                <FormMessage>
+                                    Image must be less than 1MB and of type png, jpg, or jpeg
+                                </FormMessage>
+                            ) : (
+                                <FormMessage />
+                            )}
                         </FormItem>
                     )}
                 />
@@ -150,3 +150,4 @@ const ImageUploader: React.FC<{ onUpload: (files: File[], title:string) => void 
 };
 
 export default ImageUploader;
+

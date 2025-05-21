@@ -11,9 +11,6 @@ function PrivateLayout({ children }: { children: React.ReactNode }) {
     <>
       <Toaster />
       <div>
-        <h1>private layout</h1>
-        <Header />
-        <p>{JSON.stringify(theUser)}</p>
         <div className="p-4">{children}</div>
       </div>
     </>

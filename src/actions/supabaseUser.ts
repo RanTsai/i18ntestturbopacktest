@@ -1,8 +1,8 @@
 'use server';
 import supabase from "@/config/supabase.config";
 import { currentUser } from "@clerk/nextjs/server";
-import { nanoid } from 'nanoid'
-
+import { nanoid } from 'nanoid';
+import { insertNewPurchaseToUserCreditHistory } from "./supabaseCredits";
 //When user sign up, this method is called to initialise user setting
 async function saveNewUserSettingsToSupabase(supabase_user_id: number) {
     try {
@@ -12,12 +12,15 @@ async function saveNewUserSettingsToSupabase(supabase_user_id: number) {
             is_auto_renew_subscription: true,
             language: "en",
             stripe_status: "",
-            public_user_id:nanoid()
+            public_user_id: nanoid()
         };
 
         const { data, error } = await supabase.from("user_settings").insert([userSettings]).select("*");
         if (error) {
-            throw new Error(error.message);
+            return {
+                success: false,
+                message: error.message,
+            }
         }
         console.log("user_settings insert : ", data[0]);
 
@@ -47,14 +50,17 @@ async function saveFirstPurchaseOfFreePlanToSupabase(supabase_user_id: number) {
             balance: 100
         };
 
-        const { data, error } = await supabase.from("user_purchase_history").insert([firstPurchase]).select("*");
+        const { data, error } = await supabase.from("user_purchase_history").insert([firstPurchase]).select("*").single();
         if (error) {
-            throw new Error(error.message);
+            return {
+                success: false,
+                message: error.message,
+            }
         } else {
-            console.log("user_purchase_history insert : ", data[0]);
+            console.log("user_purchase_history insert : ", data);
             const { data: newPurchase } = await insertNewPurchaseToUserCreditHistory(
-                supabase_user_id, 
-                data[0].user_purchase_id,
+                supabase_user_id,
+                data.user_purchase_id,
                 "Free Trial",
                 0,
                 firstPurchase.credit_amount,
@@ -65,7 +71,7 @@ async function saveFirstPurchaseOfFreePlanToSupabase(supabase_user_id: number) {
             console.log("New purchase ", newPurchase);
             return {
                 success: true,
-                data: data[0],
+                data: data,
             }
         }
     } catch (error: any) {
@@ -74,50 +80,9 @@ async function saveFirstPurchaseOfFreePlanToSupabase(supabase_user_id: number) {
             message: error.message,
         }
     }
-}
+};
 
-//When any purchase is made, this should be called in the purchase function, so credit history get updatedNew purchase
-export async function insertNewPurchaseToUserCreditHistory(
-    supabase_user_id: number,
-    user_purchase_id: number,
-    actionType: string,
-    debit_amount: number,
-    credit_amount: number,
-    description: string,
-    balance: number,
-    user_usage_id: number
-) {
-    try {
-        const purchaseDetails = {
-            action_type: actionType,
-            debit_amount: debit_amount,
-            credit_amount: credit_amount,
-            description: description,
-            balance: balance,
-            user_purchase_id: user_purchase_id === 0 ? null : user_purchase_id,            
-            user_usage_id: user_usage_id === 0 ? null : user_usage_id,
-            supabase_user_id: supabase_user_id
-        };
 
-        const { data:newCredit, error } = await supabase.from("user_credit_history").insert([purchaseDetails]).select("*");
-        console.log("error : ", error?.message);
-        if (error) {
-            throw new Error(error.message);
-        }
-        console.log("user_purchase_history insert : ", newCredit[0]);
-
-        return {
-            success: true,
-            data: newCredit[0],
-        }
-
-    } catch (error: any) {
-        return {
-            success: false,
-            message: error.message,
-        }
-    }
-}
 
 
 //Insert a new row into the supabase user_basic table.
@@ -204,5 +169,4 @@ export const getClerkUserFromSupabase = async () => {
             message: error.message,
         };
     }
-
 }

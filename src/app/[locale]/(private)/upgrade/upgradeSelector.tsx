@@ -1,3 +1,4 @@
+// \app\[locale]\(private)\upgrade\upgradeSelector.tsx
 "use client";
 import React from 'react'
 import { useTranslations } from 'next-intl';
@@ -13,14 +14,22 @@ import { savePurchaseToSupabase } from '@/actions/supabaseSubscription'
 function UpgradeSelector({ subscriptions }: { subscriptions: IProduct[] }) {
   const t = useTranslations();
   const [selected, setSelected] = React.useState<IProduct>(subscriptions[0]);
-  const { theUser } = userGlobalStore() as IUserGlobalStore;
+  const { theUser, isInitialized, initUserIfNeeded } = userGlobalStore();
+
+  React.useEffect(() => {
+    initUserIfNeeded(true); // 預設為 true，或根據 isSignedIn 傳入
+  }, [initUserIfNeeded]);
 
   const [{ isPending }] = usePayPalScriptReducer();
   const handleSuccess = async (details: any) => {
-    //console.log("details => ", details);
+
     if (!selected) {
       toast.error("No subscription selected");
       return;
+    }
+
+    if (!isInitialized || !theUser || isPending) {
+      return <Spinner />;
     }
 
     const amount = parseFloat(details.purchase_units[0].value);
@@ -29,24 +38,25 @@ function UpgradeSelector({ subscriptions }: { subscriptions: IProduct[] }) {
 
     //save credit to db
     try {
-      const { success, data } = await savePurchaseToSupabase(selected, theUser.supabase_user_id, theUser.credit_balance + selected.credit);
+      const { success, data } = await savePurchaseToSupabase(selected, theUser.credit_balance + selected.credit);
       //get user credts from db
-      toast.success(`Successfully purchased ${credits} credits.`);
+      if (success) {
+        toast.success(`Successfully purchased ${credits} credits.`);
+        console.log(data);
+      }
     } catch (err) {
 
       console.error("err->", err);
       toast.error("An error occurred. Please try again");
     }
-    }
+  }
 
   const handleError = (err: any) => {
     console.log("err => ", err);
     toast.error("An error occurred, please try again.");
   }
 
-  if (isPending) {
-    return <Spinner />;
-  }
+
   return (
     <>
       <div>
@@ -94,7 +104,7 @@ function UpgradeSelector({ subscriptions }: { subscriptions: IProduct[] }) {
                     purchase_units: [
                       {
                         amount: {
-                          currency_code: selected?.currency || "USD",
+                          currency_code: selected?.currency.toUpperCase() || "USD",
                           value: price,
                         },
                         custom_id: credits,

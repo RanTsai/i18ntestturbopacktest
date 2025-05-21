@@ -1,5 +1,5 @@
 export interface IUser{
-    supabase_user_id: number;
+    //supabase_user_id: number;
     sign_up_date: string;
     last_login_at: string; //Use format converter in display
     name: string;
@@ -32,7 +32,7 @@ export interface IUserSettings{
 
 export interface IUserCreditHistory{
     user_credit_history_id: number;
-    
+    created_at:string;
     action_type: string;
     debit_amount: number; 
     credit_amount: number;
@@ -41,6 +41,7 @@ export interface IUserCreditHistory{
     user_purchase_id: string;
     user_usage_id: string;
     supabase_user_id:string;
+    public_id:string;
 };
 
 export interface IUserPurchaseHistory{
@@ -52,6 +53,7 @@ export interface IUserPurchaseHistory{
     currency: string;
     credit_amount: number;
     balance: number; //place holder, need to see if required    
+    public_id: string;
 };
 
 export interface IUserUsageHistory{
@@ -63,6 +65,7 @@ export interface IUserUsageHistory{
     user_work_id:number;
     feature_cost: number;
     subscription_feature_id: number; //place holder, need to see if required
+    public_id: string;
 };
 
 export interface IProduct{
@@ -85,3 +88,5 @@ export interface IProduct{
     disabled_by:string;
     product_category:string;
 };
+
+
