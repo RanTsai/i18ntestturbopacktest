@@ -4,7 +4,7 @@
 import Image from "next/image";
 import { StarRating } from "./starrating";
 import RadarChart from "./radarchart";
-import ReactMarkdown from "react-markdown";
+import MarkDown from "react-markdown";
 import AspectBarList from "./aspectbarlist";
 
 
@@ -68,7 +68,7 @@ export default function ReviewCard({
 
       {/* AI Feedback */}
       <div className="text-sm text-gray-300 leading-6">
-        <ReactMarkdown>{aiMarkdown}</ReactMarkdown>
+        <MarkDown>{aiMarkdown}</MarkDown>
       </div>
     </div>
   );

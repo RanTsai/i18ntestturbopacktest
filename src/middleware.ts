@@ -17,7 +17,8 @@ export default clerkMiddleware(async (auth, req) => {
     // 若為受保護路由，且尚未登入 → 導向 Clerk 登入頁面
 
     if (
-        req.nextUrl.pathname.startsWith('/api/get-user') 
+        req.nextUrl.pathname.startsWith('/api/get-user') ||
+        req.nextUrl.pathname.startsWith('/api/ai-dispatch')
     ) return;
 
     if (isProtectedRoute(req) && !userId) {
