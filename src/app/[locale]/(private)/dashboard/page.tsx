@@ -7,10 +7,11 @@ import Userfeedback from '@/components/userfeedback';
 export default async function Page() {
 
   return (
-    <div>
-    <UserDashboard />
     
-    <Userfeedback />
+    <div>
+    {/* <UserDashboard />
+    
+    <Userfeedback /> */}
     </div>
   )
 }

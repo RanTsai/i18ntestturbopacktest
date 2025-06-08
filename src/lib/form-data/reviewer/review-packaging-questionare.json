@@ -1,0 +1,138 @@
+{
+  "id": "thumbnail_review",
+  "version": 1,
+  "locale": "en",
+  "channel_name": "History Simplified",
+  "channel_description": "We turn complex historical events into fun cartoon stories!",
+  "channel_logo" : "/logo/logo.png",
+  "title": "Thumbnail Review Form",
+  "thumbnails": [
+    {
+      "id": "thumbnail_1",
+      "url": "/thumbnail1.png",
+      "title" : "The biggest problem in the world"
+    },
+    {
+      "id": "thumbnail_2",
+      "url": "/thumbnail2.png",
+      "title" : "The biggest problem in the world"
+    },
+    {
+      "id": "thumbnail_3",
+      "url": "/thumbnail3.png",
+      "title" : "The biggest problem in the world"
+    },
+    {
+      "id": "thumbnail_4",
+      "url": "/thumbnail.png",
+      "title" : "The biggest problem in the world"
+    }
+  ],
+ "sections": [
+    {
+      "id": "select_best",
+      "title": "review.select_best.title",
+      "questions": [
+        {
+          "id": "best_thumbnail",
+          "type": "thumbnail-select",
+          "label": "review.select_best.label",
+          "required": true
+        },
+        {
+          "id": "best_title",
+          "type": "title-select",
+          "label": "review.select_best.best_title",
+          "required": true
+        }
+      ]
+    },
+    {
+  "id": "per_thumbnail_rating",
+  "title": "review.per_thumbnail.title",
+  "questions": [
+    {
+      "id": "overall_impression",
+      "type": "textarea",
+      "label": "review.overall_impression.label",
+      "placeholder": "review.overall_impression.placeholder"
+    },
+    {
+      "id": "eye_catchiness",
+      "type": "rating",
+      "label": "review.eye_catchiness.label",
+      "scale": 5
+    },
+    {
+      "id": "eye_catchiness_text",
+      "type": "textarea",
+      "label": "review.eye_catchiness.explain",
+      "placeholder": "Why did you give this rating?"
+    },
+    {
+      "id": "clarity",
+      "type": "rating",
+      "label": "review.clarity.label",
+      "scale": 5
+    },
+    {
+      "id": "clarity_text",
+      "type": "textarea",
+      "label": "review.clarity.explain",
+      "placeholder": "What made it clear or unclear?"
+    },
+    {
+      "id": "curiosity",
+      "type": "rating",
+      "label": "review.curiosity.label",
+      "scale": 5
+    },
+    {
+      "id": "curiosity_text",
+      "type": "textarea",
+      "label": "review.curiosity.explain",
+      "placeholder": "What made it interesting or boring?"
+    },
+    {
+      "id": "branding",
+      "type": "rating",
+      "label": "review.branding.label",
+      "scale": 5
+    },
+    {
+      "id": "branding_text",
+      "type": "textarea",
+      "label": "review.branding.explain",
+      "placeholder": "Does it match the brand?"
+    },
+    {
+      "id": "suggestions",
+      "type": "textarea",
+      "label": "review.suggestions.label",
+      "placeholder": "review.suggestions.placeholder"
+    }
+  ]
+},
+    {
+      "id": "reviewer_preferences",
+      "title": "review.preferences.title",
+      "questions": [
+        {
+          "id": "public_feedback",
+          "type": "checkbox",
+          "label": "review.preferences.public_feedback"
+        },
+        {
+          "id": "follow_creator",
+          "type": "checkbox",
+          "label": "review.preferences.follow_creator"
+        },
+        {
+          "id": "become_reviewer",
+          "type": "checkbox",
+          "label": "review.preferences.become_reviewer"
+        }
+      ]
+    }
+  ]
+}

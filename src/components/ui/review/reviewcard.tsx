@@ -24,9 +24,9 @@ export default function ReviewCard({
   aiMarkdown,
 }: ReviewCardProps) {
   return (
-    <div className="bg-[#0d0d0d] rounded-lg p-6 shadow-md space-y-4 w-full max-w-md">
+    <div className="bg-[#0d0d0d] rounded-lg p-6 shadow-md space-y-4 w-full">
       {/* Image */}
-      <div className="w-full">
+      {/* <div className="w-full">
         <Image
           src={thumbnailUrl}
           width={600}
@@ -34,7 +34,7 @@ export default function ReviewCard({
           alt="Thumbnail"
           className="rounded-md w-full h-auto"
         />
-      </div>
+      </div> */}
 
       {/* Title */}
       <input

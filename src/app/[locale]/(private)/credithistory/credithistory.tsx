@@ -2,7 +2,7 @@
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import userGlobalStore, { IUserGlobalStore } from '@/app/global-store/users-store';
+import userGlobalStore, { IUserGlobalStore } from '@/lib/global-store/users-store';
 import toast from 'react-hot-toast';
 // import { deleteProductById, getProductsBySellerId } from '@/actions/products';
 import Spinner from '@/components/ui/spinner';
@@ -17,7 +17,7 @@ import {
 import dayjs from "dayjs";
 import { Pencil, Trash2 } from 'lucide-react';
 import { IUserCreditHistory } from '@/app/interfaces';
-import { GetUserCreditHistoryFromSupabase } from '@/actions/supabaseCredits';
+import { GetUserCreditHistoryFromSupabase } from '@/actions/supabase/supabaseCredits';
 
 
 export default function CreditHistory() {

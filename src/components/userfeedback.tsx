@@ -15,9 +15,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useTranslations } from 'next-intl';
-import userGlobalStore, { IUserGlobalStore } from '@/app/global-store/users-store';
+import userGlobalStore, { IUserGlobalStore } from '@/lib/global-store/users-store';
 import toast from 'react-hot-toast';
-import { insertUserFeedback } from "@/actions/supabaseUserFeedback";
+import { insertUserFeedback } from "@/actions/supabase/supabaseUserFeedback";
 
 
 function Userfeedback() {

@@ -1,12 +1,13 @@
 "use server";
 import React from 'react';
-import Credithistory from './credithistory';
+import Credithistory from './credit-statement';
 
 export default async function Page() {
 
   return (
     <div>
-        <Credithistory/>
+        {/* <Credithistory/> */}
+        <Credithistory /> 
     </div>
   )
 }

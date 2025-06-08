@@ -1,0 +1,128 @@
+{
+  "form_id": "signup_questionnaire",
+  "locale": "en",
+  "version": "v1",
+  "title": "Signup Questionnaire",
+  "sections": [
+    {
+      "id": "channel_goal",
+      "title": "Your Channel Goal",
+      "questions": [
+        {
+          "id": "channel_link",
+          "type": "text",
+          "label": "Would you like to provide your channel link so the AI can better understand your theme and style? (We will only analyze your public YouTube page, no internal data will be accessed.)",
+          "placeholder": "Enter your channel URL"
+        }
+      ]
+    },
+    {
+      "id": "audience_type",
+      "title": "Target Audience",
+      "questions": [
+        {
+          "id": "target_audience",
+          "type": "radio",
+          "label": "What type of audience are you currently trying to attract?",
+          "options": [
+            "Mass audience (focus on reach and awareness)",
+            "Interest-based audience (e.g., gaming, reviews, history)",
+            "Niche audience with specific needs (e.g., selling courses/products)",
+            "Just sharing for fun, not focused on results"
+          ],
+          "optional_text": true
+        }
+      ]
+    },
+    {
+      "id": "commercial_goal",
+      "title": "Monetization Goal",
+      "questions": [
+        {
+          "id": "current_goal",
+          "type": "radio",
+          "label": "What is your current monetization goal?",
+          "options": [
+            "Already monetized, looking to scale up",
+            "Established channel, want to reduce production costs",
+            "Looking to monetize in the future",
+            "Currently a hobby or side project"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "brand_identity",
+      "title": "What do you want to be known for? (Brand Identity)",
+      "questions": [
+        {
+          "id": "known_for",
+          "type": "radio",
+          "label": "What do you want your audience to remember you for?",
+          "options": [
+            "Yourself (personal branding, expressions, style)",
+            "The content itself (faceless entertainment like pets, comedy clips, compilations)",
+            "Your creative ideas (opinions, reviews, travel, documentaries)",
+            "Your product or skills (e.g., car, shoes, design, services)"
+          ],
+          "optional_text": true
+        }
+      ]
+    },
+    {
+      "id": "niche_topic",
+      "title": "Your Channel Topic & Niche",
+      "questions": [
+        {
+          "id": "channel_niche",
+          "type": "checkbox",
+          "label": "What topics or niches does your channel focus on?",
+          "options": [
+            "History",
+            "Gaming",
+            "Finance",
+            "Education",
+            "Storytelling",
+            "Entertainment",
+            "Reviews",
+            "Food",
+            "Travel",
+            "Other"
+          ],
+          "optional_text": true
+        }
+      ]
+    },
+    {
+      "id": "style_preferences",
+      "title": "Preferred Visual Style & Mood",
+      "questions": [
+        {
+          "id": "visual_style",
+          "type": "checkbox",
+          "label": "What kind of visual style do you prefer for your thumbnails?",
+          "options": [
+            "Cartoon style",
+            "Realistic",
+            "Bold colors",
+            "Soft tones",
+            "3D look",
+            "Hand-drawn feel"
+          ]
+        },
+        {
+          "id": "visual_mood",
+          "type": "checkbox",
+          "label": "What kind of mood do you want your thumbnails to convey?",
+          "options": [
+            "Suspenseful (crime, historical drama)",
+            "Bizarre/creepy (e.g., backrooms, urban legends)",
+            "Intellectual & professional (e.g., finance, science)",
+            "Chill & daily life (e.g., vlogs, food)",
+            "Extreme & thrilling (e.g., challenges, fail clips)"
+          ]
+        }
+      ]
+    }
+  ]
+}

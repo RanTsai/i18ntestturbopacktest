@@ -1,10 +1,11 @@
 //\app\[locale]\(private)\upgrade\page.tsx
 "use server"
 import React from 'react'
-import { getSubscriptionsFromSupabase } from '@/actions/supabaseSubscription';
+import { getSubscriptionsFromSupabase } from '@/actions/supabase/supabaseSubscription';
 import { IProduct } from '@/app/interfaces';
 import UpgradeSelector from './upgradeSelector'
 import PaypalProvider from '@/context/paypalprovider';
+import UpgradeSelectorTemp from './upgrade-selector-temp';
 
 async function page({ params }: { params: { locale: string } }) {
   let subscriptions: IProduct[] = [];
@@ -28,7 +29,8 @@ async function page({ params }: { params: { locale: string } }) {
     <>
       <div>
         <PaypalProvider currency={subscriptions[0]?.currency.toUpperCase() || "USD"}>
-          <UpgradeSelector subscriptions={subscriptions} />
+          {/* <UpgradeSelector subscriptions={subscriptions} /> */}
+          <UpgradeSelectorTemp />
         </PaypalProvider>
       </div>
     </>

@@ -1,11 +1,11 @@
 
-
+//app/[locale]/localeclientlayout.tsx
 'use client';
 import React from 'react';
 import { useUser } from '@clerk/nextjs';
 import PrivateLayout from './(private)/privateLayout';
 import PublicLayout from './(public)/publicLayout';
-import userGlobalStore from '@/app/global-store/users-store';
+import userGlobalStore from '@/lib/global-store/users-store';
 
 
 export default function LocaleClientLayout({ children }: { children: React.ReactNode }) {

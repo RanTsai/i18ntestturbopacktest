@@ -3,7 +3,7 @@ import React from 'react';
 import Header from '../../../layout-provider/components/header';
 
 import { Toaster } from 'react-hot-toast';
-import userGlobalStore from '@/app/global-store/users-store';
+import userGlobalStore from '@/lib/global-store/users-store';
 
 function PrivateLayout({ children }: { children: React.ReactNode }) {
   const theUser = userGlobalStore((s) => s.theUser);

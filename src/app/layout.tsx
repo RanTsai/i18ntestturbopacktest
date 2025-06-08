@@ -1,5 +1,5 @@
 
-import ClientClerkProvider from "./clientClerkProvider";
+import ClientClerkProvider from "@/context/clientClerkProvider";
 import type { Metadata } from "next";
 
 import "./globals.css";

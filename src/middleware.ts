@@ -18,7 +18,9 @@ export default clerkMiddleware(async (auth, req) => {
 
     if (
         req.nextUrl.pathname.startsWith('/api/get-user') ||
-        req.nextUrl.pathname.startsWith('/api/ai-dispatch')
+        req.nextUrl.pathname.startsWith('/api/ai-dispatch') ||
+        req.nextUrl.pathname.startsWith('/api/youtube') ||
+        req.nextUrl.pathname.startsWith('/api/youtubeshorts')
     ) return;
 
     if (isProtectedRoute(req) && !userId) {

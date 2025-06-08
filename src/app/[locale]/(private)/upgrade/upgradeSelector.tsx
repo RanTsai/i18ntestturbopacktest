@@ -5,11 +5,11 @@ import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { IProduct } from '@/app/interfaces';
-import userGlobalStore, { IUserGlobalStore } from '@/app/global-store/users-store';
+import userGlobalStore, { IUserGlobalStore } from '@/lib/global-store/users-store';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import toast from 'react-hot-toast';
 import Spinner from '@/components/ui/spinner';
-import { savePurchaseToSupabase } from '@/actions/supabaseSubscription'
+import { savePurchaseToSupabase } from '@/actions/supabase/supabaseSubscription'
 
 function UpgradeSelector({ subscriptions }: { subscriptions: IProduct[] }) {
   const t = useTranslations();

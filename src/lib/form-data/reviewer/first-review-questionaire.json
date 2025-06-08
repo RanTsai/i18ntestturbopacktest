@@ -1,0 +1,86 @@
+{
+  "form_id": "review_entry_questionnaire",
+  "locale": "en",
+  "version": "v1",
+  "title": "Review Entry Questionnaire",
+  "description": "Thank you for being willing to review others' thumbnails! Giving feedback helps sharpen your own creative eye as well.",
+  "sections": [
+    {
+      "id": "user_background",
+      "title": "Your Background",
+      "questions": [
+        {
+          "id": "user_role",
+          "type": "radio",
+          "label": "Which best describes you?",
+          "options": [
+            "Content Creator",
+            "Viewer",
+            "Professional Designer"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "niche_expertise",
+      "title": "Your Niche Expertise",
+      "questions": [
+        {
+          "id": "niche_options",
+          "type": "checkbox",
+          "label": "Which niches are you comfortable reviewing?",
+          "options": [
+            "Sport",
+            "Music",
+            "Celebrity",
+            "Movie",
+            "Animations",
+            "Anime",
+            "Cartoon",
+            "Story",
+            "Other"
+          ],
+          "optional_text": true
+        }
+      ]
+    },
+    {
+      "id": "review_scope",
+      "title": "Content Format You Can Review",
+      "questions": [
+        {
+          "id": "review_types",
+          "type": "checkbox",
+          "label": "Which types of content are you willing to review?",
+          "options": [
+            "Thumbnail Only",
+            "Video Title",
+            "Whole Channel Impression",
+            "Story & Structure"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "review_preferences",
+      "title": "Review Preferences",
+      "questions": [
+        {
+          "id": "public_feedback",
+          "type": "checkbox",
+          "label": "Would you allow your feedback to be publicly visible?"
+        },
+        {
+          "id": "group_feedback",
+          "type": "checkbox",
+          "label": "Would you like others to review the same content as you? (Group review)"
+        },
+        {
+          "id": "reciprocal_rewards",
+          "type": "checkbox",
+          "label": "Would you like to receive feedback credits when helping others? (You help others, we reward you)"
+        }
+      ]
+    }
+  ]
+}
