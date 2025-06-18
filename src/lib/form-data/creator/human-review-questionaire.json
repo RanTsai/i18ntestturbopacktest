@@ -1,0 +1,81 @@
+{
+  "form_id": "human_review_settings",
+  "locale": "en",
+  "version": "v1",
+  "title": "Human Review Settings",
+  "sections": [
+    {
+      "id": "review_deadline",
+      "title": "Set Review Deadline",
+      "questions": [
+        {
+          "id": "deadline_date",
+          "type": "date",
+          "label": "Select a deadline for when reviews must be completed.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "target_audience",
+      "title": "Choose Target Audience",
+      "questions": [
+        {
+          "id": "audience_selection",
+          "type": "multi-select",
+          "label": "Who is this thumbnail intended for?",
+          "options": [
+            "Teens (13–19)",
+            "Young Adults (20–30)",
+            "Adults (30–50)",
+            "History Fans",
+            "Gamers",
+            "Casual Viewers"
+          ],
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "custom_questions",
+      "title": "Custom Questions for Reviewers",
+      "questions": [
+        {
+          "id": "custom_questions",
+          "type": "multi-text",
+          "label": "Write questions you'd like reviewers to answer.",
+          "min": 0,
+          "max": 5,
+          "placeholder": "e.g., What emotions does the thumbnail evoke?"
+        }
+      ]
+    },
+    {
+      "id": "review_visibility",
+      "title": "Feedback Visibility",
+      "questions": [
+        {
+          "id": "make_feedback_public",
+          "type": "radio",
+          "label": "Do you want to make the review results public?",
+          "options": [
+            "Yes",
+            "No"
+          ],
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "notifications",
+      "title": "Notifications",
+      "questions": [
+        {
+          "id": "email_notifications",
+          "type": "checkbox",
+          "label": "Send me an email when new reviews come in."
+        }
+      ]
+    }
+  ]
+}

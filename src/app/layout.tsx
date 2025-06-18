@@ -5,8 +5,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Creator brain",
-  description: "Basic functions",
+  title: "Mr. Click",
+  description: "He helps you to get clicks",
 };
 
 export default async function RootLayout({

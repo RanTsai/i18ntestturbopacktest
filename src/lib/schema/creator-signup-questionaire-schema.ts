@@ -5,7 +5,9 @@ export type QuestionType =
     | "rating"
     | "textarea"
     | "thumbnail-select"
-    | "title-select";
+    | "title-select"
+    | "date"
+    | "multi-text";
 
 export interface Question {
     id: string;
@@ -15,6 +17,8 @@ export interface Question {
     options?: string[];
     scale?: number;
     optional_text?: boolean;
+    max?: number;
+    min?: number;
 }
 
 export interface Section {

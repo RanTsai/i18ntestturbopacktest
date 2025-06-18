@@ -24,7 +24,7 @@ export default function Page() {
         </Button>
       </div>
 
-      <div>
+      <div> 
         {isMobile ? <MobileYouTubeHomeMock /> : <YouTubeHomeMock />}
       </div>
     </div>

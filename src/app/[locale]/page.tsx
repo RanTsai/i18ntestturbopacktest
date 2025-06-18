@@ -125,7 +125,7 @@ This thumbnail is super cool because it pulls you right into a story! 🎬 ...
           <h2 className="text-2xl font-semibold text-center mb-4">
             Which one is better?
           </h2>
-          <ThumbnailRankingBoard />
+          <ThumbnailRankingBoard thumbnails={[]} />
         </div>
 
         <div>
@@ -142,11 +142,11 @@ This thumbnail is super cool because it pulls you right into a story! 🎬 ...
           <UserFeedbackList reviewers={reviewers} />
         </div>
 
-<Link href="/thumbnails/uploadpage" className="flex justify-center">
-        <Button className=' bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-[50px] items-center justify-center mx-auto'>
-          Start
-        </Button>
-          </Link>
+        <Link href="/thumbnails/uploadpage" className="flex justify-center">
+          <Button className=' bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-[50px] items-center justify-center mx-auto'>
+            Start
+          </Button>
+        </Link>
 
         {/* FAQ */}
         <div className="p-4">

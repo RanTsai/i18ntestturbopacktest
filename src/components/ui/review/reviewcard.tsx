@@ -6,7 +6,9 @@ import { StarRating } from "./starrating";
 import RadarChart from "./radarchart";
 import MarkDown from "react-markdown";
 import AspectBarList from "./aspectbarlist";
-
+import { Button } from "../button";
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import Link from "next/link";
 
 interface ReviewCardProps {
   thumbnailUrl: string;
@@ -25,18 +27,7 @@ export default function ReviewCard({
 }: ReviewCardProps) {
   return (
     <div className="bg-[#0d0d0d] rounded-lg p-6 shadow-md space-y-4 w-full">
-      {/* Image */}
-      {/* <div className="w-full">
-        <Image
-          src={thumbnailUrl}
-          width={600}
-          height={400}
-          alt="Thumbnail"
-          className="rounded-md w-full h-auto"
-        />
-      </div> */}
-
-      {/* Title */}
+       {/* Title */}
       <input
         type="text"
         value={title}
@@ -70,6 +61,20 @@ export default function ReviewCard({
       <div className="text-sm text-gray-300 leading-6">
         <MarkDown>{aiMarkdown}</MarkDown>
       </div>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Link href="/aichat" className="flex justify-center">
+
+          {/* <div className="flex justify-between bg-secondary p-2 rounded cursor-pointer hover:bg-accent transition-all"> */}
+          {/* <Button variant="default" size="sm" className="outline cursor-pointer transition-colors bg-blue-500 hover:bg-blue-800 hover:text-black">Chat With AI</Button> */}
+          {/*   </div> */}
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent className="max-w-xs text-sm">
+          Chat with AI to Analyse improvement
+        </TooltipContent>
+      </Tooltip>
     </div>
   );
 }

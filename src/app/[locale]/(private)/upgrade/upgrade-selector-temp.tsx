@@ -67,7 +67,7 @@ export default function UpgradeSelectorTemp() {
       {/* ✅ Top: User Info */}
       <div className="flex flex-col md:flex-row justify-between items-center border-b border-gray-700 pb-4">
         <div>
-          <h2 className="text-xl font-semibold">KLING7831</h2>
+          <h2 className="text-xl font-semibold">Mr. Click</h2>
           <p className="text-sm text-gray-400">Standard (expire at: 8/9/2025)</p>
         </div>
         <div className="flex items-center space-x-2 mt-2 md:mt-0">

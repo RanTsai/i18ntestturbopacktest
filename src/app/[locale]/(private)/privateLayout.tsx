@@ -1,6 +1,5 @@
 "use client";
 import React from 'react';
-import Header from '../../../layout-provider/components/header';
 
 import { Toaster } from 'react-hot-toast';
 import userGlobalStore from '@/lib/global-store/users-store';

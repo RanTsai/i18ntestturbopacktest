@@ -22,7 +22,7 @@ export default function ProfileSettings() {
         <div className="flex-1 space-y-2">
           <p>ID: 4087831</p>
           <p className="flex items-center space-x-2">
-            <span>Name: KLING7831</span>
+            <span>Mr. Click</span>
             <Pencil className="h-4 w-4 text-gray-400 cursor-pointer" />
           </p>
           <div className="flex flex-col space-y-1">

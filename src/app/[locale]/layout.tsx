@@ -24,18 +24,18 @@ export default async function LocaleLayout({
   <NextIntlClientProvider locale={locale}>    
   <LocaleClientLayout>
 
-    <div className="flex flex-col h-screen bg-background text-foreground">
+    <div className="flex flex-col h-screen bg-background text-foreground ">
       {/* 上方 TopNavigationBar */}
       <TopNavigationBar />
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 ">
         {/* 左側 Sidebar */}
         <Sidebar />
 
         {/* 中間區域：Topbar + children */}
-        <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex flex-col flex-1 ">
           <Topbar />
-          <main className="flex-1 overflow-auto p-4">{children}</main>
+          <main className="flex-1 p-4">{children}</main>
         </div>
       </div>
     </div>

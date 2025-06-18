@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { SignInButton, SignedIn, SignedOut, UserButton } from
     "@clerk/nextjs";
-import { LaptopMinimal, Bot, LogIn, Coins, Bell } from "lucide-react";
+import { LaptopMinimal, Bot, LogIn, Coins, Bell, Handshake } from "lucide-react";
 //import ModeToggle from "@/components/nav/mode-toggle";
 import { currentUser } from "@clerk/nextjs/server";
 import LanguageSwitcher from "./languageSwitcher";
@@ -23,12 +23,12 @@ export default async function TopNavigationBar() {
                 <Link href="/" className="flex flex-col items-center">
                     <Image
                         src="/logo/logo.png"
-                        alt="Thumbnail expert Logo"
+                        alt="Mr. Click Logo"
                         width={50}
                         height={50}
                     />
                     <span className="text-xs text-gray-500 mt-1 hidden sm:inline-block">
-                        Thumbnail Expert
+                        Mr. Click
                     </span>
                 </Link>
             </div>
@@ -43,6 +43,8 @@ export default async function TopNavigationBar() {
                     />
                 )}
                 <IconWithText href="/thumbnails/uploadpage" icon={Bot} text="Analyse" />
+                <IconWithText href="/reviewothershome" icon={Handshake} text="Critique" />
+
                 {user && (
                     <>
                         <div className="flex flex-col items-center cursor-pointer">

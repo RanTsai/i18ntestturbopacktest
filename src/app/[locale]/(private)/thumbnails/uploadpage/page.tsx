@@ -2,9 +2,14 @@
 import React from 'react';
 //import ImageUploaderClient from './imageUploadClient';
 import MultiImageUploaderClient from './multiImageUploadClient';
+import path from "path";
+import { FormSchema } from "@/lib/schema/creator-signup-questionaire-schema"; 
+import fs from "fs";
 
 function ThumbnailUpload() {
-
+const filePath = path.join(process.cwd(), "src/lib/form-data/creator/human-review-questionaire.json");
+    const fileContent = fs.readFileSync(filePath, "utf-8");
+    const formData: FormSchema = JSON.parse(fileContent);
    
     const handleImageUpload = (file: File) => {
         //setUploadedImage(file);
@@ -16,7 +21,7 @@ function ThumbnailUpload() {
             {/* <ImageUploaderClient /> */}
            
 
-            <MultiImageUploaderClient />
+            <MultiImageUploaderClient formData={formData} />
            
         </div>
     )

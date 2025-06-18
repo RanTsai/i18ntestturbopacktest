@@ -3,7 +3,7 @@ import { generateObject } from 'ai';
 import { NextRequest, NextResponse } from 'next/server';
 import { AIResponseSchema } from '@/lib/schema/aiscore-schema';
 import { zodToJsonSchema } from 'zod-to-json-schema';
-import { extractUrl } from '@/lib/utils';
+import { extractUrl } from '@/lib/extract-url';
 
 export async function POST(req: NextRequest) {
     try {

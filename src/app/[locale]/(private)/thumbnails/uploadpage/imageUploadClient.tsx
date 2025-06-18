@@ -176,7 +176,7 @@ ${aiFeedback.synergy}
 ${aiFeedback.explanation}
                 `}
               />              
-               <ThumbnailRankingBoard />
+               {/* <ThumbnailRankingBoard thumbnails={reviewsForBoard}  /> */}
                </>
             )
           )}

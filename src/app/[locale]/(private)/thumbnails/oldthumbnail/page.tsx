@@ -8,6 +8,7 @@ import UserWorkGlobalStore from '@/lib/global-store/user-work-store';
 import { User } from '@clerk/nextjs/server';
 import { set } from 'mongoose';
 import Link from 'next/link';
+import ThumbnailDecisionReport from './thumbnail-decision-report';
 
 export default function page() {
 
@@ -43,6 +44,7 @@ export default function page() {
     }, []);
     return (
         <>
+        <ThumbnailDecisionReport />
         <div>
             {
                 loading ? (

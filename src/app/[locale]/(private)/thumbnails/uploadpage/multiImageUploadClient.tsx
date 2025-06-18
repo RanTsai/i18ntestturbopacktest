@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { useForm } from "react-hook-form";
 import MultiImageUploader from "@/components/ui/review/multiImageUploader";
 import userGlobalStore, { IUserGlobalStore } from "@/lib/global-store/users-store";
 import toast from "react-hot-toast";
@@ -13,7 +14,9 @@ import { UserWorkWithAIAnalaysisToSupabase } from "@/actions/supabase/supabaseUs
 import ThumbnailRankingBoard from "@/components/ui/review/thumbnailRankingBoard";
 import FeedbackDialog, { FeedbackData } from "@/components/ui/feedback/user-feedback-form";
 import { ThumbnailReview, AspectKey, AspectRating } from "@/components/ui/review/types"; // Added imports
-//import { mockThumbnails } from "@/components/ui/review/mockData";; 
+import GeneralQuestionaire from "@/components/ui/forms/general-questionare";
+import { FormSchema } from "@/lib/schema/creator-signup-questionaire-schema";
+import { AnimatePresence, motion } from "framer-motion"
 
 interface UploadedReview {
   file: File;
@@ -22,11 +25,23 @@ interface UploadedReview {
   isLoading: boolean;
   aiFeedback: any | null; // Consider defining a more specific type for aiFeedback
 }
+interface Props {
+  formData: FormSchema;
+}
 
-export default function MultiImageUploaderClient() {
+export default function MultiImageUploaderClient({ formData }: Props) {
   const { theUser } = userGlobalStore() as IUserGlobalStore;
   const [uploads, setUploads] = useState<UploadedReview[]>([]);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [isHumanReviewOpen, setIsHumanReviewOpen] = useState(false);
+  const { control, handleSubmit, register, reset } = useForm();
+  const [loading, setLoading] = useState(false);
+
+
+
+  const onSubmit = async (values: any) => {
+    console.log("feedbacksubmitted");
+  };
 
   // 上傳多張縮圖
   const handleUpload = async (files: File[]) => {
@@ -269,8 +284,38 @@ export default function MultiImageUploaderClient() {
         <ThumbnailRankingBoard thumbnails={reviewsForBoard} />
       )}
 
-      <h2 className="text-2xl font-semibold text-center mb-4">Get real human feedback</h2>
+      {/* 啟動真人回饋問卷按鈕 */}
+      <div className="text-center mt-10">
+        <Button
+          onClick={() => setIsHumanReviewOpen(prev => !prev)}
+          className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded"
+        >
+          {isHumanReviewOpen ? "Hide Human Feedback" : "Get Real Human Feedback"}
+        </Button>
+      </div>
 
+      {/* 問卷顯示區塊 */}
+      <AnimatePresence>
+        {isHumanReviewOpen && (
+          <motion.div
+            key="human-questionnaire"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
+              <GeneralQuestionaire
+                formData={formData}
+                loading={loading}
+                onSubmit={handleSubmit(onSubmit)}
+                control={control}
+                register={register}
+              />
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 用戶主觀回饋 */}
       <h2 className="text-2xl font-semibold text-center mb-4">Tell us did it help you?</h2>
