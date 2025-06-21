@@ -13,15 +13,7 @@ const userSchema = new mongoose.Schema(
         clerkUserId: {
             type: String,
             required: true,
-        },
-        supabaseUserId:{
-            type: String,
-            required: true,
-        },
-        publicUserId:{
-            type: String,
-            required: true,
-        }
+        },       
     },
     { timestamps: true }
 );

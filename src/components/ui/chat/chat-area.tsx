@@ -17,81 +17,81 @@ interface Message {
   imageUrl?: string;
 }
 
-// const versions: ThumbnailVersion[] = [
-//   {
-//     id: "v1",
-//     versionLabel: "v1",
-//     title: "How to Create Amazing Thumbnails",
-//     date: "2025-06-17",
-//     rating: 4.0,
-//     description: "Initial draft with dark background and minimal text",
-//     imageUrl: "/thumbnail1.png",
-//     linkedMessageId: "ai-msg-101",
-//     annotations: [
-//       {
-//         id: "anno1",
-//         type: "box",
-//         x: 0.2,
-//         y: 0.3,
-//         width: 0.3,
-//         height: 0.2,
-//         message: "Text may be hard to read here"
-//       }
-//     ]
-//   },
-//   {
-//     id: "v2",
-//     versionLabel: "v2",
-//     title: "How to Create Amazing Thumbnails",
-//     date: "2025-06-18",
-//     rating: 4.7,
-//     description: "Increased contrast and added drop shadow to text",
-//     imageUrl: "/thumbnail2.png",
-//     linkedMessageId: "ai-msg-102",
-//     annotations: [
-//       {
-//         id: "anno2",
-//         type: "highlight",
-//         x: 0.5,
-//         y: 0.2,
-//         width: 0.4,
-//         height: 0.3,
-//         message: "Title is much clearer here"
-//       }
-//     ]
-//   },
-//   {
-//     id: "v3",
-//     versionLabel: "v3",
-//     title: "How to Create Amazing Thumbnails",
-//     date: "2025-06-19",
-//     rating: 3.8,
-//     description: "Experimented with bold colors, but a bit cluttered",
-//     imageUrl: "/thumbnail3.png",
-//     annotations: []
-//   },
-//   {
-//     id: "v4",
-//     versionLabel: "v4",
-//     title: "How to Create Amazing Thumbnails",
-//     date: "2025-06-20",
-//     rating: 4.6,
-//     description: "Final version with balanced layout and clean fonts",
-//     imageUrl: "/thumbnail4.png",
-//     linkedMessageId: "ai-msg-104",
-//     annotations: [
-//       {
-//         id: "anno4",
-//         type: "arrow",
-//         x: 0.6,
-//         y: 0.4,
-//         width: 0.1,
-//         height: 0.1,
-//         message: "Focus point here works well"
-//       }
-//     ]
-//   }
-// ];
+const versions: ThumbnailVersion[] = [
+  {
+    id: "v1",
+    versionLabel: "v1",
+    title: "How to Create Amazing Thumbnails",
+    date: "2025-06-17",
+    rating: 4.0,
+    description: "Initial draft with dark background and minimal text",
+    imageUrl: "/thumbnail1.png",
+    linkedMessageId: "ai-msg-101",
+    annotations: [
+      {
+        id: "anno1",
+        type: "box",
+        x: 0.2,
+        y: 0.3,
+        width: 0.3,
+        height: 0.2,
+        message: "Text may be hard to read here"
+      }
+    ]
+  },
+  {
+    id: "v2",
+    versionLabel: "v2",
+    title: "How to Create Amazing Thumbnails",
+    date: "2025-06-18",
+    rating: 4.7,
+    description: "Increased contrast and added drop shadow to text",
+    imageUrl: "/thumbnail2.png",
+    linkedMessageId: "ai-msg-102",
+    annotations: [
+      {
+        id: "anno2",
+        type: "highlight",
+        x: 0.5,
+        y: 0.2,
+        width: 0.4,
+        height: 0.3,
+        message: "Title is much clearer here"
+      }
+    ]
+  },
+  {
+    id: "v3",
+    versionLabel: "v3",
+    title: "How to Create Amazing Thumbnails",
+    date: "2025-06-19",
+    rating: 3.8,
+    description: "Experimented with bold colors, but a bit cluttered",
+    imageUrl: "/thumbnail3.png",
+    annotations: []
+  },
+  {
+    id: "v4",
+    versionLabel: "v4",
+    title: "How to Create Amazing Thumbnails",
+    date: "2025-06-20",
+    rating: 4.6,
+    description: "Final version with balanced layout and clean fonts",
+    imageUrl: "/thumbnail4.png",
+    linkedMessageId: "ai-msg-104",
+    annotations: [
+      {
+        id: "anno4",
+        type: "arrow",
+        x: 0.6,
+        y: 0.4,
+        width: 0.1,
+        height: 0.1,
+        message: "Focus point here works well"
+      }
+    ]
+  }
+];
 
 export default function ChatArea() {
   const [showSidebar, setShowSideBar] = useState(false);

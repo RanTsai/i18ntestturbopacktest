@@ -14,28 +14,35 @@ import Messages from './messages';
 import { UseChatStore } from '@/lib/global-store/use-chat-store';
 import { ThumbnailVersion } from './mockdata';
 import ChatTabSwitcher, { ChatTab } from './chat-tab-switcher';
-import { useChatManager } from '@/hooks/ai-feedback/use-chat-manager';
 import ThumbnailVersionList from './thumbnail-version-list';
 import { Button } from '@/components/ui/button';
 import type { Message } from '@ai-sdk/ui-utils';
+import { createNewChat, updateChat, getChatById } from '@/actions/mongoose/mongoose-chat';
+import toast from 'react-hot-toast';
+import { useChat } from '@ai-sdk/react';
 
 function ChatAreaLive({ userId }: { userId: string }) {
     const [showSidebar, setShowSideBar] = useState(false);
-    const { selectedChat } = UseChatStore();
-    const [status, setStatus] = useState<'idle' | 'streaming' | 'ready'>('idle');
+    const { selectedChat, setSelectedChat, setUserChats, userChats} = UseChatStore();
     const [activeTab, setActiveTab] = useState<ChatTab>('chat');
     const [versions, setVersions] = useState<ThumbnailVersion[]>([]);
     const [selectedVersionId, setSelectedVersionId] = useState<string | undefined>(undefined);
     const versionCounterRef = useRef<number>(1);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    // Get All mongo DB chats into the ChatArea and store into UseChatGlobal
+    // If selectedChat == null means starting new Chat
 
-    const {
+     const {
         messages,
         input,
         handleInputChange,
         handleSubmit,
-        setMessages,
-        isLoading,
-    } = useChatManager(selectedChat?._id, userId);
+        status,
+        setMessages
+    } = useChat({
+        api: '/api/chat',
+        initialMessages: [],
+    });
 
     const handleAddToVersions = (imageUrl: string, messageId?: string) => {
         const newVersion: ThumbnailVersion = {
@@ -98,10 +105,56 @@ function ChatAreaLive({ userId }: { userId: string }) {
     };
 
     useEffect(() => {
-        if (selectedChat?.messages && selectedChat.messages.length > 0) {
-            setMessages(selectedChat.messages);
+        if (selectedChat) {
+            // 只在 messages 不同時才 set（避免無限迴圈）
+            if (JSON.stringify(messages) !== JSON.stringify(selectedChat.messages)) {
+                setMessages(selectedChat.messages || []);
+            }
+        } else {
+             if (messages.length !== 0) {
+                setMessages([]); // 新 chat
+             }
         }
     }, [selectedChat]);
+
+    const addOrUpdateChat = async () => {
+        try {
+            if (!selectedChat) {
+                // 新建 chat
+                const response = await createNewChat(                  
+                    messages,
+                    messages[0].content,
+                );
+
+                if (response.success) {
+                    setSelectedChat(response.data);
+                    setUserChats([response.data, ...userChats]);
+                } else {
+                    toast.error(response.message || 'Something went wrong while creating the chat');
+                }
+            } else {
+                // 更新現有 chat
+                await updateChat({
+                    chatId: selectedChat._id,
+                    messages: messages,
+                });
+
+                // 從 DB 取得最新 chat（包含 AI 回覆）
+                const updatedChatResponse = await getChatById(selectedChat._id);
+                if (updatedChatResponse.success) {
+                    setSelectedChat(updatedChatResponse.data);
+                }
+            }
+        } catch (error: any) {
+            toast.error(error.message || 'Error while saving the chat');
+        }
+    };
+
+    useEffect(() => {
+        if (status === 'ready' && messages.length > 0) {
+            addOrUpdateChat();
+        }
+    }, [status, messages]);
 
     return (
         <div

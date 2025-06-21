@@ -11,8 +11,6 @@ import LanguageSwitcher from "./languageSwitcher";
 import IconWithText, { IconWithTextProps } from "@/components/ui/iconwithtext"
 import ModeToggle from "./mode-toggle";
 
-
-
 export default async function TopNavigationBar() {
     const user = await currentUser();
 
