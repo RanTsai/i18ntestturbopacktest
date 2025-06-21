@@ -1,128 +1,678 @@
 {
   "form_id": "signup_questionnaire",
-  "locale": "en",
   "version": "v1",
-  "title": "Signup Questionnaire",
-  "sections": [
-    {
-      "id": "channel_goal",
-      "title": "Your Channel Goal",
-      "questions": [
+  "locales": {
+    "en": {
+      "title": "Signup Questionnaire",
+      "sections": [
         {
-          "id": "channel_link",
-          "type": "text",
-          "label": "Would you like to provide your channel link so the AI can better understand your theme and style? (We will only analyze your public YouTube page, no internal data will be accessed.)",
-          "placeholder": "Enter your channel URL"
-        }
-      ]
-    },
-    {
-      "id": "audience_type",
-      "title": "Target Audience",
-      "questions": [
-        {
-          "id": "target_audience",
-          "type": "radio",
-          "label": "What type of audience are you currently trying to attract?",
-          "options": [
-            "Mass audience (focus on reach and awareness)",
-            "Interest-based audience (e.g., gaming, reviews, history)",
-            "Niche audience with specific needs (e.g., selling courses/products)",
-            "Just sharing for fun, not focused on results"
-          ],
-          "optional_text": true
-        }
-      ]
-    },
-    {
-      "id": "commercial_goal",
-      "title": "Monetization Goal",
-      "questions": [
-        {
-          "id": "current_goal",
-          "type": "radio",
-          "label": "What is your current monetization goal?",
-          "options": [
-            "Already monetized, looking to scale up",
-            "Established channel, want to reduce production costs",
-            "Looking to monetize in the future",
-            "Currently a hobby or side project"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "brand_identity",
-      "title": "What do you want to be known for? (Brand Identity)",
-      "questions": [
-        {
-          "id": "known_for",
-          "type": "radio",
-          "label": "What do you want your audience to remember you for?",
-          "options": [
-            "Yourself (personal branding, expressions, style)",
-            "The content itself (faceless entertainment like pets, comedy clips, compilations)",
-            "Your creative ideas (opinions, reviews, travel, documentaries)",
-            "Your product or skills (e.g., car, shoes, design, services)"
-          ],
-          "optional_text": true
-        }
-      ]
-    },
-    {
-      "id": "niche_topic",
-      "title": "Your Channel Topic & Niche",
-      "questions": [
-        {
-          "id": "channel_niche",
-          "type": "checkbox",
-          "label": "What topics or niches does your channel focus on?",
-          "options": [
-            "History",
-            "Gaming",
-            "Finance",
-            "Education",
-            "Storytelling",
-            "Entertainment",
-            "Reviews",
-            "Food",
-            "Travel",
-            "Other"
-          ],
-          "optional_text": true
-        }
-      ]
-    },
-    {
-      "id": "style_preferences",
-      "title": "Preferred Visual Style & Mood",
-      "questions": [
-        {
-          "id": "visual_style",
-          "type": "checkbox",
-          "label": "What kind of visual style do you prefer for your thumbnails?",
-          "options": [
-            "Cartoon style",
-            "Realistic",
-            "Bold colors",
-            "Soft tones",
-            "3D look",
-            "Hand-drawn feel"
+          "id": "channel_goal",
+          "title": "Your Channel Goal",
+          "questions": [
+            {
+              "id": "channel_link",
+              "type": "text",
+              "label": "Would you like to provide your channel link so the AI can better understand your theme and style? (We will only analyze your public YouTube page, no internal data will be accessed.)",
+              "placeholder": "Enter your channel URL"
+            }
           ]
         },
         {
-          "id": "visual_mood",
-          "type": "checkbox",
-          "label": "What kind of mood do you want your thumbnails to convey?",
-          "options": [
-            "Suspenseful (crime, historical drama)",
-            "Bizarre/creepy (e.g., backrooms, urban legends)",
-            "Intellectual & professional (e.g., finance, science)",
-            "Chill & daily life (e.g., vlogs, food)",
-            "Extreme & thrilling (e.g., challenges, fail clips)"
+          "id": "audience_type",
+          "title": "Target Audience",
+          "questions": [
+            {
+              "id": "target_audience",
+              "type": "radio",
+              "label": "What type of audience are you currently trying to attract?",
+              "options": [
+                {
+                  "value": "target_audience_0",
+                  "label": "Mass audience (focus on reach and awareness)"
+                },
+                {
+                  "value": "target_audience_1",
+                  "label": "Interest-based audience (e.g., gaming, reviews, history)"
+                },
+                {
+                  "value": "target_audience_2",
+                  "label": "Niche audience with specific needs (e.g., selling courses/products)"
+                },
+                {
+                  "value": "target_audience_3",
+                  "label": "Just sharing for fun, not focused on results"
+                }
+              ],
+              "optional_text": true
+            }
+          ]
+        },
+        {
+          "id": "commercial_goal",
+          "title": "Monetization Goal",
+          "questions": [
+            {
+              "id": "current_goal",
+              "type": "radio",
+              "label": "What is your current monetization goal?",
+              "options": [
+                {
+                  "value": "current_goal_0",
+                  "label": "Already monetized, looking to scale up"
+                },
+                {
+                  "value": "current_goal_1",
+                  "label": "Established channel, want to reduce production costs"
+                },
+                {
+                  "value": "current_goal_2",
+                  "label": "Looking to monetize in the future"
+                },
+                {
+                  "value": "current_goal_3",
+                  "label": "Currently a hobby or side project"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "brand_identity",
+          "title": "What do you want to be known for? (Brand Identity)",
+          "questions": [
+            {
+              "id": "known_for",
+              "type": "radio",
+              "label": "What do you want your audience to remember you for?",
+              "options": [
+                {
+                  "value": "known_for_0",
+                  "label": "Yourself (personal branding, expressions, style)"
+                },
+                {
+                  "value": "known_for_1",
+                  "label": "The content itself (faceless entertainment like pets, comedy clips, compilations)"
+                },
+                {
+                  "value": "known_for_2",
+                  "label": "Your creative ideas (opinions, reviews, travel, documentaries)"
+                },
+                {
+                  "value": "known_for_3",
+                  "label": "Your product or skills (e.g., car, shoes, design, services)"
+                }
+              ],
+              "optional_text": true
+            }
+          ]
+        },
+        {
+          "id": "niche_topic",
+          "title": "Your Channel Topic & Niche",
+          "questions": [
+            {
+              "id": "channel_niche",
+              "type": "checkbox",
+              "label": "What topics or niches does your channel focus on?",
+              "options": [
+                {
+                  "value": "channel_niche_0",
+                  "label": "History"
+                },
+                {
+                  "value": "channel_niche_1",
+                  "label": "Gaming"
+                },
+                {
+                  "value": "channel_niche_2",
+                  "label": "Finance"
+                },
+                {
+                  "value": "channel_niche_3",
+                  "label": "Education"
+                },
+                {
+                  "value": "channel_niche_4",
+                  "label": "Storytelling"
+                },
+                {
+                  "value": "channel_niche_5",
+                  "label": "Entertainment"
+                },
+                {
+                  "value": "channel_niche_6",
+                  "label": "Reviews"
+                },
+                {
+                  "value": "channel_niche_7",
+                  "label": "Food"
+                },
+                {
+                  "value": "channel_niche_8",
+                  "label": "Travel"
+                },
+                {
+                  "value": "channel_niche_9",
+                  "label": "Other"
+                }
+              ],
+              "optional_text": true
+            }
+          ]
+        },
+        {
+          "id": "style_preferences",
+          "title": "Preferred Visual Style & Mood",
+          "questions": [
+            {
+              "id": "visual_style",
+              "type": "checkbox",
+              "label": "What kind of visual style do you prefer for your thumbnails?",
+              "options": [
+                {
+                  "value": "visual_style_0",
+                  "label": "Cartoon style"
+                },
+                {
+                  "value": "visual_style_1",
+                  "label": "Realistic"
+                },
+                {
+                  "value": "visual_style_2",
+                  "label": "Bold colors"
+                },
+                {
+                  "value": "visual_style_3",
+                  "label": "Soft tones"
+                },
+                {
+                  "value": "visual_style_4",
+                  "label": "3D look"
+                },
+                {
+                  "value": "visual_style_5",
+                  "label": "Hand-drawn feel"
+                }
+              ]
+            },
+            {
+              "id": "visual_mood",
+              "type": "checkbox",
+              "label": "What kind of mood do you want your thumbnails to convey?",
+              "options": [
+                {
+                  "value": "visual_mood_0",
+                  "label": "Suspenseful (crime, historical drama)"
+                },
+                {
+                  "value": "visual_mood_1",
+                  "label": "Bizarre/creepy (e.g., backrooms, urban legends)"
+                },
+                {
+                  "value": "visual_mood_2",
+                  "label": "Intellectual & professional (e.g., finance, science)"
+                },
+                {
+                  "value": "visual_mood_3",
+                  "label": "Chill & daily life (e.g., vlogs, food)"
+                },
+                {
+                  "value": "visual_mood_4",
+                  "label": "Extreme & thrilling (e.g., challenges, fail clips)"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "zh": {
+      "title": "註冊問卷",
+      "sections": [
+        {
+          "id": "channel_goal",
+          "title": "頻道目標",
+          "questions": [
+            {
+              "id": "channel_link",
+              "type": "text",
+              "label": "請提供您的頻道連結，以便 AI 更好理解您的風格與主題（僅分析公開的 YouTube 頁面，不會存取內部資料）。",
+              "placeholder": "請輸入您的頻道 URL"
+            }
+          ]
+        },
+        {
+          "id": "audience_type",
+          "title": "目標觀眾",
+          "questions": [
+            {
+              "id": "target_audience",
+              "type": "radio",
+              "label": "您目前希望吸引哪種類型的觀眾？",
+              "options": [
+                {
+                  "value": "target_audience_0",
+                  "label": "大眾觀眾（追求觸及率與認知）"
+                },
+                {
+                  "value": "target_audience_1",
+                  "label": "興趣導向觀眾（例如遊戲、影評、歷史）"
+                },
+                {
+                  "value": "target_audience_2",
+                  "label": "利基觀眾（例如銷售課程或產品）"
+                },
+                {
+                  "value": "target_audience_3",
+                  "label": "純粹分享，不在意成效"
+                }
+              ],
+              "optional_text": true
+            }
+          ]
+        },
+        {
+          "id": "commercial_goal",
+          "title": "商業目標",
+          "questions": [
+            {
+              "id": "current_goal",
+              "type": "radio",
+              "label": "您目前的營利目標為何？",
+              "options": [
+                {
+                  "value": "current_goal_0",
+                  "label": "已經營利，希望擴大規模"
+                },
+                {
+                  "value": "current_goal_1",
+                  "label": "已建立頻道，想降低製作成本"
+                },
+                {
+                  "value": "current_goal_2",
+                  "label": "希望未來能營利"
+                },
+                {
+                  "value": "current_goal_3",
+                  "label": "目前只是興趣或副業"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "brand_identity",
+          "title": "您想要建立怎樣的頻道印象？",
+          "questions": [
+            {
+              "id": "known_for",
+              "type": "radio",
+              "label": "您希望觀眾記住您的哪一面？",
+              "options": [
+                {
+                  "value": "known_for_0",
+                  "label": "您本人（個人風格、表達方式）"
+                },
+                {
+                  "value": "known_for_1",
+                  "label": "內容本身（無臉娛樂，如寵物、搞笑剪輯）"
+                },
+                {
+                  "value": "known_for_2",
+                  "label": "創意想法（評論、旅遊、紀錄片）"
+                },
+                {
+                  "value": "known_for_3",
+                  "label": "產品或技能（如汽車、鞋子、設計、服務）"
+                }
+              ],
+              "optional_text": true
+            }
+          ]
+        },
+        {
+          "id": "niche_topic",
+          "title": "頻道主題與領域",
+          "questions": [
+            {
+              "id": "channel_niche",
+              "type": "checkbox",
+              "label": "您的頻道主要聚焦哪些主題？",
+              "options": [
+                {
+                  "value": "channel_niche_0",
+                  "label": "歷史"
+                },
+                {
+                  "value": "channel_niche_1",
+                  "label": "遊戲"
+                },
+                {
+                  "value": "channel_niche_2",
+                  "label": "財經"
+                },
+                {
+                  "value": "channel_niche_3",
+                  "label": "教育"
+                },
+                {
+                  "value": "channel_niche_4",
+                  "label": "說故事"
+                },
+                {
+                  "value": "channel_niche_5",
+                  "label": "娛樂"
+                },
+                {
+                  "value": "channel_niche_6",
+                  "label": "評論"
+                },
+                {
+                  "value": "channel_niche_7",
+                  "label": "美食"
+                },
+                {
+                  "value": "channel_niche_8",
+                  "label": "旅遊"
+                },
+                {
+                  "value": "channel_niche_9",
+                  "label": "其他"
+                }
+              ],
+              "optional_text": true
+            }
+          ]
+        },
+        {
+          "id": "style_preferences",
+          "title": "偏好的視覺風格與情緒",
+          "questions": [
+            {
+              "id": "visual_style",
+              "type": "checkbox",
+              "label": "您偏好哪種縮圖風格？",
+              "options": [
+                {
+                  "value": "visual_style_0",
+                  "label": "卡通風格"
+                },
+                {
+                  "value": "visual_style_1",
+                  "label": "寫實風"
+                },
+                {
+                  "value": "visual_style_2",
+                  "label": "鮮明色彩"
+                },
+                {
+                  "value": "visual_style_3",
+                  "label": "柔和色調"
+                },
+                {
+                  "value": "visual_style_4",
+                  "label": "3D 效果"
+                },
+                {
+                  "value": "visual_style_5",
+                  "label": "手繪感"
+                }
+              ]
+            },
+            {
+              "id": "visual_mood",
+              "type": "checkbox",
+              "label": "您希望縮圖傳達什麼氛圍？",
+              "options": [
+                {
+                  "value": "visual_mood_0",
+                  "label": "懸疑（犯罪、歷史劇）"
+                },
+                {
+                  "value": "visual_mood_1",
+                  "label": "怪異/詭異（如都市傳說）"
+                },
+                {
+                  "value": "visual_mood_2",
+                  "label": "知性與專業（如財經、科學）"
+                },
+                {
+                  "value": "visual_mood_3",
+                  "label": "輕鬆日常（如 vlog、美食）"
+                },
+                {
+                  "value": "visual_mood_4",
+                  "label": "極限刺激（如挑戰、搞笑失敗）"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "ja": {
+      "title": "サインアップアンケート",
+      "sections": [
+        {
+          "id": "channel_goal",
+          "title": "チャンネルの目的",
+          "questions": [
+            {
+              "id": "channel_link",
+              "type": "text",
+              "label": "AI があなたのスタイルやテーマを理解しやすくするため、チャンネルのリンクを入力してください（公開されている YouTube ページのみを分析し、内部データにはアクセスしません）。",
+              "placeholder": "チャンネルの URL を入力"
+            }
+          ]
+        },
+        {
+          "id": "audience_type",
+          "title": "ターゲット視聴者",
+          "questions": [
+            {
+              "id": "target_audience",
+              "type": "radio",
+              "label": "現在、どのような視聴者を引き付けたいですか？",
+              "options": [
+                {
+                  "value": "target_audience_0",
+                  "label": "マス視聴者（リーチと認知を重視）"
+                },
+                {
+                  "value": "target_audience_1",
+                  "label": "関心ベースの視聴者（ゲーム、レビュー、歴史など）"
+                },
+                {
+                  "value": "target_audience_2",
+                  "label": "特定ニーズのあるニッチな視聴者（コースや製品の販売など）"
+                },
+                {
+                  "value": "target_audience_3",
+                  "label": "ただ楽しみで共有しており、結果は気にしない"
+                }
+              ],
+              "optional_text": true
+            }
+          ]
+        },
+        {
+          "id": "commercial_goal",
+          "title": "収益化の目標",
+          "questions": [
+            {
+              "id": "current_goal",
+              "type": "radio",
+              "label": "現在の収益化目標は何ですか？",
+              "options": [
+                {
+                  "value": "current_goal_0",
+                  "label": "すでに収益化しており、拡大を目指している"
+                },
+                {
+                  "value": "current_goal_1",
+                  "label": "確立されたチャンネルで、制作コストを削減したい"
+                },
+                {
+                  "value": "current_goal_2",
+                  "label": "将来的に収益化を目指している"
+                },
+                {
+                  "value": "current_goal_3",
+                  "label": "今は趣味や副業の段階"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "brand_identity",
+          "title": "あなたのブランディング（記憶されたい印象）",
+          "questions": [
+            {
+              "id": "known_for",
+              "type": "radio",
+              "label": "視聴者にどのように覚えてもらいたいですか？",
+              "options": [
+                {
+                  "value": "known_for_0",
+                  "label": "自分自身（パーソナルブランディング、表現、スタイル）"
+                },
+                {
+                  "value": "known_for_1",
+                  "label": "コンテンツ自体（顔出しなしのエンタメ：ペット、コメディなど）"
+                },
+                {
+                  "value": "known_for_2",
+                  "label": "創造的なアイデア（意見、旅行、ドキュメンタリー）"
+                },
+                {
+                  "value": "known_for_3",
+                  "label": "製品やスキル（車、靴、デザイン、サービスなど）"
+                }
+              ],
+              "optional_text": true
+            }
+          ]
+        },
+        {
+          "id": "niche_topic",
+          "title": "チャンネルのトピックとニッチ",
+          "questions": [
+            {
+              "id": "channel_niche",
+              "type": "checkbox",
+              "label": "あなたのチャンネルはどんなテーマに焦点を当てていますか？",
+              "options": [
+                {
+                  "value": "channel_niche_0",
+                  "label": "歴史"
+                },
+                {
+                  "value": "channel_niche_1",
+                  "label": "ゲーム"
+                },
+                {
+                  "value": "channel_niche_2",
+                  "label": "ファイナンス"
+                },
+                {
+                  "value": "channel_niche_3",
+                  "label": "教育"
+                },
+                {
+                  "value": "channel_niche_4",
+                  "label": "ストーリーテリング"
+                },
+                {
+                  "value": "channel_niche_5",
+                  "label": "エンターテインメント"
+                },
+                {
+                  "value": "channel_niche_6",
+                  "label": "レビュー"
+                },
+                {
+                  "value": "channel_niche_7",
+                  "label": "食べ物"
+                },
+                {
+                  "value": "channel_niche_8",
+                  "label": "旅行"
+                },
+                {
+                  "value": "channel_niche_9",
+                  "label": "その他"
+                }
+              ],
+              "optional_text": true
+            }
+          ]
+        },
+        {
+          "id": "style_preferences",
+          "title": "好みのビジュアルスタイルと雰囲気",
+          "questions": [
+            {
+              "id": "visual_style",
+              "type": "checkbox",
+              "label": "サムネイルにどんなスタイルを好みますか？",
+              "options": [
+                {
+                  "value": "visual_style_0",
+                  "label": "アニメ風"
+                },
+                {
+                  "value": "visual_style_1",
+                  "label": "リアル風"
+                },
+                {
+                  "value": "visual_style_2",
+                  "label": "鮮やかな色"
+                },
+                {
+                  "value": "visual_style_3",
+                  "label": "柔らかい色調"
+                },
+                {
+                  "value": "visual_style_4",
+                  "label": "3D風"
+                },
+                {
+                  "value": "visual_style_5",
+                  "label": "手書き風"
+                }
+              ]
+            },
+            {
+              "id": "visual_mood",
+              "type": "checkbox",
+              "label": "サムネイルで伝えたい雰囲気は？",
+              "options": [
+                {
+                  "value": "visual_mood_0",
+                  "label": "サスペンス（犯罪、歴史ドラマ）"
+                },
+                {
+                  "value": "visual_mood_1",
+                  "label": "奇妙・不気味（例：バックルーム、都市伝説）"
+                },
+                {
+                  "value": "visual_mood_2",
+                  "label": "知的・プロフェッショナル（例：金融、科学）"
+                },
+                {
+                  "value": "visual_mood_3",
+                  "label": "ゆったり日常(例:Vlog、グルメ)"
+                },
+                {
+                  "value": "visual_mood_4",
+                  "label": "スリリング・過激（例：チャレンジ、失敗動画）"
+                }
+              ]
+            }
           ]
         }
       ]
     }
-  ]
+  }
 }

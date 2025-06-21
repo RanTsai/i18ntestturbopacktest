@@ -19,13 +19,9 @@ const DynamicSignupForm = ({ formData }: Props) => {
 
   const onSubmit = async (values: any) => {
     setLoading(true);
-    //console.log ("submitted values", values);
-    const result = await InsertUserSignUpQuestionareToSupabase({
-      form_id: formData.form_id,
-      locale: formData.locale,
-      version: formData.version,
-      answers: values,
-    });
+    console.log("current goal:", values);
+
+    const result = await InsertUserSignUpQuestionareToSupabase(values);
 
     setLoading(false);
     if (result.success) reset();

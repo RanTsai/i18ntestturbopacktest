@@ -67,7 +67,7 @@ export default function ReviewCard({
           <Link href="/aichat" className="flex justify-center">
 
           {/* <div className="flex justify-between bg-secondary p-2 rounded cursor-pointer hover:bg-accent transition-all"> */}
-          {/* <Button variant="default" size="sm" className="outline cursor-pointer transition-colors bg-blue-500 hover:bg-blue-800 hover:text-black">Chat With AI</Button> */}
+           <Button variant="default" size="sm" className="outline cursor-pointer transition-colors bg-blue-500 hover:bg-blue-800 hover:text-black">Chat With AI</Button>
           {/*   </div> */}
           </Link>
         </TooltipTrigger>

@@ -1,29 +1,19 @@
-//api/supabase-user-signup.ts
 
+//actions/supabase/supabase-user-signup.ts
 "use server";
-import { auth } from "@clerk/nextjs/server";
 import supabase from "@/config/supabase.config";
-import { nanoid } from "nanoid";
+import { FormSchema } from "@/lib/schema/creator-signup-questionaire-schema";
+import { auth } from "@clerk/nextjs/server";
 
-export const InsertUserSignUpQuestionareToSupabase = async (signup: {
-  form_id: string;
-  locale: string;
-  version: string;
-  answers: any;
-}) => {
+export const InsertUserSignUpQuestionareToSupabase = async (values: any) => {
   try {
     const clerkUser = await auth();
     if (!clerkUser) throw new Error("Clerk user not found");
 
-    const { data, error } = await supabase.from("questionnaire_responses").insert([
-      {
-        form_id: signup.form_id,
-        locale: signup.locale,
-        version: signup.version,
-        answers: signup.answers,
-        user_id: clerkUser.userId, // 建議加上 user 綁定
-      },
-    ]);
+    const { data, error } = await supabase
+      .from("user_basic")
+      .update({ user_goal: values })
+      .eq("clerk_user_id", clerkUser.userId);
 
     if (error) return { success: false, message: error.message };
     return { success: true, data };

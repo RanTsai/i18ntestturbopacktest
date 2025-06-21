@@ -37,8 +37,6 @@ export default function MultiImageUploaderClient({ formData }: Props) {
   const { control, handleSubmit, register, reset } = useForm();
   const [loading, setLoading] = useState(false);
 
-
-
   const onSubmit = async (values: any) => {
     console.log("feedbacksubmitted");
   };
@@ -83,63 +81,75 @@ export default function MultiImageUploaderClient({ formData }: Props) {
 
   // 單張縮圖送審
   const getReview = async (index: number) => {
-    const file = uploads[index];
-    if (!file) return;
+  const file = uploads[index];
+  if (!file) return;
 
-    try {
-      const result = await DeductUserCredits(50);
-      if (!result.success) {
-        toast.error(result.message);
-        return;
-      }
-
-      const updatedUploads = [...uploads];
-      updatedUploads[index].isLoading = true;
-      setUploads(updatedUploads);
-
-      const response = await fetch("/api/ai-dispatch/thumbnailreview", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [
-            {
-              role: "user",
-              content: `請幫我檢視這個縮圖和標題：\n- 縮圖: ${file.url}\n- 標題: ${file.title}`
-            }
-          ]
-        })
-      });
-
-      if (!response.ok) throw new Error("AI response failed");
-
-      const aiJson = await response.json();
-      updatedUploads[index].aiFeedback = aiJson;
-      updatedUploads[index].isLoading = false;
-      setUploads(updatedUploads);
-
-      await UserWorkWithAIAnalaysisToSupabase(
-        file.url,
-        file.title,
-        "User thumbnail",
-        JSON.stringify(aiJson),
-        aiJson.scores, // Assuming aiJson.scores is an object like { clickability: 5, relevance: 4, ... }
-        "en",
-        "AI feedback",
-        50,
-        50,
-        1
-      );
-
-      toast.success("AI review done!");
-    } catch (error) {
-      toast.error("Review failed");
-      console.error(error);
-
-      const updatedUploads = [...uploads];
-      updatedUploads[index].isLoading = false;
-      setUploads(updatedUploads);
+  try {
+    const result = await DeductUserCredits(50);
+    if (!result.success) {
+      toast.error(result.message);
+      return;
     }
-  };
+
+    // Step 1: 標記為 loading
+    setUploads((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, isLoading: true } : item
+      )
+    );
+
+    // Step 2: 送出請求取得 AI 回覆
+    const response = await fetch("/api/ai-dispatch/thumbnailreview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: [
+          {
+            role: "user",
+            content: `請幫我檢視這個縮圖和標題：\n- 縮圖: ${file.url}\n- 標題: ${file.title}`
+          }
+        ]
+      })
+    });
+
+    if (!response.ok) throw new Error("AI response failed");
+
+    const aiJson = await response.json();
+
+    // Step 3: 更新 uploads 資料
+    setUploads((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, aiFeedback: aiJson, isLoading: false } : item
+      )
+    );
+
+    // Step 4: 存入 Supabase
+    await UserWorkWithAIAnalaysisToSupabase(
+      file.url,
+      file.title,
+      "User thumbnail",
+      JSON.stringify(aiJson),
+      aiJson.scores,
+      "en",
+      "AI feedback",
+      50,
+      50,
+      1
+    );
+
+    toast.success("AI review done!");
+  } catch (error) {
+    console.error(error);
+    toast.error("Review failed");
+
+    // fallback: 關掉 loading
+    setUploads((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, isLoading: false } : item
+      )
+    );
+  }
+};
 
   // 一次送審所有縮圖
   const getReviewForAll = () => {

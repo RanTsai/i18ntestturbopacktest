@@ -1,17 +1,17 @@
 import React from "react";
 import DynamicSignupForm from "@/components/ui/forms/dynamic-signup-form";
-import fs from "fs";
-import path from "path";
-import { FormSchema } from "@/lib/schema/creator-signup-questionaire-schema"; 
+import { loadQuestionnaire } from "@/actions/upstashredis/load-questionaire";
 
-export default async function SignupPage() {
-  const filePath = path.join(process.cwd(), "src/lib/form-data/creator/sign-up-questionare.json");
-  const fileContent = fs.readFileSync(filePath, "utf-8");
-  const formData: FormSchema = JSON.parse(fileContent);
+export default async function SignupPage({ params }: { params: { locale: string } }) {
+  const { locale } = await params;
+  const { content } = await loadQuestionnaire('signup', locale)
+
+  if (!content) return <p>Failed Loading Questionaire</p>
 
   return (
-    <div className="px-6 py-10">
-      <DynamicSignupForm formData={formData} />
+    <div className="p-6">
+      <p className="mb-2 text-sm text-gray-400">Language：{locale}</p>
+      <DynamicSignupForm formData={content} />
     </div>
-  );
+  )
 }

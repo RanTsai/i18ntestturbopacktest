@@ -118,7 +118,7 @@ const mockChats = [
 ];
 
 interface ChatListBarProps {
-  setShowSidebar: (open: boolean) => void;
+  setShowSidebar? : (open: boolean) => void;
 }
 
 export default function ChatListBar({ setShowSidebar }: ChatListBarProps) {
@@ -143,7 +143,7 @@ export default function ChatListBar({ setShowSidebar }: ChatListBarProps) {
         className="w-full justify-start gap-2 text-gray-200"
         onClick={() => {
           setSelectedChat(null);
-          setShowSidebar(false);
+          setShowSidebar?.(false);
         }}
       >
         <Plus size={16} /> New Chat

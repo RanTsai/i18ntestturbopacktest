@@ -9,12 +9,17 @@ export type QuestionType =
     | "date"
     | "multi-text";
 
+export interface OptionItem {
+    value: string;       // ✅ 不變的 ID，如 "hobby"
+    label: string;       // ✅ 顯示文字（可多語言）
+}
+
 export interface Question {
     id: string;
     type: QuestionType;
     label: string;
     placeholder?: string;
-    options?: string[];
+    options?: OptionItem[];
     scale?: number;
     optional_text?: boolean;
     max?: number;

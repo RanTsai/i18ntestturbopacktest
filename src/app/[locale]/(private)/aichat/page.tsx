@@ -1,16 +1,23 @@
-"use client";
+"use server";
 
 import ChatListBar from "@/components/ui/chat/chat-list-bar";
 import ChatArea from "@/components/ui/chat/chat-area";
+import ChatAreaLive from "@/components/ui/chat/chat-area-live";
+import { auth } from '@clerk/nextjs/server';
+import { redirect } from 'next/navigation';
 
-export default function Page() {
+export default async function Page() {
+  const { userId } = await auth();
+  if (!userId) {
+    redirect('/sign-in'); // 或顯示 Unauthorized 頁面
+  }
   return (
     <div className="flex h-screen">
       <div className="hidden lg:flex">
-        {/* <ChatListBar setShowSidebar={} /> */}
-      </div>
+        <ChatListBar/>      </div>
       <div className="flex-1 h-full" >
-        <ChatArea />
+        {/* <ChatArea />  */}
+        <ChatAreaLive userId={userId} /> 
       </div>
     </div>)
 } 

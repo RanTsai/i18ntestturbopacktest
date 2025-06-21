@@ -1,6 +1,6 @@
 "use server";
 import React from 'react';
-import ImageUploaderClient from './image-upload-client';
+import MultiImageUploaderClient from './multiImage-upload-client';
 import { loadQuestionnaire } from '@/actions/upstashredis/load-questionaire';
 
 export default async function ThumbnailUpload({ params }: { params: { locale: string } }) {
@@ -12,7 +12,11 @@ export default async function ThumbnailUpload({ params }: { params: { locale: st
     return (
         <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
             <h1 className="text-2xl font-semibold text-white text-center">AI Thumbnail Analyzer</h1>
-            <ImageUploaderClient formData={content} />
+            {/* <ImageUploaderClient /> */}
+
+
+            <MultiImageUploaderClient formData={content} />
+
         </div>
     )
 };

@@ -1,3 +1,4 @@
+//components/ui/forms/general-questionaire.
 "use client";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -72,12 +73,17 @@ const GeneralQuestionaire = ({
                   render={({ field }) => (
                     <RadioGroup onValueChange={field.onChange} value={field.value}>
                       {q.options!.map((opt) => (
-                        <div key={opt} className="flex items-center gap-2">
-                          <RadioGroupItem value={opt} id={`${q.id}-${opt}`} />
-                          <label htmlFor={`${q.id}-${opt}`}>{opt}</label>
+                        <div key={`${q.id}_${opt.value}`} className="flex items-center gap-2">                          
+                        <RadioGroupItem
+                          key={opt.value}
+                          value={opt.value}
+                          id={`${q.id}-${opt.value}`}
+                        />
+                          <label htmlFor={`${q.id}-${opt.value}`}>{opt.label}</label>
                         </div>
                       ))}
                     </RadioGroup>
+
                   )}
                 />
               )}
@@ -134,24 +140,24 @@ const GeneralQuestionaire = ({
                     return (
                       <div className="flex flex-col gap-1">
                         {q.options!.map((opt) => {
-                          const isChecked = values.includes(opt);
+                          const isChecked = values.includes(opt.value);
                           return (
-                            <label key={opt} className="flex items-center gap-2">
+                            <label key={opt.value} className="flex items-center gap-2">
                               <input
                                 type="checkbox"
                                 checked={isChecked}
                                 onChange={(e) => {
                                   const newValue = [...values];
                                   if (e.target.checked) {
-                                    newValue.push(opt);
+                                    newValue.push(opt.value);
                                   } else {
-                                    const index = newValue.indexOf(opt);
+                                    const index = newValue.indexOf(opt.value);
                                     if (index > -1) newValue.splice(index, 1);
                                   }
                                   field.onChange(newValue);
                                 }}
                               />
-                              {opt}
+                              {opt.label}
                             </label>
                           );
                         })}

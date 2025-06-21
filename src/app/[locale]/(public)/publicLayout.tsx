@@ -1,6 +1,5 @@
 "use client";
 import React from 'react';
-import Header from '../../../layout-provider/components/header';
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
