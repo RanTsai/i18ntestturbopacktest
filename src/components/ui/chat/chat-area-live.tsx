@@ -20,10 +20,12 @@ import type { Message } from '@ai-sdk/ui-utils';
 import { createNewChat, updateChat, getChatById } from '@/actions/mongoose/mongoose-chat';
 import toast from 'react-hot-toast';
 import { useChat } from '@ai-sdk/react';
+import { uploadThumbnailAndGetUrl } from "@/actions/supabase/supabaseImages";
+
 
 function ChatAreaLive({ userId }: { userId: string }) {
     const [showSidebar, setShowSideBar] = useState(false);
-    const { selectedChat, setSelectedChat, setUserChats, userChats} = UseChatStore();
+    const { selectedChat, setSelectedChat, setUserChats, userChats } = UseChatStore();
     const [activeTab, setActiveTab] = useState<ChatTab>('chat');
     const [versions, setVersions] = useState<ThumbnailVersion[]>([]);
     const [selectedVersionId, setSelectedVersionId] = useState<string | undefined>(undefined);
@@ -32,7 +34,7 @@ function ChatAreaLive({ userId }: { userId: string }) {
     // Get All mongo DB chats into the ChatArea and store into UseChatGlobal
     // If selectedChat == null means starting new Chat
 
-     const {
+    const {
         messages,
         input,
         handleInputChange,
@@ -60,10 +62,16 @@ function ChatAreaLive({ userId }: { userId: string }) {
         setVersions((prev) => [...prev, newVersion]);
     };
 
+
     const handleImageUpload = async (file: File) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const imageUrl = reader.result as string;
+        try {
+            const response = await uploadThumbnailAndGetUrl(file);
+
+            if (!response.success || !response.url) {
+                throw new Error('Upload failed');
+            }
+
+            const imageUrl = response.url;
 
             const userImageMessage: Message = {
                 id: `msg-${Date.now()}`,
@@ -73,10 +81,11 @@ function ChatAreaLive({ userId }: { userId: string }) {
                     {
                         type: 'file',
                         mimeType: file.type,
-                        data: imageUrl,
+                        data: imageUrl, // ✅ 改為 URL，而非 base64
                     }
                 ]
             };
+
             setMessages((prev) => [...prev, userImageMessage]);
 
             const newVersionId = `v-${versionCounterRef.current}`;
@@ -93,9 +102,11 @@ function ChatAreaLive({ userId }: { userId: string }) {
             };
 
             setVersions((prev) => [...prev, newVersion]);
-        };
 
-        reader.readAsDataURL(file);
+        } catch (error: any) {
+            console.error('Image upload failed:', error.message);
+            toast.error('圖片上傳失敗');
+        }
     };
 
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -105,15 +116,24 @@ function ChatAreaLive({ userId }: { userId: string }) {
     };
 
     useEffect(() => {
+
         if (selectedChat) {
             // 只在 messages 不同時才 set（避免無限迴圈）
+            console.log("Has selected Chat");
             if (JSON.stringify(messages) !== JSON.stringify(selectedChat.messages)) {
+                console.log('messages before', messages,)
+                console.log('selectedChat.message before', selectedChat.messages);
                 setMessages(selectedChat.messages || []);
+                console.log('messages before', messages,)
+                console.log('selectedChat.message before', selectedChat.messages);
             }
         } else {
-             if (messages.length !== 0) {
+
+            if (messages.length !== 0) {
+                console.log('setMessages length 0 before', messages)
                 setMessages([]); // 新 chat
-             }
+                console.log('setMessages length 0 before', messages)
+            }
         }
     }, [selectedChat]);
 
@@ -121,28 +141,51 @@ function ChatAreaLive({ userId }: { userId: string }) {
         try {
             if (!selectedChat) {
                 // 新建 chat
-                const response = await createNewChat(                  
+                console.log("new message", messages);
+                const response = await createNewChat(
                     messages,
                     messages[0].content,
                 );
-
                 if (response.success) {
-                    setSelectedChat(response.data);
-                    setUserChats([response.data, ...userChats]);
+                    const newChat = {
+                        ...response.data,
+                        messages: messages, // ← 手動加回 messages
+                    };
+                    setSelectedChat(newChat);
+                    setUserChats([{ ...response.data, messages }, ...userChats]);
                 } else {
                     toast.error(response.message || 'Something went wrong while creating the chat');
                 }
             } else {
                 // 更新現有 chat
-                await updateChat({
+                //console.log("updating chat 2");
+
+                const response = await updateChat({
                     chatId: selectedChat._id,
                     messages: messages,
                 });
+                // console.log("response result", response.data);
 
                 // 從 DB 取得最新 chat（包含 AI 回覆）
                 const updatedChatResponse = await getChatById(selectedChat._id);
+                // console.log("getChatById", selectedChat._id);
+                // console.log("updatedChatResponse result ", updatedChatResponse.data);
+
                 if (updatedChatResponse.success) {
-                    setSelectedChat(updatedChatResponse.data);
+                    const newChat = updatedChatResponse.data;
+                    const isMessageChanged = JSON.stringify(newChat.messages) !== JSON.stringify(selectedChat.messages);
+                    // console.log("messageChanged ", isMessageChanged);
+
+                    if (isMessageChanged) {
+                        console.log("setting new chat ", newChat);
+                        setSelectedChat(newChat); // ✅ 避免 set 同樣內容，減少 useEffect 再跑
+
+                        setUserChats((prevChats) =>
+                            prevChats.map((chat) =>
+                                chat._id === newChat._id ? { ...chat, ...newChat } : chat
+                            )
+                        );
+                    }
                 }
             }
         } catch (error: any) {
@@ -152,6 +195,7 @@ function ChatAreaLive({ userId }: { userId: string }) {
 
     useEffect(() => {
         if (status === 'ready' && messages.length > 0) {
+            console.log("updating chat");
             addOrUpdateChat();
         }
     }, [status, messages]);

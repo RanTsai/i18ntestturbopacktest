@@ -9,6 +9,10 @@ import {
     Check,
     ThumbsUp,
     ThumbsDown,
+    Pencil,
+    RefreshCcw,
+    Pointer,
+    Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
@@ -92,7 +96,7 @@ export default function Messages({
         return (
           <div
             key={messageId}
-            className={`flex gap-2 px-5 ${isUser ? "justify-end" : "justify-start"} group`}
+            className={`flex gap-0 px-5 ${isUser ? "justify-end" : "justify-start"} group`}
           >
             {!isUser && (
               <div className="p-2">
@@ -110,7 +114,7 @@ export default function Messages({
               )}
 
               {imageData && (
-                <div className="relative w-full max-w-lg aspect-[16/9] border border-white rounded group">
+                <div className="relative w-full max-w-lg aspect-[10/9] border border-white rounded group">
                   <img
                     src={imageData}
                     alt="Uploaded Image"
@@ -140,9 +144,9 @@ export default function Messages({
               )}
 
               {!isUser && (
-                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="flex gap-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <Button variant="ghost" size="icon" onClick={() => onCopy(message.content)}>
-                    {copiedMessages === message.content ? <Check size={16} /> : <Copy size={16} />}
+                    {copiedMessages === message.content ? <Check size={8} /> : <Copy size={8} />}
                   </Button>
                   <Button
                     variant="ghost"
@@ -152,7 +156,7 @@ export default function Messages({
                       setShowShareModal(true);
                     }}
                   >
-                    <Share size={16} />
+                    <Share size={8} />
                   </Button>
                   <Button
                     variant="ghost"
@@ -160,7 +164,7 @@ export default function Messages({
                     onClick={() => handleFeedback(messageId, "up")}
                     className={`hover:text-green-400 ${feedback[messageId] === "up" ? "text-green-400" : ""}`}
                   >
-                    <ThumbsUp size={16} />
+                    <ThumbsUp size={8} />
                   </Button>
                   <Button
                     variant="ghost"
@@ -168,19 +172,20 @@ export default function Messages({
                     onClick={() => handleFeedback(messageId, "down")}
                     className={`hover:text-red-400 ${feedback[messageId] === "down" ? "text-red-400" : ""}`}
                   >
-                    <ThumbsDown size={16} />
+                    <ThumbsDown size={8} />
                   </Button>
                 </div>
               )}
 
               {isUser && (
-                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="flex gap-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <Button variant="ghost" size="icon" onClick={() => onCopy(message.content)}>
-                    {copiedMessages === message.content ? <Check size={16} /> : <Copy size={16} />}
+                    {copiedMessages === message.content ? <Check size={8} /> : <Copy size={8} />}
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={() => toast("Edit clicked (to be implemented)")}>✏️</Button>
-                  <Button variant="ghost" size="icon" onClick={() => toast("Rerun clicked (to be implemented)")}>🔁</Button>
-                  <Button variant="ghost" size="icon" onClick={() => toast("Refer to clicked (to be implemented)")}>🔗</Button>
+                  <Button variant="ghost" size="icon" onClick={() => toast("Edit clicked (to be implemented)")}><Pencil size={8}/></Button>
+                  <Button variant="ghost" size="icon" onClick={() => toast("Rerun clicked (to be implemented)")}><RefreshCcw size={8}/></Button>
+                  <Button variant="ghost" size="icon" onClick={() => toast("Refer to clicked (to be implemented)")}><Pointer size={8}/></Button>
+                  <Button variant="ghost" size="icon" onClick={() => toast("Refer to clicked (to be implemented)")}><Trash2 size={8}/></Button>
                 </div>
               )}
             </div>

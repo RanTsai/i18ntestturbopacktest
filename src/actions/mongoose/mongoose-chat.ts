@@ -2,21 +2,28 @@
 
 import ChatModel from "./chat-mongoose-model";
 import { saveAndGetCurrentUser } from "./mongoose-user";
-import { UIMessage } from "ai";
 
-export const createNewChat = async (messages: UIMessage[], title:string) => {
+export const createNewChat = async (
+    messages: any[],
+    title: string,
+    supabaseUserWorkId?: string // ✅ 可選的 Supabase 縮圖 ID
+) => {
     const { data: user } = await saveAndGetCurrentUser();
 
-    const payload = {
-         user: user._id,
-         message: messages,
-         title: title
+    const payload: any = {
+        user: user._id,
+        messages,
+        title,
+    };
+
+    // ✅ 若有提供 Supabase UserWork ID，就加入 payload
+    if (supabaseUserWorkId) {
+        payload.supabase_user_work_id = supabaseUserWorkId;
     }
-    console.log("createNewChat payload", payload);
 
     try {
         const response = await ChatModel.create(payload);
-        console.log(response.data);
+
         return {
             data: JSON.parse(JSON.stringify(response)),
             success: true,
@@ -24,7 +31,7 @@ export const createNewChat = async (messages: UIMessage[], title:string) => {
     } catch (error: any) {
         return {
             message: error.message || 'Something went wrong while saving the chat',
-            success: false
+            success: false,
         };
     }
 };
@@ -57,8 +64,21 @@ export const getChatsByUserId = async () => {
 export const getChatById = async (chatId: string) => {
     try {
         const chat = await ChatModel.findById(chatId);
-        console.log("getChatById response", JSON.parse(JSON.stringify(chat)));
+        //console.log("getChatById response", JSON.parse(JSON.stringify(chat)));
         return { data: JSON.parse(JSON.stringify(chat)), success: true };
+    } catch (error: any) {
+        return { message: error.message, success: false };
+    }
+};
+
+
+export const getChatsByUserWorkId = async (supabaseUserWorkId: string): Promise<{ data?: any; success: boolean; message?: string }> => {
+    try {
+        console.log("loading chat by work ID", supabaseUserWorkId);
+        const chat = await ChatModel.find({ supabase_user_work_id: supabaseUserWorkId });
+        console.log("loaded chats by work ID", chat);
+
+        return { data: JSON.parse(JSON  .stringify(chat)), success: true };
     } catch (error: any) {
         return { message: error.message, success: false };
     }

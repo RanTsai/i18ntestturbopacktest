@@ -183,7 +183,7 @@ export const GetUserCreditHistoryFromSupabase = async () => {
         };
     }
 };
-
+//-----------------------------------------------------Logic Functions---------------------------------------------------
 //Logic function checks which user is calling, check credit balance and process when it is enough.
 export const DeductUserCredits = async (creditToDeduct: number) => {
     try {

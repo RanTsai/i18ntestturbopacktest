@@ -1,7 +1,7 @@
 // components/ui/chat/chat-list-bar.tsx
 "use client";
 
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -11,10 +11,57 @@ import { deleteChat, getChatsByUserId, getChatById } from "@/actions/mongoose/mo
 import toast from "react-hot-toast";
 import clsx from 'clsx';
 import Spinner from "../spinner";
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription
+} from "@/components/ui/dialog"
 
 interface ChatListBarProps {
   setShowSidebar?: (open: boolean) => void;
+}
+
+function ChatTitleWithTooltip({ title }: { title: string }) {
+  const spanRef = useRef<HTMLSpanElement>(null);
+  const [isOverflowed, setIsOverflowed] = useState(false);
+
+  useEffect(() => {
+    const el = spanRef.current;
+    if (el && el.scrollWidth > el.clientWidth) {
+      setIsOverflowed(true);
+    }
+  }, [title]);
+
+  const span = (
+    <span
+      ref={spanRef}
+      className="text-sm text-gray-300 truncate max-w-[180px]"
+    >
+      {title}
+    </span>
+  );
+
+  if (!isOverflowed) return span;
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>{span}</TooltipTrigger>
+        <TooltipContent side="top" align="start" className="tooltip-content bg-white dark:bg-gray-800 text-black dark:text-white border border-gray-200 dark:border-gray-700" >
+          {title}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
 }
 
 export default function ChatListBar({ setShowSidebar }: ChatListBarProps) {
@@ -24,6 +71,7 @@ export default function ChatListBar({ setShowSidebar }: ChatListBarProps) {
 
   const { userChats, setUserChats, selectedChat, setSelectedChat } = UseChatStore() as any;
   const [loadingChatId, setLoadingChatId] = React.useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = React.useState<string | null>(null);
 
   const deleteChatHandler = async (chatId: string) => {
     try {
@@ -81,33 +129,68 @@ export default function ChatListBar({ setShowSidebar }: ChatListBarProps) {
       <div>
         <h2 className="text-lg font-semibold mb-2">Your recent chats</h2>
         <ScrollArea className="h-[300px] pr-1">
-          <div className='flex flex-col gap-2 p-2'>
-            {Array.isArray(userChats) && userChats.map((chat: any, index) => (
-              <div key={index}
-                className={clsx('cursor-pointer flex justify-between items-center', {
-                  'bg-gray-300 rounded': selectedChat?._id === chat._id,
-                })}
-                onMouseEnter={() => setHoveredChat(chat._id)}
-                onMouseLeave={() => setHoveredChat("")}>
-                <span className='text-small text-gray-300'
-                  onClick={async () => {
-                    const fullChat = await getChatById(chat._id);
-                    if (fullChat.success) {
-                      setSelectedChat(fullChat.data); // ✅ 正確做法，完整 chat 含最新 messages
+          <div className="flex flex-col gap-2">
+            {Array.isArray(userChats) &&
+              userChats.map((chat: any, index) => (
+                <div
+                  key={index}
+                  className={clsx(
+                    'cursor-pointer flex items-center justify-between px-2 py-1 rounded-md transition-colors w-full',
+                    {
+                      'bg-gray-300': selectedChat?._id === chat._id,
+                      'hover:bg-gray-700': selectedChat?._id !== chat._id,
                     }
-                  }}>{chat.title}</span>
+                  )}
+                  onMouseEnter={() => setHoveredChat(chat._id)}
+                  onMouseLeave={() => setHoveredChat("")}
+                  onClick={() => {
+                    setSelectedChat(chat);
+                  }}
+                >
+                  <ChatTitleWithTooltip title={chat.title} />
 
-                {hoveredChat === chat._id && (<Trash2
-                  size={15}
-                  className='text-gray-500'
-                  onClick={() => deleteChatHandler(chat._id)} />)}
+                  {hoveredChat === chat._id && (
+                    <Trash2
+                      size={15}
+                      className="text-gray-500"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setConfirmDeleteId(chat._id); // ➜ 打開對話框
+                      }}
+                    />
+                  )}
 
-                {selectedChatForDelete === chat._id && (<Spinner />)}
-              </div>
-            ))}
+                  {selectedChatForDelete === chat._id && <Spinner />}
+                </div>
+              ))}
           </div>
         </ScrollArea>
       </div>
+
+      <Dialog open={!!confirmDeleteId} onOpenChange={() => setConfirmDeleteId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>確定要刪除這個聊天？</DialogTitle>
+            <DialogDescription className="text-red-500">
+              ⚠️ 此動作無法回復，請確認！
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setConfirmDeleteId(null)}>
+              取消
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                deleteChatHandler(confirmDeleteId!);
+                setConfirmDeleteId(null);
+              }}
+            >
+              確定刪除
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

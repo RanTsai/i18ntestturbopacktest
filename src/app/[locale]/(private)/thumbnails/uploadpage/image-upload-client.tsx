@@ -14,9 +14,7 @@ import { UserWorkWithAIAnalaysisToSupabase } from "@/actions/supabase/supabaseUs
 import ThumbnailRankingBoard from "@/components/ui/review/thumbnailRankingBoard";
 import FeedbackDialog, { FeedbackData } from "@/components/ui/feedback/user-feedback-form";
 import { ThumbnailReview, AspectKey, AspectRating } from "@/components/ui/review/types"; // Added imports
-import GeneralQuestionaire from "@/components/ui/forms/general-questionare";
 import { FormSchema } from "@/lib/schema/creator-signup-questionaire-schema";
-import { AnimatePresence, motion } from "framer-motion"
 import { useThumbnailReview } from "@/hooks/ai-feedback/ai-image-review";
 import { useBatchReview } from "@/hooks/ai-feedback/ai-batch-image-review";
 import {MapAiScoreToThumbnailReview } from "@/lib/mappers/map-ai-score";

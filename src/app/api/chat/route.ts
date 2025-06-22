@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
         const result = await streamText({
             // model: google('gemini-2.5-pro'),
-              model: openai('gpt-4o-mini'),
+              model: openai('gpt-4o'),
 
             messages,
             

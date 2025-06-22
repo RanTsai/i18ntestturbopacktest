@@ -1,3 +1,5 @@
+import { AIScoreSchema } from "@/lib/schema/aiscore-schema";
+
 export interface IUser{
     //supabase_user_id: number;
     sign_up_date: string;
@@ -19,6 +21,39 @@ export interface IUser{
     is_deleted: boolean;
     public_user_id:string;
 };
+export interface IAIScore{
+    clickability: number,
+    curiosity: number,
+    brightness: number,
+    relevance: number,
+    emotion: number
+};
+export interface IVersions{
+    version_number: number,
+    image_url: string,
+    title: string,
+    description: string,
+    remark: string
+};
+
+export interface IUserWork{
+    //supabase_user_id: number;
+    user_work_id: number;
+    created_at: string;
+    image_url: string; //for displaying latest version
+    title: string; 
+    description: string;
+    ai_comment: string;
+    
+    ai_score: IAIScore | null; //Store as JSONB in Supabase
+    view_count: number;
+    rating_count:number;
+    public_id: string;
+    language:string;
+    versions:IVersions | null; //Store as JSONB in Supabase
+    clerk_user_id:string;
+};
+
 
 export interface IUserSettings{
     user_setting_id: number;

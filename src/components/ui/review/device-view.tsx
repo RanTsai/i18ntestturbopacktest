@@ -1,71 +1,63 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-// 單個預覽項目
-const DevicePreviewItem: React.FC<{
-  title: string;
-  description?: string;
+interface DevicePreviewProps {
   image: string;
-}> = ({ title, description, image }) => {
+  title: string;
+}
+
+const DevicePreview: React.FC<DevicePreviewProps> = ({ image, title }) => {
+  const [desktopResolution, setDesktopResolution] = useState<string>("");
+  const [mobileResolution, setMobileResolution] = useState<string>("");
+
+  useEffect(() => {
+    // 取得圖片的原始大小
+    const img = new Image();
+    img.src = image;
+    img.onload = () => {
+      const res = `${img.naturalWidth}x${img.naturalHeight}`;
+      setDesktopResolution("1920x1080");
+      setMobileResolution("560x480"); // 假設同一張縮圖
+    };
+  }, [image]);
+
   return (
-    <div className="border-b border-gray-700 py-4 space-y-2">
-      <div className="text-sm font-semibold text-white flex justify-between">
-        <span>{title}</span>
-        <span className="text-xs text-gray-400">123K views • 1 hour ago</span>
-      </div>
-      <div className="flex gap-4">
-        <img
-          src={image}
-          alt={title}
-          className="w-48 h-auto rounded shadow object-cover"
-        />
-        <div className="flex flex-col text-xs text-gray-400">
-          <p className="font-semibold text-white">
-            Enter your title to see how it looks
-          </p>
-          {description && (
-            <p className="mt-1 text-gray-300">{description}</p>
+    <div className="w-full flex flex-col space-y-6">
+      {/* Desktop View */}
+      <div className="border border-gray-300 rounded-lg overflow-hidden shadow bg-black">
+        <div className="flex justify-between items-center bg-gray-800 text-white px-4 py-2 font-semibold">
+          <span>Desktop View</span>
+          {desktopResolution && (
+            <span className="text-xs text-gray-400">{desktopResolution}</span>
           )}
-          <p className="mt-1">Your Channel</p>
+        </div>
+        <div className="aspect-video bg-black">
+          <img
+            src={image}
+            alt={title}
+            className="object-contain w-full h-full"
+          />
+        </div>
+      </div>
+
+      {/* Mobile View */}
+      <div className="border border-gray-300 rounded-lg overflow-hidden shadow bg-black max-w-xs mx-auto">
+        <div className="flex justify-between items-center bg-gray-800 text-white px-4 py-2 font-semibold">
+          <span>Mobile View</span>
+          {mobileResolution && (
+            <span className="text-xs text-gray-400">{mobileResolution}</span>
+          )}
+        </div>
+        <div className="aspect-video bg-black">
+          <img
+            src={image}
+            alt={title}
+            className="object-contain w-full h-full"
+          />
         </div>
       </div>
     </div>
   );
 };
 
-// 整體元件
-const DevicePreviewList: React.FC<{ image: string }> = ({ image }) => {
-  return (
-    <div className="bg-black text-white p-4 rounded-lg space-y-6">
-      <h2 className="text-xl font-bold">Web Browser</h2>
-
-      <DevicePreviewItem
-        title="Home Large"
-        image={image}
-      />
-      <DevicePreviewItem
-        title="Home Small"
-        image={image}
-      />
-      <DevicePreviewItem
-        title="Sidebar"
-        image={image}
-      />
-      <DevicePreviewItem
-        title="Channel Page: Large"
-        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-        image={image}
-      />
-      <DevicePreviewItem
-        title="Channel Page: Small"
-        image={image}
-      />
-      <DevicePreviewItem
-        title="History"
-        image={image}
-      />
-    </div>
-  );
-};
-
-export default DevicePreviewList;
+export default DevicePreview;

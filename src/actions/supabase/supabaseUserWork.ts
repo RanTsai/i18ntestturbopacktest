@@ -7,6 +7,7 @@ import { InsertNewUsageToUserCreditHistory } from "./supabaseCredits";
 import { auth } from "@clerk/nextjs/server"
 import { UserWorkSchema } from "@/lib/schema/userwork-schema";
 import { z } from "zod";
+import { IUserWork } from "@/app/interfaces";
 //insert new user work to supabase
 //Base function to insert user work to Supabase
 async function InsertUserWorkToSupabase(
@@ -55,31 +56,42 @@ async function InsertUserWorkToSupabase(
     }
 }
 //Base function to get all user works from Supabase
-export async function GetUserWorkFromSupabseWithUserID({ supabase_user_id }: { supabase_user_id: number }) {
+export async function GetUserWorkFromSupabseWithUserID(): Promise<{
+    success: boolean;
+    data: IUserWork[] | null;
+    code?: string;
+    message?: string;
+}> {
     try {
+        const clerkUser = await auth();
         const { data, error } = await supabase
             .from("user_work")
             .select("*")
-            .eq("supabase_user_id", supabase_user_id);
+            .eq("clerk_user_id", clerkUser.userId);
 
         if (error) {
             return {
                 success: false,
                 code: "Failed to fetch user work",
                 message: error.message,
+                data: null
             }
         } else {
+            console.log("loaded user work data", data);
             const safeData = z.array(UserWorkSchema).parse(data);
-
+            console.log("loaded user parsed data", safeData);
             return {
                 success: true,
                 data: safeData,
             }
         }
     } catch (error: any) {
+                    console.log("loaded user work data error", error.message);
+
         return {
             success: false,
             message: error.message,
+            data: null
         }
     }
 };
