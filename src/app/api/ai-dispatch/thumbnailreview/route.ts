@@ -1,4 +1,6 @@
-import { google } from '@ai-sdk/google';
+//import { google } from '@ai-sdk/google';
+import { openai } from '@ai-sdk/openai';
+
 import { generateObject } from 'ai';
 import { NextRequest, NextResponse } from 'next/server';
 import { AIResponseSchema } from '@/lib/schema/aiscore-schema';
@@ -47,7 +49,8 @@ export async function POST(req: NextRequest) {
 
         // 🟨 使用 generateObject 並傳入 zod schema
         const result = await generateObject({
-            model: google('gemini-2.5-pro-preview-05-06'),
+            //model: google('gemini-2.5-pro-preview-05-06'),
+            model: openai('gpt-4o'),
             schema: AIResponseSchema,
             messages: multiModalMessages
         });

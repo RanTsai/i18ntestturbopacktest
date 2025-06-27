@@ -1,191 +1,184 @@
-//components/ui/chat/chat-area
-"use client";
+'use client';
 
-import React, { useState, useRef } from "react";
-import { Menu, Send, ImagePlus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
-import ChatTabSwitcher, { ChatTab } from "./chat-tab-switcher";
-import ThumbnailVersionList from "./thumbnail-version-list";
-import Messages from "./messages";
-import ChatListBar from "./chat-list-bar";
-import { mockChatSession } from "./mockdata";
-import { ThumbnailVersion } from "./mockdata";
-interface Message {
-  role: "user" | "ai";
-  content: string;
-  imageUrl?: string;
+import React, { useState, useEffect, useRef } from 'react';
+import { Menu, Send, ImagePlus } from 'lucide-react';
+import { UserButton } from '@clerk/nextjs';
+import { useChat } from '@ai-sdk/react';
+import { UseChatStore } from '@/lib/global-store/use-chat-store';
+import { getChatsByUserWorkId, createNewChat, getChatById, updateChat } from '@/actions/mongoose/mongoose-chat';
+import { uploadThumbnailAndGetUrl } from '@/actions/supabase/supabaseImages';
+import toast from 'react-hot-toast';
+
+import Messages from './messages';
+import Sidebar from './chat-list-sidebar';
+import ChatTabSwitcher, { ChatTab } from './chat-tab-switcher';
+import ThumbnailVersionList from './thumbnail-version-list';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
+
+import type { ThumbnailVersion } from './mockdata';
+import type { Message } from '@ai-sdk/ui-utils';
+import { usePathname } from 'next/navigation';
+
+interface ChatAreaLiveProps {
+  userId: string;
+  supabaseUserWorkId?: string | null;
 }
 
-const versions: ThumbnailVersion[] = [
-  {
-    id: "v1",
-    versionLabel: "v1",
-    title: "How to Create Amazing Thumbnails",
-    date: "2025-06-17",
-    rating: 4.0,
-    description: "Initial draft with dark background and minimal text",
-    imageUrl: "/thumbnail1.png",
-    linkedMessageId: "ai-msg-101",
-    annotations: [
-      {
-        id: "anno1",
-        type: "box",
-        x: 0.2,
-        y: 0.3,
-        width: 0.3,
-        height: 0.2,
-        message: "Text may be hard to read here"
-      }
-    ]
-  },
-  {
-    id: "v2",
-    versionLabel: "v2",
-    title: "How to Create Amazing Thumbnails",
-    date: "2025-06-18",
-    rating: 4.7,
-    description: "Increased contrast and added drop shadow to text",
-    imageUrl: "/thumbnail2.png",
-    linkedMessageId: "ai-msg-102",
-    annotations: [
-      {
-        id: "anno2",
-        type: "highlight",
-        x: 0.5,
-        y: 0.2,
-        width: 0.4,
-        height: 0.3,
-        message: "Title is much clearer here"
-      }
-    ]
-  },
-  {
-    id: "v3",
-    versionLabel: "v3",
-    title: "How to Create Amazing Thumbnails",
-    date: "2025-06-19",
-    rating: 3.8,
-    description: "Experimented with bold colors, but a bit cluttered",
-    imageUrl: "/thumbnail3.png",
-    annotations: []
-  },
-  {
-    id: "v4",
-    versionLabel: "v4",
-    title: "How to Create Amazing Thumbnails",
-    date: "2025-06-20",
-    rating: 4.6,
-    description: "Final version with balanced layout and clean fonts",
-    imageUrl: "/thumbnail4.png",
-    linkedMessageId: "ai-msg-104",
-    annotations: [
-      {
-        id: "anno4",
-        type: "arrow",
-        x: 0.6,
-        y: 0.4,
-        width: 0.1,
-        height: 0.1,
-        message: "Focus point here works well"
-      }
-    ]
-  }
-];
-
-export default function ChatArea() {
+export default function ChatAreaLive({ userId, supabaseUserWorkId = null }: ChatAreaLiveProps) {
   const [showSidebar, setShowSideBar] = useState(false);
-  const [messages, setMessages] = useState<Message[]>(mockChatSession.messages);
-  const [input, setInput] = useState<string>("");
-  const [status, setStatus] = useState<"idle" | "streaming" | "ready">("idle");
-  const [activeTab, setActiveTab] = useState<ChatTab>("chat");
-  const [versions, setVersions] = useState<ThumbnailVersion[]>(mockChatSession.thumbnailVersions);
+  const { selectedChat, setSelectedChat, setUserChats, userChats } = UseChatStore();
+  const [activeTab, setActiveTab] = useState<ChatTab>('chat');
+  const [versions, setVersions] = useState<ThumbnailVersion[]>([]);
   const [selectedVersionId, setSelectedVersionId] = useState<string | undefined>(undefined);
-  const versionCounterRef = useRef<number>(versions.length + 1);
-
-
+  const versionCounterRef = useRef<number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
-  };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    status,
+    setMessages
+  } = useChat({
+    api: '/api/chat',
+    initialMessages: [],
+  });
 
-    const userMessage: Message = { role: "user", content: input };
-    const aiReply: Message = {
-      role: "ai",
-      content: `Here's my response to: ${input}`
+  useEffect(() => {
+    // 當切換到新的 userWorkId 時，重置 selectedChat 與 messages
+    setMessages([]);
+  }, [supabaseUserWorkId]);
+
+  useEffect(() => {
+    if (selectedChat) {
+      if (JSON.stringify(messages) !== JSON.stringify(selectedChat.messages)) {
+        setMessages(selectedChat.messages || []);
+      }
+    } else {
+      if (messages.length !== 0) {
+        setMessages([]);
+      }
+    }
+  }, [selectedChat]);
+
+  const handleAddToVersions = (imageUrl: string, messageId?: string) => {
+    const newVersion: ThumbnailVersion = {
+      id: `v-${Date.now()}`,
+      imageUrl,
+      versionLabel: `v-${versions.length + 1}`,
+      title: 'Untitled Thumbnail',
+      date: new Date().toISOString(),
+      rating: 0,
+      description: 'Added from AI message',
+      linkedMessageId: messageId,
+      annotations: [],
     };
 
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
-    setStatus("streaming");
-
-    setTimeout(() => {
-      setMessages((prev) => [...prev, aiReply]);
-      setStatus("ready");
-    }, 800);
+    setVersions((prev) => [...prev, newVersion]);
   };
 
-  const handleImageUpload = async (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const imageUrl = reader.result as string;
+    useEffect(() => {
+      setMessages([]);
+    }, [supabaseUserWorkId]);
 
-      // 1. 加到 messages
+  const handleImageUpload = async (file: File) => {
+    try {
+      const response = await uploadThumbnailAndGetUrl(file);
+
+      if (!response.success || !response.url) {
+        throw new Error('Upload failed');
+      }
+
+      const imageUrl = response.url;
+
       const userImageMessage: Message = {
-        role: "user",
-        content: "",
-        imageUrl
+        id: `msg-${Date.now()}`,
+        role: 'user',
+        content: '',
+        parts: [
+          {
+            type: 'file',
+            mimeType: file.type,
+            data: imageUrl,
+          }
+        ]
       };
+
       setMessages((prev) => [...prev, userImageMessage]);
 
-      // 2. 加到 version list
       const newVersionId = `v-${versionCounterRef.current}`;
       versionCounterRef.current += 1;
+
       const newVersion: ThumbnailVersion = {
         id: newVersionId,
         imageUrl,
-        versionLabel: `v${versions.length + 1}`,
-        title: "Untitled Thumbnail Version",
-        date: new Date().toISOString(), // ISO 格式
-        rating: 0,                      // 預設未評分
-        description: "New version uploaded by user",
-        annotations: []                 // 預設無標註
+        versionLabel: `v-${versions.length + 1}`,
+        title: 'Untitled Thumbnail Version',
+        date: new Date().toISOString(),
+        rating: 0,
+        description: 'New version uploaded by user',
+        annotations: [],
       };
 
       setVersions((prev) => [...prev, newVersion]);
-    };
 
-    reader.readAsDataURL(file);
+    } catch (error: any) {
+      console.error('Image upload failed:', error.message);
+      toast.error('圖片上傳失敗');
+    }
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
-    if (file) {
-      handleImageUpload(file);
+    if (file) handleImageUpload(file);
+  };
+
+  const addOrUpdateChat = async () => {
+    try {
+      if (!selectedChat) {
+        const response = await createNewChat(messages, messages[0]?.content || 'New Chat', supabaseUserWorkId);
+        if (response.success) {
+          const newChat = { ...response.data, messages };
+          setSelectedChat(newChat);
+          setUserChats([newChat, ...userChats]);
+        } else {
+          toast.error(response.message || 'Something went wrong while creating the chat');
+        }
+      } else {
+        const response = await updateChat({
+          chatId: selectedChat._id,
+          messages,
+        });
+
+        if (response.success) {
+          const updated = await getChatById(selectedChat._id);
+          if (updated.success) {
+            const updatedChat = updated.data;
+            if (JSON.stringify(updatedChat.messages) !== JSON.stringify(selectedChat.messages)) {
+              setSelectedChat(updatedChat);
+              setUserChats((prevChats) =>
+                prevChats.map((chat) =>
+                  chat._id === updatedChat._id ? { ...chat, ...updatedChat } : chat
+                )
+              );
+            }
+          }
+        }
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Error while saving the chat');
     }
   };
 
-  const handleAddToVersions = (imageUrl: string, messageId?: string) => {
-  const newVersion: ThumbnailVersion = {
-    id: `v-${Date.now()}`,
-    imageUrl,
-    versionLabel: `v${versions.length + 1}`,
-    title: "Untitled Thumbnail",
-    date: new Date().toISOString(),
-    rating: 0,
-    description: "Added from AI message",
-    linkedMessageId: messageId,
-    annotations: []
-  };
-
-  setVersions((prev) => [...prev, newVersion]);
-};
-
+  useEffect(() => {
+    if (status === 'ready' && messages.length > 0) {
+      addOrUpdateChat();
+    }
+  }, [status, messages]);
 
   return (
     <div
@@ -196,18 +189,16 @@ export default function ChatArea() {
       {/* Header + Tabs */}
       <div className="sticky top-0 z-20 bg-gray-900 border-b border-gray-700">
         <div className="flex justify-between items-center px-5 py-4">
-          <Menu
-            className="text-white lg:hidden cursor-pointer"
-            onClick={() => setShowSideBar(true)}
-          />
+          <Menu className="text-white lg:hidden cursor-pointer" onClick={() => setShowSideBar(true)} />
           <ChatTabSwitcher value={activeTab} onChange={setActiveTab} />
+          <UserButton />
         </div>
       </div>
 
       {/* Main Body */}
       <div className="flex-1 text-white px-5 overflow-auto">
-        {activeTab === "chat" ? (
-          <Messages messages={messages} status={status}  onAddToVersions={handleAddToVersions} />
+        {activeTab === 'chat' ? (
+          <Messages messages={messages} status={isLoading ? 'loading' : 'done'} onAddToVersions={handleAddToVersions} />
         ) : (
           <ThumbnailVersionList
             versions={versions}
@@ -218,7 +209,7 @@ export default function ChatArea() {
       </div>
 
       {/* Input Bar */}
-      {activeTab === "chat" && (
+      {activeTab === 'chat' && (
         <div className="p-5 bg-amber-900 border-t border-gray-700">
           <form onSubmit={handleSubmit} className="relative flex gap-2">
             <input
@@ -246,6 +237,7 @@ export default function ChatArea() {
               type="submit"
               size="icon"
               className="bg-white text-black hover:bg-gray-300"
+              disabled={isLoading}
             >
               <Send size={16} />
             </Button>
@@ -256,7 +248,7 @@ export default function ChatArea() {
       {/* Sidebar for mobile */}
       <Sheet open={showSidebar} onOpenChange={setShowSideBar}>
         <SheetContent side="left" className="w-64 bg-gray-100 p-0">
-          <ChatListBar setShowSidebar={setShowSideBar} />
+          <Sidebar setShowSidebar={setShowSideBar} userId={userId} supabaseUserWorkId={supabaseUserWorkId} />
         </SheetContent>
       </Sheet>
     </div>

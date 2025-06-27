@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, XCircle } from "lucide-react";
 
 const MultiImageUploader: React.FC<{
   onUpload: (files: File[], title: string) => void;
@@ -125,10 +125,10 @@ const MultiImageUploader: React.FC<{
                               e.stopPropagation();
                               handleRemoveFile(i);
                             }}
-                            className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full p-1
-            opacity-0 group-hover:opacity-100 transition hover:bg-red-600"
+                            className="absolute top-1 right-1 text-gray-500 text-xs rounded-full p-1
+            opacity-0 group-hover:opacity-100 transition hover:text-red-500"
                           >
-                            X
+                            <XCircle size={16} />
                           </button>
                         </div>
                       ))}

@@ -1,80 +1,14 @@
 "use client";
 import React from "react";
 import { Bell, Cast, Search, Home, Play, PlusCircle, Users, MoreVertical, Library } from "lucide-react";
-import { Video } from "@/lib/schema/video"; // 假設你有 Video 型別
+import { YoutubeVideo } from "@/lib/schema/youtube-video-schema";
+import VideoCard from "@/components/ui/review/video-card";
+import ShortsSection from "@/components/ui/review/shorts-section";
 
 
-// Shorts Section Component
-function ShortsSection() {
-  const [shorts, setShorts] = React.useState<any[]>([]);
-
-  React.useEffect(() => {
-    const fetchShorts = async () => {
-      const res = await fetch("/api/youtubeshorts");
-      const data = await res.json();
-      setShorts(data);
-    };
-    fetchShorts();
-  }, []);
-
-  return (
-    <div className="bg-black text-white px-2 py-2">
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-red-500 font-bold">▶</span>
-        <p className="font-semibold">Shorts</p>
-      </div>
-
-      <div className="grid grid-cols-2 gap-2">
-        {shorts.map((short) => (
-          <div key={short.id} className="relative flex flex-col bg-zinc-900 rounded-md overflow-hidden aspect-[9/16]">
-            <img src={short.thumbnail} alt={short.title} className="w-full h-full object-cover" />
-            <div className="absolute top-1 left-1 text-xs bg-gray-500 rounded px-1">New</div>
-            <div className="absolute top-1 right-1">
-              <MoreVertical className="w-4 h-4 text-white" />
-            </div>
-            <div className="absolute bottom-1 left-1 text-xs font-normal px-1 rounded text-shadow">
-              {short.title}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// 單一影片卡片元件
-function VideoCard({ video }: { video: Video }) {
-  return (
-    <div className="group">
-      <div className="relative rounded overflow-hidden aspect-video">
-        <img
-          src={video.thumbnail}
-          alt="Video Thumbnail"
-          className="w-full h-full object-cover rounded transform transition-transform duration-300 ease-in-out group-hover:scale-105"
-        />
-        <span className="absolute bottom-1 right-1 bg-black/70 text-xs px-1 rounded">
-          {video.length}
-        </span>
-      </div>
-      <div className="flex mt-2 px-1">
-        <img
-          src={video.channelLogo}
-          alt="Channel Logo"
-          className="w-9 h-9 rounded-full object-cover"
-        />
-        <div className="flex flex-col flex-1 ml-2">
-          <p className="text-sm font-semibold line-clamp-2">{video.title}</p>
-          <p className="text-xs text-gray-400">{video.channelName}</p>
-          <p className="text-xs text-gray-400">{video.views} • {video.uploadedAt}</p>
-        </div>
-        <MoreVertical className="w-4 h-4 text-gray-400" />
-      </div>
-    </div>
-  );
-}
 
 export default function MobileYouTubeHomeMock() {
-  const [videos, setVideos] = React.useState<Video[]>([]);
+  const [videos, setVideos] = React.useState<YoutubeVideo[]>([]);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -83,7 +17,7 @@ export default function MobileYouTubeHomeMock() {
         if (!res.ok) throw new Error("Failed to fetch videos");
         const data = await res.json();
 
-        const mappedVideos: Video[] = data.map((item: any, idx: number) => ({
+        const mappedVideos: YoutubeVideo[] = data.map((item: any, idx: number) => ({
           id: item.id || String(idx),
           title: item.title,
           thumbnail: item.thumbnail,

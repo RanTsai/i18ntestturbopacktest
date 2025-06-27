@@ -3,8 +3,8 @@
 'use client';
 import React from 'react';
 import { useUser } from '@clerk/nextjs';
-import PrivateLayout from './(private)/privateLayout';
-import PublicLayout from './(public)/publicLayout';
+import PrivateLayout from '../../app/[locale]/(private)/privateLayout';
+import PublicLayout from '../../app/[locale]/(public)/publicLayout';
 import userGlobalStore from '@/lib/global-store/users-store';
 
 

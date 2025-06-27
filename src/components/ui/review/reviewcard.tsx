@@ -1,9 +1,9 @@
 // components/review/reviewcard.tsx
 "use client";
 
-import Image from "next/image";
+
 import { StarRating } from "./starrating";
-import RadarChart from "./radarchart";
+// import RadarChart from "./radarchart";
 import MarkDown from "react-markdown";
 import AspectBarList from "./aspectbarlist";
 import { Button } from "../button";
@@ -27,13 +27,7 @@ export default function ReviewCard({
 }: ReviewCardProps) {
   return (
     <div className="bg-[#0d0d0d] rounded-lg p-6 shadow-md space-y-4 w-full">
-       {/* Title */}
-      <input
-        type="text"
-        value={title}
-        readOnly
-        className="w-full p-2 text-white bg-black border border-gray-700 rounded"
-      />
+      
 
       {/* Star Rating & View link */}
       <div className="flex items-center justify-between">
@@ -44,7 +38,7 @@ export default function ReviewCard({
       </div>
 
       {/* Radar Chart */}
-      <RadarChart data={aspects} />
+      {/* <RadarChart data={aspects} /> */}
 
       {/* Aspect Bar List */}
       <AspectBarList

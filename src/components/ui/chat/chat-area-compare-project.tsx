@@ -5,7 +5,7 @@ import { Menu, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import Messages from "./messages";
-import ChatListBar from "./chat-list-bar";
+import ChatListBar from "./chat-list-sidebar";
 import ThumbnailCard from "../review/thumbnail-card";
 import { mockChatSession } from "./mockdata";
 import {
@@ -107,7 +107,7 @@ export default function ChatAreaCompareProject() {
       {/* Sticky Header + Tabs */}
       <div className="sticky top-0 z-20 bg-gray-900 border-b border-gray-700">
         {/* Thumbnail Select Row */}
-        <div className="flex flex-wrap gap-3 px-5 pb-4">
+        <div className="grid grid-cols-4 gap-3 px-5 pb-4 x-[400px] h-[240px] overflow-y-auto ">
           {mockChatSession.thumbnailVersions.map((version) => {
             const isUserSelected = userSelectedId === version.id;
             const isAIHighlighted = aiHighlightedIds.has(version.id);
@@ -138,7 +138,7 @@ export default function ChatAreaCompareProject() {
 
       {/* Main Area */}
       <div className="flex-1 text-white px-5 overflow-auto">
-        <Messages messages={messages} status={status} onAddToVersions={()=>{}}/>
+        <Messages messages={messages} status={status} onAddToVersions={() => { }} />
       </div>
 
       {/* Fixed Bottom Input */}
@@ -165,7 +165,7 @@ export default function ChatAreaCompareProject() {
       {/* Sidebar Drawer (Mobile) */}
       <Sheet open={showSidebar} onOpenChange={setShowSideBar}>
         <SheetContent side="left" className="w-64 bg-gray-100 p-0">
-          <ChatListBar setShowSidebar={setShowSideBar} />
+          <ChatListBar setShowSidebar={setShowSideBar} userId={null} supabaseUserWorkId={null} />
         </SheetContent>
       </Sheet>
 

@@ -1,7 +1,7 @@
 "use server";
 
-import ChatListBar from "@/components/ui/chat/chat-list-sidebar-backup";
-import ChatAreaLive from "@/components/ui/chat/chat-area-backup";
+import ChatListBar from "@/components/ui/chat/chat-list-sidebar";
+import ChatAreaLive from "@/components/ui/chat/chat-area";
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { notFound } from 'next/navigation';

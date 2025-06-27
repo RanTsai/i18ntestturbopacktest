@@ -6,7 +6,7 @@ import { saveAndGetCurrentUser } from "./mongoose-user";
 export const createNewChat = async (
     messages: any[],
     title: string,
-    supabaseUserWorkId?: string // ✅ 可選的 Supabase 縮圖 ID
+    supabaseUserWorkId?: string | null// ✅ 可選的 Supabase 縮圖 ID
 ) => {
     const { data: user } = await saveAndGetCurrentUser();
 
@@ -36,29 +36,30 @@ export const createNewChat = async (
     }
 };
 
-export const getChatsByUserId = async () => {
-    try {
-        const { data: user } = await saveAndGetCurrentUser();
+export const getChatsByUserId = async (includeWorkChats: boolean = false) => {
+  try {
+    const { data: user } = await saveAndGetCurrentUser();
+    console.log("MongoUser", user);
 
-        console.log("MongoUser", user);
+    // 根據是否包含與 work 相關的 chat 做查詢條件
+    const query = includeWorkChats
+      ? { user: user._id }
+      : { user: user._id, supabase_user_work_id: { $exists: false } };
 
-        const response = await ChatModel.find({ user: user._id });
-        //const response = await ChatModel.find({ user: "683434c0ee26b7a6685eda9e" });
+    const response = await ChatModel.find(query);
+    // console.log("getChatsByUserId response", JSON.parse(JSON.stringify(response)));
+    // console.log("完整 response:", JSON.stringify(response, null, 2));
 
-        console.log("getChatsByUserId response", JSON.parse(JSON.stringify(response)));
-        console.log("完整 response:", JSON.stringify(response, null, 2));
-
-        return {
-            data: JSON.parse(JSON.stringify(response)),
-            success: true,
-        };
-
-    } catch (error: any) {
-        return {
-            message: error.message || 'Something went wrong while getting the chats',
-            success: false
-        };
-    }
+    return {
+      data: JSON.parse(JSON.stringify(response)),
+      success: true,
+    };
+  } catch (error: any) {
+    return {
+      message: error.message || 'Something went wrong while getting the chats',
+      success: false,
+    };
+  }
 };
 
 export const getChatById = async (chatId: string) => {
