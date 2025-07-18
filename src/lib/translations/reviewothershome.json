@@ -1,0 +1,372 @@
+{
+    "page_id": "review_community_page",
+    "version": "v1",
+    "locales": {
+        "en": {
+            "page_header": {
+                "label": "Review Community",
+                "translation": "Review Community",
+                "description": "To tell the user this page is to find and review others for rewards",
+                "tooltip": "Learn by reviewing other's work"
+            },
+            "trending_button": {
+                "label": "Trending",
+                "translation": "Trending",
+                "description": "To indicate this Button allows user to sort by trend",
+                "tooltip": "Sort by the most viewed"
+            },
+            "latest_button": {
+                "label": "Latest",
+                "translation": "Latest",
+                "description": "To tell the user this button sorts by the latest",
+                "tooltip": "Sort by the latest"
+            },
+            "search_bar": {
+                "label": "Search Title / Channel Name / Tags",
+                "translation": "Search Title / Channel Name / Tags",
+                "description": "To tell the user what they can search for",
+                "tooltip": "Type what you want to search, it can be tags, channel or title"
+            },
+            "reset_button": {
+                "label": "Reset",
+                "translation": "Reset",
+                "description": "To tell the User this button resets all filters",
+                "tooltip": "Reset all filters"
+            },
+            "reviewed_by_you_section": {
+                "label": "Reviewed By You",
+                "translation": "Reviewed By You",
+                "description": "To indicate the section is for user already reviewed",
+                "tooltip": "This section includes your past reviewed thumbnails"
+            },
+            "channel_section": {
+                "label": "My Channels",
+                "translation": "My Channels",
+                "description": "To indicate the section is for user to choose their channels",
+                "tooltip": "Select to show thumbnails under your channel"
+            },
+            "your_following_section": {
+                "label": "Your Following",
+                "translation": "Your Following",
+                "description": "To indicate the section includes the channels followed by the user",
+                "tooltip": "Select to show thumbnails under the channel you're following"
+            },
+            "explore_section": {
+                "label": "Explore",
+                "translation": "Explore",
+                "description": "To indicate the section is to explore something new",
+                "tooltip": "Select to explore new thumbnails uploaded by new channels"
+            },
+            "Closing_days_noticiation": {
+                "label": "Closing in",
+                "translation": "Closing in",
+                "description": "To indicate the deadline of the thumbnail",
+                "tooltip": "The thumbnail will be closed for review in the indicated days."
+            },
+            "days": {
+                "label": "Days",
+                "translation": "Days",
+                "description": "",
+                "tooltip": ""
+            },
+            "Closed_days_noticiation": {
+                "label": "Closed",
+                "translation": "Remix",
+                "description": "To indicate the user can click to remix",
+                "tooltip": "Click to mix your thumbnails in the page, and see if if they stand out"
+            },
+            "days_ago": {
+                "label": "Days Ago",
+                "translation": "Days Ago",
+                "description": "",
+                "tooltip": ""
+            },
+            "people_rated": {
+                "label": "People Rated",
+                "translation": "People Rated",
+                "description": "To show the number of completed ratings on this thumbnail",
+                "tooltip": "This is rated by the indicated number of people"
+            },
+            "people_viewed": {
+                "label": "People Viewed",
+                "translation": "People Viewed",
+                "description": "To show the number of views on this thumbnail",
+                "tooltip": "This is viewed by the indicated number of people"
+            },
+            "review_and_get_button": {
+                "label": "Rate and get",
+                "translation": "Rate and get",
+                "description": "To show the user the reward they will receive",
+                "tooltip": "This thumbnail offers reward for your rating"
+            },
+            "thank_you_for_rating_button": {
+                "label": "Thank you for rating",
+                "translation": "Thank you for rating",
+                "description": "To indicate that the user already rated, and cannot rate again",
+                "tooltip": "You have already rated the thumbnail, thank you"
+            },
+            "rated": {
+                "label": "Rated",
+                "translation": "Rated",
+                "description": "To display on a noticiation that the thumbnail is rated by user",
+                "tooltip": "You have rated this"
+            },
+            "loading": {
+                "label": "Loading...",
+                "translation": "Loading...",
+                "description": "To tell the user the system is loading",
+                "tooltip": "Busy loading... please wait"
+            },
+            "no_thumbnails_found": {
+                "label": "No thumbnails matching the search critiera",
+                "translation": "No thumbnails matching the search critiera",
+                "description": "To tell the user that no thumbnail matches the critiera",
+                "tooltip": "No thumbnails found"
+            }
+        },
+        "zh": {
+            "page_header": {
+                "label": "Review Community",
+                "translation": "評審社群",
+                "description": "告訴使用者這個頁面是用來尋找並評審其他作品以獲得獎勵",
+                "tooltip": "透過評審他人的作品來學習"
+            },
+            "trending_button": {
+                "label": "Trending",
+                "translation": "熱門",
+                "description": "這個按鈕可以讓使用者按照熱門排序",
+                "tooltip": "依最多觀看數排序"
+            },
+            "latest_button": {
+                "label": "Latest",
+                "translation": "最新",
+                "description": "這個按鈕可以按照最新排序",
+                "tooltip": "依最新上傳時間排序"
+            },
+            "search_bar": {
+                "label": "Search Title / Channel Name / Tags",
+                "translation": "搜尋標題／頻道名稱／標籤",
+                "description": "告訴使用者可以搜尋哪些內容",
+                "tooltip": "輸入你要搜尋的內容，可以是標籤、頻道或標題"
+            },
+            "reset_button": {
+                "label": "Reset",
+                "translation": "重設",
+                "description": "這個按鈕會重設所有篩選條件",
+                "tooltip": "重設所有篩選"
+            },
+            "reviewed_by_you_section": {
+                "label": "Reviewed By You",
+                "translation": "你已評審",
+                "description": "表示這個區塊是使用者已經評審過的內容",
+                "tooltip": "這個區塊包含你曾經評審過的縮圖"
+            },
+            "channel_section": {
+                "label": "My Channels",
+                "translation": "我的頻道",
+                "description": "這個區塊讓使用者選擇自己的頻道",
+                "tooltip": "選擇顯示你頻道下的縮圖"
+            },
+            "your_following_section": {
+                "label": "Your Following",
+                "translation": "你追蹤的",
+                "description": "這個區塊顯示使用者追蹤的頻道",
+                "tooltip": "選擇顯示你追蹤的頻道所發布的縮圖"
+            },
+            "explore_section": {
+                "label": "Explore",
+                "translation": "探索",
+                "description": "這個區塊是為了探索新的內容",
+                "tooltip": "探索新頻道上傳的縮圖"
+            },
+            "Closing_days_noticiation": {
+                "label": "Closing in",
+                "translation": "剩餘時間",
+                "description": "顯示縮圖的截止時間",
+                "tooltip": "這個縮圖將在指定天數內關閉評審"
+            },
+            "days": {
+                "label": "Days",
+                "translation": "天",
+                "description": "",
+                "tooltip": ""
+            },
+            "Closed_days_noticiation": {
+                "label": "Closed",
+                "translation": "已結束",
+                "description": "表示可以點擊 Remix",
+                "tooltip": "點擊混合你的縮圖，看看是否更突出"
+            },
+            "days_ago": {
+                "label": "Days Ago",
+                "translation": "天前",
+                "description": "",
+                "tooltip": ""
+            },
+            "people_rated": {
+                "label": "People Rated",
+                "translation": "已評分人數",
+                "description": "顯示此縮圖被評分的總人數",
+                "tooltip": "此縮圖已被以下人數評分"
+            },
+            "people_viewed": {
+                "label": "People Viewed",
+                "translation": "瀏覽人數",
+                "description": "顯示此縮圖的瀏覽次數",
+                "tooltip": "此縮圖已被以下人數瀏覽"
+            },
+            "review_and_get_button": {
+                "label": "Rate and get",
+                "translation": "評分領獎",
+                "description": "顯示使用者可以獲得的獎勵",
+                "tooltip": "評分此縮圖可獲得獎勵"
+            },
+            "thank_you_for_rating_button": {
+                "label": "Thank you for rating",
+                "translation": "感謝你的評分",
+                "description": "表示使用者已經評分，不能再次評分",
+                "tooltip": "你已經對此縮圖評分，感謝你的參與"
+            },
+            "rated": {
+                "label": "Rated",
+                "translation": "已評分",
+                "description": "顯示此縮圖已被使用者評分",
+                "tooltip": "你已評分此縮圖"
+            },
+            "loading": {
+                "label": "Loading...",
+                "translation": "載入中...",
+                "description": "告訴使用者系統正在載入",
+                "tooltip": "正在載入中...請稍候"
+            },
+            "no_thumbnails_found": {
+                "label": "No thumbnails matching the search critiera",
+                "translation": "找不到符合搜尋條件的縮圖",
+                "description": "告訴使用者沒有符合條件的縮圖",
+                "tooltip": "未找到符合條件的縮圖"
+            }
+        },
+        "ja": {
+            "page_header": {
+                "label": "Review Community",
+                "translation": "レビューコミュニティ",
+                "description": "このページは他人をレビューして報酬を得るためのものだと伝える",
+                "tooltip": "他人の作品をレビューして学ぼう"
+            },
+            "trending_button": {
+                "label": "Trending",
+                "translation": "トレンド",
+                "description": "このボタンでトレンド順に並び替えができることを示す",
+                "tooltip": "最も閲覧された順に並び替え"
+            },
+            "latest_button": {
+                "label": "Latest",
+                "translation": "最新",
+                "description": "このボタンで最新順に並び替えできることを示す",
+                "tooltip": "最新のアップロード順に並び替え"
+            },
+            "search_bar": {
+                "label": "Search Title / Channel Name / Tags",
+                "translation": "タイトル / チャンネル名 / タグを検索",
+                "description": "検索できる内容をユーザーに伝える",
+                "tooltip": "検索したい内容を入力、タグ・チャンネル・タイトルなど"
+            },
+            "reset_button": {
+                "label": "Reset",
+                "translation": "リセット",
+                "description": "このボタンですべてのフィルターをリセットする",
+                "tooltip": "すべてのフィルターをリセット"
+            },
+            "reviewed_by_you_section": {
+                "label": "Reviewed By You",
+                "translation": "あなたがレビューした",
+                "description": "このセクションはすでにレビュー済みの内容を示す",
+                "tooltip": "このセクションには過去にレビューしたサムネイルが含まれます"
+            },
+            "channel_section": {
+                "label": "My Channels",
+                "translation": "マイチャンネル",
+                "description": "ユーザーが自分のチャンネルを選べるセクション",
+                "tooltip": "自分のチャンネルにあるサムネイルを表示"
+            },
+            "your_following_section": {
+                "label": "Your Following",
+                "translation": "フォロー中",
+                "description": "ユーザーがフォローしているチャンネルのセクション",
+                "tooltip": "フォロー中のチャンネルが投稿したサムネイルを表示"
+            },
+            "explore_section": {
+                "label": "Explore",
+                "translation": "探索",
+                "description": "新しいものを探索するためのセクション",
+                "tooltip": "新しいチャンネルのサムネイルを探索しよう"
+            },
+            "Closing_days_noticiation": {
+                "label": "Closing in",
+                "translation": "締切まで",
+                "description": "このサムネイルの締切日を示す",
+                "tooltip": "このサムネイルのレビュー締切までの残り日数"
+            },
+            "days": {
+                "label": "Days",
+                "translation": "日",
+                "description": "",
+                "tooltip": ""
+            },
+            "Closed_days_noticiation": {
+                "label": "Closed",
+                "translation": "終了",
+                "description": "クリックしてRemixできることを示す",
+                "tooltip": "サムネイルをRemixして、目立つかどうかを確認しよう"
+            },
+            "days_ago": {
+                "label": "Days Ago",
+                "translation": "日前",
+                "description": "",
+                "tooltip": ""
+            },
+            "people_rated": {
+                "label": "People Rated",
+                "translation": "評価人数",
+                "description": "このサムネイルを評価した人数を表示",
+                "tooltip": "このサムネイルは以下の人数に評価されました"
+            },
+            "people_viewed": {
+                "label": "People Viewed",
+                "translation": "閲覧人数",
+                "description": "このサムネイルの閲覧数を表示",
+                "tooltip": "このサムネイルは以下の人数に閲覧されました"
+            },
+            "review_and_get_button": {
+                "label": "Rate and get",
+                "translation": "評価して獲得",
+                "description": "ユーザーが獲得できる報酬を示す",
+                "tooltip": "このサムネイルは評価に報酬を提供します"
+            },
+            "thank_you_for_rating_button": {
+                "label": "Thank you for rating",
+                "translation": "評価ありがとうございます",
+                "description": "すでに評価済みで再評価できないことを示す",
+                "tooltip": "このサムネイルはすでに評価済みです、ありがとうございます"
+            },
+            "rated": {
+                "label": "Rated",
+                "translation": "評価済み",
+                "description": "このサムネイルが評価されたことを示す",
+                "tooltip": "このサムネイルはあなたが評価しました"
+            },
+            "loading": {
+                "label": "Loading...",
+                "translation": "読み込み中...",
+                "description": "システムが読み込み中であることを伝える",
+                "tooltip": "読み込み中です... しばらくお待ちください"
+            },
+            "no_thumbnails_found": {
+                "label": "No thumbnails matching the search critiera",
+                "translation": "検索条件に一致するサムネイルが見つかりません",
+                "description": "条件に一致するサムネイルが見つからないことを伝える",
+                "tooltip": "一致するサムネイルが見つかりませんでした"
+            }
+        }
+    }
+}

@@ -1,84 +1,119 @@
 "use client";
+
 import React from "react";
-import { Bell, Cast, Search, Home, Play, PlusCircle, Users, MoreVertical, Library } from "lucide-react";
-import { YoutubeVideo } from "@/lib/schema/youtube-video-schema";
+import {
+  Bell,
+  Cast,
+  Search,
+  Home,
+  Play,
+  PlusCircle,
+  Users,
+  Library,
+} from "lucide-react";
 import VideoCard from "@/components/ui/review/video-card";
 import ShortsSection from "@/components/ui/review/shorts-section";
-
-
+import { useVideoContext } from "@/context/youtube-video-provider";
+import useVideoSelectionStore from "@/lib/global-store/video-selection-store"; // ✅ 加入 store
 
 export default function MobileYouTubeHomeMock() {
-  const [videos, setVideos] = React.useState<YoutubeVideo[]>([]);
+  const { videos, searchTerm } = useVideoContext();
+  const { selectedVideos, addVideo, removeVideo } = useVideoSelectionStore(); // ✅ 呼叫 store
 
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch("/api/youtube?q=trending");
-        if (!res.ok) throw new Error("Failed to fetch videos");
-        const data = await res.json();
-
-        const mappedVideos: YoutubeVideo[] = data.map((item: any, idx: number) => ({
-          id: item.id || String(idx),
-          title: item.title,
-          thumbnail: item.thumbnail,
-          channelLogo: item.channelLogo,
-          channelName: item.channelName,
-          views: item.views,
-          uploadedAt: item.uploadedAt,
-          length: item.length,
-        }));
-
-        setVideos(mappedVideos);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  // 拆分影片
   const beforeShorts = videos.slice(0, 4);
   const afterShorts = videos.slice(4);
 
+  // ✅ 判斷是否選取
+  const isVideoSelected = (thumbnail: string) => {
+    return selectedVideos.some((v) => v.thumbnail === thumbnail);
+  };
+
+  // ✅ 處理選取邏輯
+  const handleSelect = (video: { title: string; thumbnail: string }) => {
+    if (isVideoSelected(video.thumbnail)) {
+      removeVideo(video.thumbnail);
+    } else {
+      addVideo(video);
+    }
+  };
+
   return (
-    <div className="bg-black text-white flex justify-center">
-      <div className="relative w-full max-w-xs h-[660px] flex flex-col border-x border-gray-700 overflow-hidden overflow-y-auto rounded-4xl [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {/* Topbar */}
-        <div className="flex justify-between items-center px-4 py-2 border-b border-gray-700">
+    <div className="bg-background text-foreground flex justify-center">
+      <div className="relative w-full max-w-xs h-[660px] flex flex-col border-x border-border overflow-hidden overflow-y-auto rounded-4xl [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {/* 🔺 Topbar */}
+        <div className="flex justify-between items-center px-4 py-2 border-b border-border">
           <div className="text-xl font-semibold text-red-500">Premium</div>
-          <div className="flex space-x-3 items-center">
+          <div className="flex space-x-3 items-center text-foreground">
             <Cast className="w-5 h-5" />
             <div className="relative">
               <Bell className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-[0.6rem] px-[0.15rem] rounded-full">9+</span>
+              <span className="absolute -top-1 -right-1 bg-red-500 text-[0.6rem] px-[0.15rem] rounded-full text-background">
+                9+
+              </span>
             </div>
             <Search className="w-5 h-5" />
           </div>
         </div>
 
-        {/* Filter tags */}
-        <div className="flex px-2 py-2 space-x-2 border-b border-gray-700">
-          <span className="bg-white text-black px-3 py-1 rounded-full text-xs font-semibold">All</span>
-          <span className="bg-gray-800 px-3 py-1 rounded-full text-xs">Gaming</span>
-          <span className="bg-gray-800 px-3 py-1 rounded-full text-xs whitespace-nowrap">Movie</span>
-          <span className="bg-gray-800 px-3 py-1 rounded-full text-xs whitespace-nowrap">Music</span>
-          <span className="bg-gray-800 px-3 py-1 rounded-full text-xs whitespace-nowrap">Shorts</span>
+        {/* 🔺 Filter tags */}
+        <div className="flex px-2 py-2 space-x-2 border-b border-border">
+          <span className="bg-foreground text-background px-3 py-1 rounded-full text-xs font-semibold">
+            All
+          </span>
+          <span className="bg-muted px-3 py-1 rounded-full text-xs">
+            Gaming
+          </span>
+          <span className="bg-muted px-3 py-1 rounded-full text-xs whitespace-nowrap">
+            Movie
+          </span>
+          <span className="bg-muted px-3 py-1 rounded-full text-xs whitespace-nowrap">
+            Music
+          </span>
+          <span className="bg-muted px-3 py-1 rounded-full text-xs whitespace-nowrap">
+            Shorts
+          </span>
         </div>
 
-        {/* 影片列表 */}
+        {/* 🔺 Video List */}
         <div className="flex-1 p-2 space-y-4">
           {beforeShorts.map((video) => (
-            <VideoCard key={video.id} video={video} />
+            <div
+              key={video.id}
+              onClick={() =>
+                handleSelect({ title: video.title, thumbnail: video.thumbnail })
+              }
+              className="cursor-pointer"
+            >
+              <VideoCard
+                video={video}
+                isSelected={isVideoSelected(video.thumbnail)}
+              />
+            </div>
           ))}
-          <ShortsSection />
+          <ShortsSection variant="mobile" keyword={searchTerm} />
           {afterShorts.map((video) => (
-            <VideoCard key={video.id} video={video} />
+            <div
+              key={video.id}
+              onClick={() =>
+                handleSelect({ title: video.title, thumbnail: video.thumbnail })
+              }
+              className="cursor-pointer"
+            >
+              <VideoCard
+                video={video}
+                isSelected={isVideoSelected(video.thumbnail)}
+              />
+            </div>
           ))}
+          {videos.length === 0 && (
+            <p className="text-center text-muted-foreground mt-10">
+              No videos found.
+            </p>
+          )}
         </div>
 
-        {/* Bottom Navigation */}
-        <div className="flex justify-around py-2 border-t border-gray-700 bg-black">
+        {/* 🔺 Bottom Navigation */}
+        <div className="flex justify-around py-2 border-t border-border bg-background text-muted-foreground">
           <div className="flex flex-col items-center text-[0.4rem]">
             <Home className="w-5 h-5" />
             Home

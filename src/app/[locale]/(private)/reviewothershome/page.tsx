@@ -1,5 +1,5 @@
 import React from 'react'
-import ReviewThumbnailsPage from './ThumbnailCard'
+import ReviewThumbnailsPage from './review-thumbnail-page'
 
 function page() {
   return (

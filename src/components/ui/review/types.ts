@@ -1,4 +1,3 @@
-export type AspectKey = "Clickability" | "Clarity" | "Relevance" | "CTR" | "Branding";
 
 export type AspectRating = {
   score: number;
@@ -7,8 +6,8 @@ export type AspectRating = {
 
 export type ThumbnailReview = {
   id: string;
-  title: string;
+  version: string;
   imageUrl: string;
   aiCommentMarkdown: string;
-  aspectRatings: Record<AspectKey, AspectRating>;
+  aspectRatings: Record<string, AspectRating>; // ✅ 改為 string key
 };

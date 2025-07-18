@@ -1,7 +1,7 @@
 // thumbnailRankingBoard.tsx
 'use client';
 import React, { useState, useMemo, useEffect } from 'react';
-import { AspectKey, ThumbnailReview } from './types';
+import { ThumbnailReview } from './types';
 
 import ThumbnailRankingTable from './thumbnailRankingTable';
 import ThumbnailDetailPanel from './thumbnailDetailPanel';
@@ -12,7 +12,7 @@ interface ThumbnailRankingBoardProps {
 
 const ThumbnailRankingBoard: React.FC<ThumbnailRankingBoardProps> = ({ thumbnails }) => {
   // TODO: Consider making 'Clickability' dynamic or a prop if aspects can vary
-  const [selectedAspect, setSelectedAspect] = useState<AspectKey>('Clickability');
+  const [selectedAspect, setSelectedAspect] = useState<string>('clickability');
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -52,8 +52,9 @@ const ThumbnailRankingBoard: React.FC<ThumbnailRankingBoardProps> = ({ thumbnail
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 w-full p-4 bg-gray-50 rounded-lg shadow">
-      <div className="flex-grow md:w-2/3">
+    <div className="flex flex-col md:flex-row gap-6 w-full p-4 bg-gray-50 rounded-lg shadow items-start">
+      <div className="w-full md:w-1/3">
+
         {selectedId ? (
           <ThumbnailRankingTable
             thumbnails={sortedThumbnails}
@@ -66,7 +67,7 @@ const ThumbnailRankingBoard: React.FC<ThumbnailRankingBoardProps> = ({ thumbnail
           thumbnails && thumbnails.length > 0 && <div className="text-center p-4 text-gray-400">Initializing selection...</div>
         )}
       </div>
-      <div className="flex-grow md:w-1/3">
+      <div className="w-full md:w-2/3">
         {selectedThumbnail ? (
           <ThumbnailDetailPanel data={selectedThumbnail} selectedAspect={selectedAspect} />
         ) : (

@@ -22,6 +22,7 @@ export default async function LocaleLayout({
     }
    return (
   <NextIntlClientProvider locale={locale}>    
+  <TopNavigationBar />
   <LocaleClientLayout>
           <main>{children}</main>
     </LocaleClientLayout>

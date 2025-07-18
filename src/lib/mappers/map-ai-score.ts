@@ -1,4 +1,4 @@
-import { ThumbnailReview, AspectRating, AspectKey } from "@/components/ui/review/types";
+import { ThumbnailReview, AspectRating } from "@/components/ui/review/types";
 
 interface AiFeedback {
   overall_impression?: string;
@@ -17,37 +17,39 @@ interface AiFeedback {
 
 interface MapAiFeedbackInput {
   url: string;
-  title: string;
-  aiFeedback: AiFeedback;
+  version: string;
+  aiFeedback: AiFeedback | null;
 }
 
 export function MapAiScoreToThumbnailReview({
   url,
-  title,
+  version,
   aiFeedback,
 }: MapAiFeedbackInput): ThumbnailReview {
+  if (!aiFeedback || !aiFeedback.scores) {
+    console.warn("No AI feedback or scores available for URL:", url);
+    return {
+      id: url,
+      version,
+      imageUrl: url,
+      aiCommentMarkdown: "No AI feedback available.",
+      aspectRatings: {},
+    };
+  }
   const scores = aiFeedback.scores || {};
+  console.log("AI feedback scores", scores);
 
-  const createAspect = (
-    key: keyof typeof scores,
-    label: AspectKey
-  ): [AspectKey, AspectRating] => {
-    return [
-      label,
+  const aspectRatings: Record<string, AspectRating> = Object.fromEntries(
+    Object.entries(scores).map(([key, value]) => [
+      key,
       {
-        score: typeof scores[key] === "number" ? scores[key]! : 0,
-        explanation: `Explanation for ${label} (placeholder)`, // 🔁 可替換為更真實的 AI explanation
+        score: typeof value === "number" ? value : 0,
+        explanation: `Explanation for ${key} (placeholder)`,
       },
-    ];
-  };
+    ])
+  );
 
-  const aspectRatings: Record<AspectKey, AspectRating> = Object.fromEntries([
-    createAspect("clickability", "Clickability"),
-    createAspect("relevance", "Relevance"),
-    createAspect("clarity", "Clarity"),
-    createAspect("ctr", "CTR"),
-    createAspect("branding", "Branding"),
-  ]) as Record<AspectKey, AspectRating>;
+  console.log("Creating aspect ratings from AI feedback", aspectRatings);
 
   const aiCommentMarkdown = `
 ### Overall Impression
@@ -68,7 +70,7 @@ ${aiFeedback.explanation || "N/A"}
 
   return {
     id: url,
-    title,
+    version,
     imageUrl: url,
     aiCommentMarkdown,
     aspectRatings,

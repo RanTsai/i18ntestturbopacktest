@@ -1,54 +1,73 @@
-//application/youtube-home-mock.tsx
 "use client";
-import React from "react";
-import { YoutubeVideo } from "@/lib/schema/youtube-video-schema";
-import VideoCard from "@/components/ui/review/video-card";
 
+import React from "react";
+import VideoCard from "@/components/ui/review/video-card";
+import ShortsSection from "@/components/ui/review/shorts-section";
+import { useVideoContext } from "@/context/youtube-video-provider";
+import useVideoSelectionStore from "@/lib/global-store/video-selection-store"; // ✅ 你定義的 GlobalStore
 
 export default function YouTubeHomeMock() {
-    const [videos, setVideos] = React.useState<YoutubeVideo[]>([]);
+  const { videos, searchTerm } = useVideoContext();
+  const { selectedVideos, addVideo, removeVideo } = useVideoSelectionStore(); // ✅
 
-    // 🔹 一進入頁面就從後端 API 拉資料
-    React.useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await fetch("/api/youtube?q=trending");
-                if (!res.ok) throw new Error("Failed to fetch videos");
-                const data = await res.json();
+  const firstRow = videos.slice(0, 4);
+  const remaining = videos.slice(4);
 
-                // 這裡假設 API 回傳的資料是陣列，每筆有 title / thumbnail
-                const mappedVideos: YoutubeVideo[] = data.map((item: any, idx: number) => ({
-                    id: item.id || String(idx),
-                    title: item.title,
-                    thumbnail: item.thumbnail,
-                    channelLogo: item.channelLogo,
-                    channelName: item.channelName,
-                    views: item.views,
-                    uploadedAt: item.uploadedAt,
-                    length: item.length
-                }));
+  // 判斷是否已選取
+const isVideoSelected = (thumbnail: string) => {
+  return selectedVideos.some((v) => v.thumbnail === thumbnail);
+};
 
-                setVideos(mappedVideos);
-            } catch (err) {
-                console.error(err);
-            }
-        };
-
-        fetchData();
-    }, []);
-
-    return (
-    <div className="bg-black min-h-screen text-white p-4">
-      <h1 className="text-2xl font-bold mb-4">YouTube Home</h1>
-
+// 點擊時處理選取與取消選取
+const handleSelect = (video: { title: string; thumbnail: string }) => {
+  if (isVideoSelected(video.thumbnail)) {
+    removeVideo(video.thumbnail);
+  } else {
+    addVideo(video); // 不需要其他 key，只要 title + thumbnail
+  }
+};
+  return (
+    <div className="min-h-screen bg-background text-foreground p-4 space-y-4">
+      {/* 🔹 第一排影片 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {videos.map((item) => (
-          <VideoCard key={item.id} video={item} />
+        {firstRow.map((item) => (
+          <div
+            key={item.id}
+            onClick={() => handleSelect({ title: item.title, thumbnail: item.thumbnail })}
+            className="cursor-pointer"
+          >
+            <VideoCard
+              video={item}
+              isSelected={isVideoSelected(item.thumbnail)}
+            />
+          </div>
         ))}
       </div>
 
+      {/* 🔹 Shorts 區塊（mobile 版本） */}
+      <ShortsSection variant="horizontal" keyword={searchTerm} />
+
+      {/* 🔹 剩下的影片 */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {remaining.map((item) => (
+          <div
+            key={item.id}
+            onClick={() => handleSelect({ title: item.title, thumbnail: item.thumbnail })}
+            className="cursor-pointer"
+          >
+            <VideoCard
+              video={item}
+              isSelected={isVideoSelected(item.thumbnail)}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* 無資料提示 */}
       {videos.length === 0 && (
-        <p className="text-center text-gray-500 mt-10">Loading videos...</p>
+        <p className="text-center text-muted-foreground mt-10">
+          No videos found. Try searching something else.
+        </p>
       )}
     </div>
   );

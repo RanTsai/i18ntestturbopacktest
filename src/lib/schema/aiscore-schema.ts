@@ -21,3 +21,10 @@ export const AIResponseSchema = z.object({
 });
 export type AIResponse = z.infer<typeof AIResponseSchema>;
 
+export interface IAspectScore {
+  label: string;
+  value: number;
+  color: string; // 可選，若需要自定義顏色
+  tooltip?: string; // 可選，若需要顯示提示
+}
+

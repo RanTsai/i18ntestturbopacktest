@@ -11,7 +11,7 @@ type Props = {
 
 const ThumbnailDetailPanel: React.FC<Props> = ({ data }) => {
   return (
-    <div className="w-2/3 bg-background p-6 rounded-lg">
+  <div className="bg-background p-6 rounded-lg w-full">
       <img src={data.imageUrl} alt={data.title} className="w-full rounded-lg mb-4" />
       <h2 className="text-xl font-semibold mb-4">{data.title}</h2>
       <div className="grid grid-cols-2 gap-4 mb-6">

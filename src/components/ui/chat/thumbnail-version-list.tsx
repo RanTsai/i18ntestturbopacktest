@@ -72,85 +72,85 @@ export default function ThumbnailVersionList({ versions, onSelect, selectedId }:
     }
   };
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {versions.map((version) => (
-        <div
-          key={version.id}
-          className={`border rounded-lg shadow-md bg-muted text-white hover:border-primary transition cursor-pointer ${
-            selectedId === version.id ? "ring-2 ring-primary" : ""
-          }`}
-          onClick={() => onSelect?.(version)}
-        >
-          {/* 修正：使用 aspect-ratio 保持圖片比例 */}
-          <div className="relative w-full aspect-[16/9]">
-            <ThumbnailCard
-              key={version.id}
-              id={version.id}
-              imageUrl={version.imageUrl}
-              versionLabel={version.versionLabel}
-              isSelected={selectedId === version.id}
-              isFavorite={favorites[version.id] || false}
-              highlightType={null}
-              onSelect={(id, selected) => {
-                if (selected) {
-                  onSelect?.(version);
-                } else {
-                  onSelect?.({ ...version, id: "" }); // 取消選擇
-                }
-              }}
-              onToggleFavorite={handleToggleFavorite}
-              onDownload={handleDownload}
-              onReview={handleReview}
-            />
-          </div>
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    {versions.map((version) => (
+      <div
+        key={version.id}
+        className={`
+          border rounded-lg shadow-md transition cursor-pointer
+          bg-[var(--card)] text-[var(--foreground)]
+          hover:border-[var(--primary)]
+          ${selectedId === version.id ? "ring-2 ring-[var(--primary)]" : ""}
+        `}
+        onClick={() => onSelect?.(version)}
+      >
+        {/* Aspect-ratio 保持比例 */}
+        <div className="relative w-full aspect-[16/9]">
+          <ThumbnailCard
+            key={version.id}
+            id={version.id}
+            imageUrl={version.imageUrl}
+            versionLabel={version.versionLabel}
+            isSelected={selectedId === version.id}
+            isFavorite={favorites[version.id] || false}
+            highlightType={null}
+            onSelect={(id, selected) => {
+              if (selected) {
+                onSelect?.(version);
+              } else {
+                onSelect?.({ ...version, id: "" }); // 取消選擇
+              }
+            }}
+            onToggleFavorite={handleToggleFavorite}
+            onDownload={handleDownload}
+            onReview={handleReview}
+          />
+        </div>
 
-          {/* 下方文字與評分區塊 */}
-          <div className="p-3 space-y-1">
-            <div className="text-sm font-semibold truncate">
-              {version.title}
-            </div>
-            <div className="text-xs text-gray-400">{version.date}</div>
-            <div className="text-xs text-gray-300 line-clamp-2">
-              {version.description}
-            </div>
-            <div className="flex gap-1 pt-1">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  size={14}
-                  className={
-                    i < version.rating
-                      ? "fill-yellow-400 text-yellow-400"
-                      : "text-gray-600"
-                  }
-                />
-              ))}
-            </div>
+        {/* 下方文字與評分區塊 */}
+        <div className="p-3 space-y-1">
+          <div className="text-sm font-semibold truncate">{version.title}</div>
+          <div className="text-xs text-[var(--muted-foreground)]">{version.date}</div>
+          <div className="text-xs text-[var(--muted-foreground)] line-clamp-2">{version.description}</div>
+          <div className="flex gap-1 pt-1">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star
+                key={i}
+                size={14}
+                className={
+                  i < version.rating
+                    ? "fill-yellow-400 text-yellow-400"
+                    : "text-[var(--muted)]"
+                }
+              />
+            ))}
           </div>
         </div>
-      ))}
+      </div>
+    ))}
 
-       <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
-              <DialogContent className="max-w-3xl bg-black border-gray-800">
-                <DialogHeader>
-                  <DialogTitle className="text-white text-lg">Thumbnail Review</DialogTitle>
-                  <DialogDescription className="text-gray-400">
-                    AI-generated feedback on the selected thumbnail
-                  </DialogDescription>
-                </DialogHeader>
-      
-                {reviewData && (
-                  <ReviewCard
-                    thumbnailUrl={reviewData.thumbnailUrl}
-                    title={reviewData.title}
-                    score={reviewData.score}
-                    aspects={reviewData.aspects}
-                    aiMarkdown={reviewData.aiMarkdown}
-                  />
-                )}
-              </DialogContent>
-            </Dialog>
-            
-    </div>
-  );
+    {/* Review Dialog */}
+    <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
+      <DialogContent className="max-w-3xl bg-[var(--card)] border-[var(--border)]">
+        <DialogHeader>
+          <DialogTitle className="text-[var(--foreground)] text-lg">Thumbnail Review</DialogTitle>
+          <DialogDescription className="text-[var(--muted-foreground)]">
+            AI-generated feedback on the selected thumbnail
+          </DialogDescription>
+        </DialogHeader>
+
+        {reviewData && (
+          <ReviewCard
+            thumbnailUrl={reviewData.thumbnailUrl}
+            title={reviewData.title}
+            score={reviewData.score}
+            aspects={reviewData.aspects}
+            aiMarkdown={reviewData.aiMarkdown}
+          />
+        )}
+      </DialogContent>
+    </Dialog>
+  </div>
+);
+
 }

@@ -1,6 +1,6 @@
 "use client";
 import React from 'react'
-import { GetUserWorkFromSupabseWithWorkID } from '@/actions/supabase/supabaseUserWork';
+import { GetUserWorkFromSupabseWithWorkID } from '@/actions/supabase/supabase-user-work';
 import Spinner from '@/components/ui/spinner';
 import ReviewCard from '@/components/ui/review/reviewcard';
 import { UserWork } from '@/lib/schema/userwork-schema';

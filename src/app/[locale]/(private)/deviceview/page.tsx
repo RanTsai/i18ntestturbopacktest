@@ -10,7 +10,6 @@ function page() {
     <div>
         {/* <DeviceView image={imageUrl} title={title} /> */}
         <DevicePreviewList image="/thumbnail.png" />
-
     </div>
   )
 }

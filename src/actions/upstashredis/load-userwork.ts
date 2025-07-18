@@ -1,7 +1,7 @@
 // actions/upstashredis/load-userwork.ts
 import { redis } from '@/actions/upstashredis/redis'
 import { IUserWork } from '@/app/interfaces'
-import { GetUserWorkFromSupabseWithUserID } from '../supabase/supabaseUserWork'
+import { GetUserWorkFromSupabseWithUserID } from '../supabase/supabase-user-work'
 import { auth } from "@clerk/nextjs/server"
 
 export async function loadAllUserWork(): Promise<{

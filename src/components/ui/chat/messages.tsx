@@ -79,139 +79,148 @@ export default function Messages({
   }
 
   return (
-    <div
-      className="flex flex-col gap-7 text-gray-300 mt-7 flex-1 h-[85vh] overflow-auto"
-      ref={messageRef}
-    >
-      {messages.map((message, index) => {
-        const isUser = message.role === "user";
-        const messageId = message.id || `msg-${index}`;
+  <div
+    className="flex flex-col gap-7 mt-7 flex-1 h-[85vh] overflow-auto text-foreground"
+    ref={messageRef}
+  >
+    {messages.map((message, index) => {
+      const isUser = message.role === "user";
+      const messageId = message.id || `msg-${index}`;
+      const filePart = message.parts?.find(
+        (part: any) => part.type === "file" && part.mimeType.startsWith("image/")
+      ) as FileUIPart | undefined;
 
-        const filePart = message.parts?.find(
-          (part: any) => part.type === "file" && part.mimeType.startsWith("image/")
-        ) as FileUIPart | undefined;
+      const imageData = filePart?.data;
 
-        const imageData = filePart?.data;
+      return (
+        <div
+          key={messageId}
+          className={`flex gap-0 px-5 ${isUser ? "justify-end" : "justify-start"} group`}
+        >
+          {!isUser && (
+            <div className="p-2">
+              <Bot size={40} className="border border-border rounded-full text-foreground" />
+            </div>
+          )}
 
-        return (
-          <div
-            key={messageId}
-            className={`flex gap-0 px-5 ${isUser ? "justify-end" : "justify-start"} group`}
-          >
-            {!isUser && (
-              <div className="p-2">
-                <Bot size={40} className="border border-white rounded-full" />
+          <div className={`flex flex-col gap-2 max-w-[70%] ${isUser ? "items-end" : "items-start"}`}>
+            {message.content && (
+              <div
+                className={`
+                  prose prose-invert text-sm 
+                  bg-muted text-foreground px-4 py-2 rounded-3xl 
+                  ${isUser ? "rounded-br-none" : "rounded-bl-none"}
+                `}
+              >
+                <ReactMarkdown>{message.content}</ReactMarkdown>
               </div>
             )}
 
-            <div className={`flex flex-col gap-2 max-w-[70%] ${isUser ? "items-end" : "items-start"}`}>
-              {message.content && (
-                <div
-                  className={`prose prose-invert text-sm bg-gray-700 px-4 py-2 rounded-3xl ${isUser ? "rounded-br-none" : "rounded-bl-none"}`}
-                >
-                  <ReactMarkdown>{message.content}</ReactMarkdown>
-                </div>
-              )}
-
-              {imageData && (
-                <div className="relative w-full max-w-lg aspect-[10/9] border border-white rounded group">
-                  <img
-                    src={imageData}
-                    alt="Uploaded Image"
-                    className="w-full h-full object-cover rounded"
-                  />
-                  <ImageAnnotationLayer
-                    annotations={
-                      mockChatSession.thumbnailVersions.find(
-                        (v) => v.linkedMessageId === message.id
-                      )?.annotations ?? []
-                    }
-                  />
-                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 hidden group-hover:block">
-                    <Button
-                      size="sm"
-                      variant="default"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onAddToVersions(imageData, message.id);
-                      }}
-                      className="bg-blue-500 text-white hover:bg-blue-600"
-                    >
-                      Add to Versions
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {!isUser && (
-                <div className="flex gap-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <Button variant="ghost" size="icon" onClick={() => onCopy(message.content)}>
-                    {copiedMessages === message.content ? <Check size={8} /> : <Copy size={8} />}
-                  </Button>
+            {imageData && (
+              <div className="relative w-full max-w-lg aspect-[10/9] border border-border rounded group">
+                <img
+                  src={imageData}
+                  alt="Uploaded Image"
+                  className="w-full h-full object-cover rounded"
+                />
+                <ImageAnnotationLayer
+                  annotations={
+                    mockChatSession.thumbnailVersions.find(
+                      (v) => v.linkedMessageId === message.id
+                    )?.annotations ?? []
+                  }
+                />
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 hidden group-hover:block">
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      setMessageToShare(message.content);
-                      setShowShareModal(true);
+                    size="sm"
+                    variant="default"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAddToVersions(imageData, message.id);
                     }}
                   >
-                    <Share size={8} />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleFeedback(messageId, "up")}
-                    className={`hover:text-green-400 ${feedback[messageId] === "up" ? "text-green-400" : ""}`}
-                  >
-                    <ThumbsUp size={8} />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleFeedback(messageId, "down")}
-                    className={`hover:text-red-400 ${feedback[messageId] === "down" ? "text-red-400" : ""}`}
-                  >
-                    <ThumbsDown size={8} />
+                    Add to Versions
                   </Button>
                 </div>
-              )}
+              </div>
+            )}
 
-              {isUser && (
-                <div className="flex gap-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <Button variant="ghost" size="icon" onClick={() => onCopy(message.content)}>
-                    {copiedMessages === message.content ? <Check size={8} /> : <Copy size={8} />}
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={() => toast("Edit clicked (to be implemented)")}><Pencil size={8}/></Button>
-                  <Button variant="ghost" size="icon" onClick={() => toast("Rerun clicked (to be implemented)")}><RefreshCcw size={8}/></Button>
-                  <Button variant="ghost" size="icon" onClick={() => toast("Refer to clicked (to be implemented)")}><Pointer size={8}/></Button>
-                  <Button variant="ghost" size="icon" onClick={() => toast("Refer to clicked (to be implemented)")}><Trash2 size={8}/></Button>
-                </div>
-              )}
-            </div>
+            {/* Bot Tools */}
+            {!isUser && (
+              <div className="flex gap-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <Button variant="ghost" size="icon" onClick={() => onCopy(message.content)}>
+                  {copiedMessages === message.content ? <Check size={8} /> : <Copy size={8} />}
+                </Button>
+                <Button variant="ghost" size="icon" onClick={() => {
+                  setMessageToShare(message.content);
+                  setShowShareModal(true);
+                }}>
+                  <Share size={8} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleFeedback(messageId, "up")}
+                  className={feedback[messageId] === "up" ? "text-green-400" : ""}
+                >
+                  <ThumbsUp size={8} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleFeedback(messageId, "down")}
+                  className={feedback[messageId] === "down" ? "text-red-400" : ""}
+                >
+                  <ThumbsDown size={8} />
+                </Button>
+              </div>
+            )}
 
+            {/* User Tools */}
             {isUser && (
-              <div className="p-2">
-                <User size={40} className="border border-white rounded-full" />
+              <div className="flex gap-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <Button variant="ghost" size="icon" onClick={() => onCopy(message.content)}>
+                  {copiedMessages === message.content ? <Check size={8} /> : <Copy size={8} />}
+                </Button>
+                <Button variant="ghost" size="icon" onClick={() => toast("Edit clicked (to be implemented)")}>
+                  <Pencil size={8} />
+                </Button>
+                <Button variant="ghost" size="icon" onClick={() => toast("Rerun clicked (to be implemented)")}>
+                  <RefreshCcw size={8} />
+                </Button>
+                <Button variant="ghost" size="icon" onClick={() => toast("Refer to clicked (to be implemented)")}>
+                  <Pointer size={8} />
+                </Button>
+                <Button variant="ghost" size="icon" onClick={() => toast("Delete clicked (to be implemented)")}>
+                  <Trash2 size={8} />
+                </Button>
               </div>
             )}
           </div>
-        );
-      })}
 
-      {status === "streaming" && (
-        <div className="flex justify-start px-5">
-          <Skeleton className="h-4 w-20 rounded bg-muted" />
+          {isUser && (
+            <div className="p-2">
+              <User size={40} className="border border-border rounded-full text-foreground" />
+            </div>
+          )}
         </div>
-      )}
+      );
+    })}
 
-      {showShareModal && (
-        <ShareMessage
-          open={showShareModal}
-          setOpen={setShowShareModal}
-          messageToShare={messageToShare}
-        />
-      )}
-    </div>
-  );
+    {status === "streaming" && (
+      <div className="flex justify-start px-5">
+        <Skeleton className="h-4 w-20 rounded bg-muted" />
+      </div>
+    )}
+
+    {showShareModal && (
+      <ShareMessage
+        open={showShareModal}
+        setOpen={setShowShareModal}
+        messageToShare={messageToShare}
+      />
+    )}
+  </div>
+);
+
 }

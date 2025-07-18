@@ -1,4 +1,4 @@
-// actions/upstashredis/load-user.ts
+// actions/upstashredis/redis.ts
 import { Redis } from '@upstash/redis'
 
 export const redis = new Redis({

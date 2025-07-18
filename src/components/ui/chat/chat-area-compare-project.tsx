@@ -103,93 +103,93 @@ export default function ChatAreaCompareProject() {
   };
 
   return (
-    <div className="bg-gray-900 h-screen grid grid-rows-[auto_1fr_auto]">
-      {/* Sticky Header + Tabs */}
-      <div className="sticky top-0 z-20 bg-gray-900 border-b border-gray-700">
-        {/* Thumbnail Select Row */}
-        <div className="grid grid-cols-4 gap-3 px-5 pb-4 x-[400px] h-[240px] overflow-y-auto ">
-          {mockChatSession.thumbnailVersions.map((version) => {
-            const isUserSelected = userSelectedId === version.id;
-            const isAIHighlighted = aiHighlightedIds.has(version.id);
-            const highlightType = isUserSelected
-              ? "user"
-              : isAIHighlighted
-                ? "ai"
-                : null;
+  <div className="bg-[var(--background)] text-[var(--foreground)] h-screen grid grid-rows-[auto_1fr_auto]">
+    {/* Sticky Header + Tabs */}
+    <div className="sticky top-0 z-20 bg-[var(--background)] border-b border-[var(--border)]">
+      {/* Thumbnail Select Row */}
+      <div className="grid grid-cols-4 gap-3 px-5 pb-4 h-[240px] overflow-y-auto">
+        {mockChatSession.thumbnailVersions.map((version) => {
+          const isUserSelected = userSelectedId === version.id;
+          const isAIHighlighted = aiHighlightedIds.has(version.id);
+          const highlightType = isUserSelected
+            ? "user"
+            : isAIHighlighted
+              ? "ai"
+              : null;
 
-            return (
-              <ThumbnailCard
-                key={version.id}
-                id={version.id}
-                imageUrl={version.imageUrl}
-                versionLabel={version.versionLabel ?? 1}
-                isSelected={isUserSelected}
-                isFavorite={favoriteIds.has(version.id)}
-                highlightType={highlightType}
-                onSelect={handleSelect}
-                onToggleFavorite={handleToggleFavorite}
-                onDownload={handleDownload}
-                onReview={handleReview}
-              />
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Main Area */}
-      <div className="flex-1 text-white px-5 overflow-auto">
-        <Messages messages={messages} status={status} onAddToVersions={() => { }} />
-      </div>
-
-      {/* Fixed Bottom Input */}
-      <div className="p-5 bg-amber-900">
-        <form onSubmit={handleSubmit} className="relative">
-          <input
-            name="prompt"
-            value={input}
-            onChange={handleInputChange}
-            id="input"
-            placeholder="Type your message..."
-            className="flex-1 w-full p-2 text-white bg-transparent border border-gray-500 rounded focus:outline-none pr-10"
-          />
-          <Button
-            type="submit"
-            size="icon"
-            className="absolute right-2 top-1/2 -translate-y-1/2"
-          >
-            <Send size={16} />
-          </Button>
-        </form>
-      </div>
-
-      {/* Sidebar Drawer (Mobile) */}
-      <Sheet open={showSidebar} onOpenChange={setShowSideBar}>
-        <SheetContent side="left" className="w-64 bg-gray-100 p-0">
-          <ChatListBar setShowSidebar={setShowSideBar} userId={null} supabaseUserWorkId={null} />
-        </SheetContent>
-      </Sheet>
-
-      <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
-        <DialogContent className="max-w-3xl bg-black border-gray-800">
-          <DialogHeader>
-            <DialogTitle className="text-white text-lg">Thumbnail Review</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              AI-generated feedback on the selected thumbnail
-            </DialogDescription>
-          </DialogHeader>
-
-          {reviewData && (
-            <ReviewCard
-              thumbnailUrl={reviewData.thumbnailUrl}
-              title={reviewData.title}
-              score={reviewData.score}
-              aspects={reviewData.aspects}
-              aiMarkdown={reviewData.aiMarkdown}
+          return (
+            <ThumbnailCard
+              key={version.id}
+              id={version.id}
+              imageUrl={version.imageUrl}
+              versionLabel={version.versionLabel ?? 1}
+              isSelected={isUserSelected}
+              isFavorite={favoriteIds.has(version.id)}
+              highlightType={highlightType}
+              onSelect={handleSelect}
+              onToggleFavorite={handleToggleFavorite}
+              onDownload={handleDownload}
+              onReview={handleReview}
             />
-          )}
-        </DialogContent>
-      </Dialog>
-
+          );
+        })}
+      </div>
     </div>
-  );
+
+    {/* Main Area */}
+    <div className="flex-1 px-5 overflow-auto">
+      <Messages messages={messages} status={status} onAddToVersions={() => {}} />
+    </div>
+
+    {/* Fixed Bottom Input */}
+    <div className="p-5 bg-[var(--card)] border-t border-[var(--border)]">
+      <form onSubmit={handleSubmit} className="relative">
+        <input
+          name="prompt"
+          value={input}
+          onChange={handleInputChange}
+          id="input"
+          placeholder="Type your message..."
+          className="flex-1 w-full p-2 text-[var(--foreground)] bg-transparent border border-[var(--border)] rounded focus:outline-none pr-10"
+        />
+        <Button
+          type="submit"
+          size="icon"
+          className="absolute right-2 top-1/2 -translate-y-1/2"
+        >
+          <Send size={16} />
+        </Button>
+      </form>
+    </div>
+
+    {/* Sidebar Drawer (Mobile) */}
+    <Sheet open={showSidebar} onOpenChange={setShowSideBar}>
+      <SheetContent side="left" className="w-64 bg-[var(--sidebar)] text-[var(--sidebar-foreground)] p-0">
+        <ChatListBar setShowSidebar={setShowSideBar} userId={null} supabaseUserWorkId={null} />
+      </SheetContent>
+    </Sheet>
+
+    <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
+      <DialogContent className="max-w-3xl bg-[var(--card)] border-[var(--border)]">
+        <DialogHeader>
+          <DialogTitle className="text-[var(--foreground)] text-lg">Thumbnail Review</DialogTitle>
+          <DialogDescription className="text-[var(--muted-foreground)]">
+            AI-generated feedback on the selected thumbnail
+          </DialogDescription>
+        </DialogHeader>
+
+        {reviewData && (
+          <ReviewCard
+            thumbnailUrl={reviewData.thumbnailUrl}
+            title={reviewData.title}
+            score={reviewData.score}
+            aspects={reviewData.aspects}
+            aiMarkdown={reviewData.aiMarkdown}
+          />
+        )}
+      </DialogContent>
+    </Dialog>
+  </div>
+);
+
 }

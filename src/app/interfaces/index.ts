@@ -1,4 +1,4 @@
-import { AIScoreSchema } from "@/lib/schema/aiscore-schema";
+import { IVersions } from "@/lib/schema/userwork-schema";
 
 export interface IUser{
     //supabase_user_id: number;
@@ -27,13 +27,6 @@ export interface IAIScore{
     brightness: number,
     relevance: number,
     emotion: number
-};
-export interface IVersions{
-    version_number: number,
-    image_url: string,
-    title: string,
-    description: string,
-    remark: string
 };
 
 export interface IUserWork{

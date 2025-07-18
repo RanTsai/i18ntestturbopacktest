@@ -181,76 +181,81 @@ export default function ChatAreaLive({ userId, supabaseUserWorkId = null }: Chat
   }, [status, messages]);
 
   return (
-    <div
-      className="bg-gray-900 h-screen grid grid-rows-[auto_1fr_auto]"
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={handleDrop}
-    >
-      {/* Header + Tabs */}
-      <div className="sticky top-0 z-20 bg-gray-900 border-b border-gray-700">
-        <div className="flex justify-between items-center px-5 py-4">
-          <Menu className="text-white lg:hidden cursor-pointer" onClick={() => setShowSideBar(true)} />
-          <ChatTabSwitcher value={activeTab} onChange={setActiveTab} />
-          <UserButton />
-        </div>
+  <div
+    className="bg-[var(--background)] text-[var(--foreground)] h-screen grid grid-rows-[auto_1fr_auto]"
+    onDragOver={(e) => e.preventDefault()}
+    onDrop={handleDrop}
+  >
+    {/* Header + Tabs */}
+    <div className="sticky top-0 z-20 bg-[var(--background)] border-b border-[var(--border)]">
+      <div className="flex justify-between items-center px-5 py-4">
+        <Menu className="text-[var(--foreground)] lg:hidden cursor-pointer" onClick={() => setShowSideBar(true)} />
+        <ChatTabSwitcher value={activeTab} onChange={setActiveTab} />
+        <UserButton />
       </div>
-
-      {/* Main Body */}
-      <div className="flex-1 text-white px-5 overflow-auto">
-        {activeTab === 'chat' ? (
-          <Messages messages={messages} status={isLoading ? 'loading' : 'done'} onAddToVersions={handleAddToVersions} />
-        ) : (
-          <ThumbnailVersionList
-            versions={versions}
-            selectedId={selectedVersionId}
-            onSelect={(v) => setSelectedVersionId(v.id)}
-          />
-        )}
-      </div>
-
-      {/* Input Bar */}
-      {activeTab === 'chat' && (
-        <div className="p-5 bg-amber-900 border-t border-gray-700">
-          <form onSubmit={handleSubmit} className="relative flex gap-2">
-            <input
-              name="prompt"
-              value={input}
-              onChange={handleInputChange}
-              placeholder="Type your message..."
-              className="flex-1 p-2 text-white bg-transparent border border-gray-500 rounded focus:outline-none pr-10"
-            />
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              id="upload-image"
-              onChange={(e) => {
-                if (e.target.files?.[0]) handleImageUpload(e.target.files[0]);
-              }}
-            />
-            <label htmlFor="upload-image" className="cursor-pointer">
-              <Button variant="ghost" size="icon" type="button">
-                <ImagePlus size={18} />
-              </Button>
-            </label>
-            <Button
-              type="submit"
-              size="icon"
-              className="bg-white text-black hover:bg-gray-300"
-              disabled={isLoading}
-            >
-              <Send size={16} />
-            </Button>
-          </form>
-        </div>
-      )}
-
-      {/* Sidebar for mobile */}
-      <Sheet open={showSidebar} onOpenChange={setShowSideBar}>
-        <SheetContent side="left" className="w-64 bg-gray-100 p-0">
-          <Sidebar setShowSidebar={setShowSideBar} userId={userId} supabaseUserWorkId={supabaseUserWorkId} />
-        </SheetContent>
-      </Sheet>
     </div>
-  );
+
+    {/* Main Body */}
+    <div className="flex-1 px-5 overflow-auto">
+      {activeTab === 'chat' ? (
+        <Messages
+          messages={messages}
+          status={isLoading ? 'loading' : 'done'}
+          onAddToVersions={handleAddToVersions}
+        />
+      ) : (
+        <ThumbnailVersionList
+          versions={versions}
+          selectedId={selectedVersionId}
+          onSelect={(v) => setSelectedVersionId(v.id)}
+        />
+      )}
+    </div>
+
+    {/* Input Bar */}
+    {activeTab === 'chat' && (
+      <div className="p-5 bg-[var(--card)] border-t border-[var(--border)]">
+        <form onSubmit={handleSubmit} className="relative flex gap-2">
+          <input
+            name="prompt"
+            value={input}
+            onChange={handleInputChange}
+            placeholder="Type your message..."
+            className="flex-1 p-2 bg-transparent border border-[var(--border)] rounded text-[var(--foreground)] focus:outline-none pr-10"
+          />
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            id="upload-image"
+            onChange={(e) => {
+              if (e.target.files?.[0]) handleImageUpload(e.target.files[0]);
+            }}
+          />
+          <label htmlFor="upload-image" className="cursor-pointer">
+            <Button variant="ghost" size="icon" type="button">
+              <ImagePlus size={18} />
+            </Button>
+          </label>
+          <Button
+            type="submit"
+            size="icon"
+            className="bg-[var(--foreground)] text-[var(--background)] hover:bg-[var(--muted)]"
+            disabled={isLoading}
+          >
+            <Send size={16} />
+          </Button>
+        </form>
+      </div>
+    )}
+
+    {/* Sidebar for mobile */}
+    <Sheet open={showSidebar} onOpenChange={setShowSideBar}>
+      <SheetContent side="left" className="w-64 bg-[var(--sidebar)] text-[var(--sidebar-foreground)] p-0">
+        <Sidebar setShowSidebar={setShowSideBar} userId={userId} supabaseUserWorkId={supabaseUserWorkId} />
+      </SheetContent>
+    </Sheet>
+  </div>
+);
+
 }

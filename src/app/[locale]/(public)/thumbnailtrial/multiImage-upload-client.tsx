@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import Spinner from "@/components/ui/spinner";
 import ReviewCard from "@/components/ui/review/reviewcard";
 import { DeductUserCredits } from "@/actions/supabase/supabaseCredits";
-import { UserWorkWithAIAnalaysisToSupabase } from "@/actions/supabase/supabaseUserWork";
+import { UserWorkWithAIAnalaysisToSupabase } from "@/actions/supabase/supabase-user-work";
 import ThumbnailRankingBoard from "@/components/ui/review/thumbnailRankingBoard";
 import FeedbackDialog, { FeedbackData } from "@/components/ui/feedback/user-feedback-form";
 import { ThumbnailReview, AspectKey, AspectRating } from "@/components/ui/review/types"; // Added imports
@@ -188,7 +188,7 @@ export default function MultiImageUploaderClient({ formData }: Props) {
 
           return {
             id: item.url,
-            title: item.title,
+            version: item.aiFeedback.version || "1.0",
             imageUrl: item.url,
             aiCommentMarkdown: `### Overall Impression\n${feedback.overall_impression || 'N/A'}\n\n### Title Strength\n${feedback.title_strength || 'N/A'}\n\n### Thumbnail Strength\n${feedback.thumbnail_strength || 'N/A'}\n\n### Synergy\n${feedback.synergy || 'N/A'}\n\n### Explanation\n${feedback.explanation || 'N/A'}`,
             aspectRatings,

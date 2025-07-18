@@ -21,7 +21,7 @@ export async function loadQuestionnaire(
     const data = await redis.get(key)
 
     if (data) {
-        console.log("found in Redis", data);
+        //console.log("found in Redis", data);
         return {
             found: true,
             content: typeof data === 'string' ? JSON.parse(data) : data,

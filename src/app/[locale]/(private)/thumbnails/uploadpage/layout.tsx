@@ -6,6 +6,8 @@ import { routing } from '@/i18n/routing';
 import TopNavigationBar from '@/components/navigation/topnavigationbar';
 import UploadSideBar from '@/components/upload/upload-side-bar';
 import Topbar from '@/components/navigation/top-bar';
+import { LoadPageTranslation } from '@/actions/upstashredis/load-page-translation';
+
 export default async function LocaleLayout({
     children,
     params
@@ -16,17 +18,19 @@ export default async function LocaleLayout({
     const resolvedParams = await params;
     const locale = resolvedParams.locale;
 
+    const translation = await LoadPageTranslation("signed_up_upload_review", locale);
+    const t = translation.content;
+    console.log("translations", t, "locale", locale);
+
     if (!hasLocale(routing.locales, locale)) {
         notFound();    }
    return (
 
     <div className="flex flex-col h-screen bg-background text-foreground ">
-      {/* 上方 TopNavigationBar */}
-      <TopNavigationBar />
-
+ 
       <div className="flex flex-1 ">
         {/* 左側 Sidebar */}
-        <UploadSideBar />
+        <UploadSideBar fallbackTranslations={t}/>
 
         {/* 中間區域：Topbar + children */}
         <div className="flex flex-col flex-1 ">

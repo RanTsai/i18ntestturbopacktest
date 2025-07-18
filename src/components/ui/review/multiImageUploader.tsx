@@ -14,15 +14,22 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { ImagePlus, XCircle } from "lucide-react";
+import { useParams } from 'next/navigation';
+import useTranslationStore from "@/lib/global-store/use-translation-store";
 
 const MultiImageUploader: React.FC<{
-  onUpload: (files: File[], title: string) => void;
+  onUpload: (files: File[], title: string) => Promise<void>;  // 明確定義回傳 Promise
 }> = ({ onUpload }) => {
   const [previews, setPreviews] = React.useState<string[]>([]);
   const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]);
+ const { getTranslation } = useTranslationStore();
+    const { locale } = useParams() as { locale: string };
+    const pageId = "signed_up_upload_review";
+    const translations = getTranslation(pageId, locale) || {};
 
   const formSchema = z.object({
-    title: z.string().min(1, "Title is required"),
+
+    title: z.string().min(1, { message: translations?.title?.translation ?? "Title is required" }),
     images: z
       .any()
       .refine((files) => Array.isArray(files) && files.length > 0, "Please upload at least one image"),
@@ -72,7 +79,7 @@ const MultiImageUploader: React.FC<{
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    onUpload(values.images, values.title);
+    await onUpload(values.images, values.title);  // 必須 await
   }
 
   return (
@@ -83,8 +90,8 @@ const MultiImageUploader: React.FC<{
           control={form.control}
           name="title"
           render={({ field }) => (
-<FormItem className="w-full max-w-6xl mx-auto">
-              <FormLabel>Title</FormLabel>
+            <FormItem className="w-full max-w-6xl mx-auto">
+              <FormLabel>{translations?.title_header?.translation ?? "Title"}</FormLabel>
               <FormControl>
                 <Input placeholder="Enter a title" {...field} />
               </FormControl>
@@ -100,7 +107,7 @@ const MultiImageUploader: React.FC<{
           render={() => (
             <FormItem className="w-full max-w-6xl mx-auto">
               <FormLabel className={fileRejections.length !== 0 ? "text-destructive" : ""}>
-                <h2 className="text-xl font-semibold tracking-tight">Upload your images</h2>
+                <h2 className="text-xl font-semibold tracking-tight">{translations?.Uploaded_Thumbnail?.translation ?? "Upload Thumbnail"}</h2>
               </FormLabel>
               <FormControl>
                 <div
@@ -138,7 +145,7 @@ const MultiImageUploader: React.FC<{
                   )}
                   <Input {...getInputProps()} type="file" multiple />
                   <p className="text-sm text-muted-foreground">
-                    Click here or drag images to upload (PNG, JPG, JPEG)
+                     {translations?.upload_area_note?.translation ?? "Click here or drag images to upload (PNG, JPG, JPEG)"}
                   </p>
                 </div>
               </FormControl>
@@ -155,9 +162,12 @@ const MultiImageUploader: React.FC<{
         <Button
           type="submit"
           disabled={form.formState.isSubmitting}
-          className="mx-auto block h-auto rounded-lg px-8 py-3 text-xl"
+          className={`mx-auto block h-auto rounded-lg px-8 py-3 text-xl cursor-pointer transition-colors
+    ${form.formState.isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
         >
-          Submit
+          {form.formState.isSubmitting
+  ? (translations?.submitting?.translation ?? "Submitting...")
+  : (translations?.submit?.translation ?? "Submit")}
         </Button>
       </form>
     </Form>

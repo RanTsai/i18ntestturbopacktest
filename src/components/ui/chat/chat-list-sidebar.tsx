@@ -32,8 +32,8 @@ import {
 } from "@/actions/mongoose/mongoose-chat";
 
 interface ChatListBarProps {
-    userId : string | null;
-    supabaseUserWorkId: string | null;    
+    userId: string | null;
+    supabaseUserWorkId: string | null;
     setShowSidebar?: (open: boolean) => void;
 }
 
@@ -145,10 +145,10 @@ export default function ChatListBar({
     }, [supabaseUserWorkId]);
 
     return (
-        <div className="w-64 bg-gray-800 p-4 space-y-6 text-white">
+        <div className="w-64 bg-[var(--sidebar)] text-[var(--sidebar-foreground)] p-4 space-y-6">
             <Button
                 variant="outline"
-                className="w-full justify-start gap-2 text-gray-200"
+                className="w-full justify-start gap-2 text-[var(--muted-foreground)]"
                 onClick={handleNewChat}
             >
                 <Plus size={16} /> New Chat
@@ -158,14 +158,16 @@ export default function ChatListBar({
                 <h2 className="text-lg font-semibold mb-2">Your chats</h2>
                 <ScrollArea className="h-[300px] pr-1">
                     <div className="flex flex-col gap-2">
-                        {userChats.map((chat: any, index: number) => (
+                        {userChats.map((chat: any) => (
                             <div
                                 key={chat._id}
                                 className={clsx(
                                     "cursor-pointer flex items-center justify-between px-2 py-1 rounded-md transition-colors w-full",
                                     {
-                                        "bg-gray-300": selectedChat?._id === chat._id,
-                                        "hover:bg-gray-700": selectedChat?._id !== chat._id,
+                                        "bg-[var(--muted)] text-[var(--foreground)]":
+                                            selectedChat?._id === chat._id,
+                                        "hover:bg-[var(--muted)]":
+                                            selectedChat?._id !== chat._id,
                                     }
                                 )}
                                 onMouseEnter={() => setHoveredChat(chat._id)}
@@ -176,7 +178,7 @@ export default function ChatListBar({
                                 {hoveredChat === chat._id && (
                                     <Trash2
                                         size={15}
-                                        className="text-gray-500"
+                                        className="text-[var(--muted-foreground)]"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             setConfirmDeleteId(chat._id);
@@ -190,14 +192,11 @@ export default function ChatListBar({
                 </ScrollArea>
             </div>
 
-            <Dialog
-                open={!!confirmDeleteId}
-                onOpenChange={() => setConfirmDeleteId(null)}
-            >
+            <Dialog open={!!confirmDeleteId} onOpenChange={() => setConfirmDeleteId(null)}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>確定要刪除這個聊天？</DialogTitle>
-                        <DialogDescription className="text-red-500">
+                        <DialogDescription className="text-destructive">
                             ⚠️ 此動作無法回復，請確認！
                         </DialogDescription>
                     </DialogHeader>
@@ -219,4 +218,5 @@ export default function ChatListBar({
             </Dialog>
         </div>
     );
+
 }

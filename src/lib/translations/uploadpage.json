@@ -1,0 +1,534 @@
+{
+  "page_id": "signed_up_upload_review",
+  "version": "v1",
+  "locales": {
+    "en": {
+      "page_header": {
+        "label": "Thumbnail Analyser",
+        "translation": "Thumbnail Analyser",
+        "description": "The title of the page to help users understand the purpose of the page.",
+        "tooltip": "This page allows you to analyze the thumbnails of your uploaded videos to ensure they meet the platform's standards and guidelines."
+      },
+      "title_header": {
+        "label": "Title",
+        "translation": "Thumbnail Analyser",
+        "description": "To indicate the input field is for the title of the video.",
+        "tooltip": "Upload a title here, and alternative versions under the 'Alternative Titles' section."
+      },
+      "Uploaded_Thumbnail": {
+        "label": "Upload Your Thumbnails",
+        "translation": "Thumbnail Analyser",
+        "description": "To indicate the area where users can upload their video thumbnails.",
+        "tooltip": "Click or drag and drop your video thumbnails here to upload them for analysis."
+      },
+      "title_error": {
+        "label": "Title is required",
+        "translation": "Thumbnail Analyser",
+        "description": "To indicate the title is a required field.",
+        "tooltip": "Upload a title here, even if it is temporary, you can change it later."
+      },
+      "upload_area_note": {
+        "label": "Click or drag and drop your video thumbnails here and click Submit below",
+        "translation": "Click or drag and drop your video thumbnails here and click Submit below",
+        "description": "To provide instructions for users on how to upload their video thumbnails.",
+        "tooltip": "This area allows you to upload your video thumbnails. You can click to select files or drag and drop them here."
+      },
+      "submit": {
+        "label": "Submit",
+        "translation": "Submit",
+        "description": "The text on the submit button.",
+        "tooltip": "Upload your images"
+      },
+      "submitting": {
+        "label": "Submitting",
+        "translation": "Submitting",
+        "description": "The text on the submit button during uploading.",
+        "tooltip": "Submitting your images, please wait..."
+      },
+      "upload_info": {
+        "label": "Upload up to 6 images, then request an AI review.",
+        "translation": "Upload up to 6 images, then request an AI review.",
+        "description": "To inform users about the upload limit and the next step.",
+        "tooltip": "You can upload up to 6 images for analysis. After uploading, then you can request an AI review of your thumbnails."
+      },
+      "get_human_review": {
+        "label": "Get Human Review",
+        "translation": "Get Human Review",
+        "description": "To indicate the button for requesting human reviews of the uploaded thumbnails.",
+        "tooltip": "Click here to request a human review of your uploaded thumbnails. This is useful if you want additional feedback beyond AI analysis."
+      },
+      "user_feedback_title": {
+        "label": "Tell us if it helped you",
+        "translation": "Tell us if it helped you",
+        "description": "To indicate the section where users can provide feedback on the thumbnail analysis.",
+        "tooltip": ""
+      },
+      "user_feedback_button": {
+        "label": "Share Your Feedback",
+        "translation": "Share Your Feedback",
+        "description": "To indicate the button for submitting user feedback on the thumbnail analysis.",
+        "tooltip": "Click here to share your feedback on the thumbnail analysis. Your input helps us improve the service."
+      },
+      "selected_too_many": {
+        "label": "You can upload up to 6 images",
+        "translation": "You can upload up to 6 images",
+        "description": "To indicate that the user has selected more images than allowed.",
+        "tooltip": "You can only upload up to 6 images for analysis. Please remove some images before submitting."
+      },
+      "get_review": {
+        "label": "Get Review",
+        "translation": "Get Review",
+        "description": "Telling the user this gets review for 1 thumbnail.",
+        "tooltip": "Click here to get a review for the selected thumbnail. This will provide you with feedback on its quality and compliance with platform standards."
+      },
+      "get_review_for_all": {
+        "label": "Get Review For All",
+        "translation": "Get Review For All",
+        "description": "Telling the user this gets review for All thumbnail.",
+        "tooltip": "Click here to get a review for all thumbnails. This will provide you with feedback on their quality and compliance with platform standards."
+      },
+      "loading": {
+        "label": "loading",
+        "translation": "loading...",
+        "description": "Telling the user this gets review for All thumbnail.",
+        "tooltip": "Click here to get a review for all thumbnails. This will provide you with feedback on their quality and compliance with platform standards."
+      },
+      "select_box": {
+        "label": "Select",
+        "translation": "Select",
+        "description": "The Square box for selecting the image or thumbnail to the next action",
+        "tooltip": "Select the image for device preview, human feedback or AI improvement"
+      },
+      "favorate_box": {
+        "label": "Favorite",
+        "translation": "Favorite",
+        "description": "The Star for selecting the image or thumbnail to add to favorite",
+        "tooltip": "Add the image to favorite"
+      },
+      "download_box": {
+        "label": "Download",
+        "translation": "Download",
+        "description": "The download button for user to re-download the image",
+        "tooltip": "Click to download"
+      },
+      "channel_section": {
+        "label": "My Channels",
+        "translation": "My Channels",
+        "description": "To indicate the section is for user to choose their channels",
+        "tooltip": "Select which channel this thumbnail is for"
+      },
+      "titles_section": {
+        "label": "Titles",
+        "translation": "Titles",
+        "description": "To indicate the section is for user to alternative titles",
+        "tooltip": "Enter different versions of your titles here for analysis"
+      },
+      "add_title_button": {
+        "label": "Add Title",
+        "translation": "Add Title",
+        "description": "To indicate the function adds a new input for the user to enter a title",
+        "tooltip": "Click to add a new title"
+      },
+      "remove_title_button": {
+        "label": "Remove Title",
+        "translation": "Remove Title",
+        "description": "To indicate the function adds a new input for the user to remove the title",
+        "tooltip": "Click to delete the title"
+      },
+      "video_type_section": {
+        "label": "Video",
+        "translation": "Video",
+        "description": "To the section is for user to enter information about the video",
+        "tooltip": "Enter the information about the video here to help align the analysis with the video's goal"
+      },
+      "video_category": {
+        "label": "Video Category",
+        "translation": "Video Category",
+        "description": "To indicate the drop down list is for selecting the video category.",
+        "tooltip": "Select the video category here, this is the same as the Youtube video category"
+      },
+      "topic": {
+        "label": "Topic (Optional)",
+        "translation": "Topic (Optional)",
+        "description": "To indicate the field is for the topic of the video.",
+        "tooltip": "What is the video about? It helps to align the thumbnail and the video topic"
+      },
+      "niche": {
+        "label": "Niche (Optional)",
+        "translation": "Niche (Optional)",
+        "description": "To indicate the field is for the niche of the video.",
+        "tooltip": "Enter the niche here, it helps to check if the thumbnail is aligned in the niche"
+      },
+      "theme": {
+        "label": "Theme (Optional)",
+        "translation": "Theme (Optional)",
+        "description": "To indicate the field is for the theme of the video.",
+        "tooltip": "The main idea of the vidoe, the clearer the audience can understand it better"
+      },
+      "tags": {
+        "label": "Tags (Optional)",
+        "translation": "Tags (Optional)",
+        "description": "To indicate the field is for the tags of the video.",
+        "tooltip": "The tags of the vidoe, which helps to categorize the video if you invite real human to review."
+      },
+      "audience_section": {
+        "label": "Audience",
+        "translation": "Audience",
+        "description": "To show the list of AI avatar audience",
+        "tooltip": "The AI target audience will review on their perspective and share with you their ideas."
+      }
+    },
+    "zh": {
+      "page_header": {
+        "label": "Thumbnail Analyser",
+        "translation": "縮圖分析器",
+        "description": "此頁面的標題，幫助使用者了解其用途。",
+        "tooltip": "此頁面可分析你上傳的影片縮圖，確保符合平台標準與規範。"
+      },
+      "title_header": {
+        "label": "Title",
+        "translation": "標題",
+        "description": "此欄位用於輸入影片標題。",
+        "tooltip": "請在此輸入標題，並可在「其他標題」區輸入替代版本。"
+      },
+      "Uploaded_Thumbnail": {
+        "label": "Upload Your Thumbnails",
+        "translation": "上傳你的縮圖",
+        "description": "指出此區域可上傳影片縮圖。",
+        "tooltip": "點擊或拖曳影片縮圖至此，即可進行分析。"
+      },
+      "title_error": {
+        "label": "Title is required",
+        "translation": "標題為必填項目",
+        "description": "指出標題為必填欄位。",
+        "tooltip": "請輸入標題，即使是暫時的也沒關係，稍後可修改。"
+      },
+      "upload_area_note": {
+        "label": "Click or drag and drop your video thumbnails here and click Submit below",
+        "translation": "點擊或拖曳縮圖到這裡，然後點擊下方的提交",
+        "description": "提供用戶縮圖上傳操作說明。",
+        "tooltip": "可點擊或拖曳方式上傳影片縮圖。"
+      },
+      "submit": {
+        "label": "Submit",
+        "translation": "提交",
+        "description": "提交按鈕上的文字。",
+        "tooltip": "上傳你的圖片"
+      },
+      "submitting": {
+        "label": "Submitting",
+        "translation": "提交中",
+        "description": "上傳進行中時的按鈕文字。",
+        "tooltip": "正在上傳圖片，請稍候…"
+      },
+      "upload_info": {
+        "label": "Upload up to 6 images, then request an AI review.",
+        "translation": "最多上傳 6 張圖片，然後請求 AI 分析",
+        "description": "提示使用者可上傳數量與後續操作。",
+        "tooltip": "最多可上傳 6 張圖片，之後可進行 AI 分析。"
+      },
+      "get_human_review": {
+        "label": "Get Human Review",
+        "translation": "申請人工審查",
+        "description": "指出此按鈕可申請人工審查。",
+        "tooltip": "點擊以申請人工審查，獲得 AI 以外的回饋。"
+      },
+      "user_feedback_title": {
+        "label": "Tell us if it helped you",
+        "translation": "這對你有幫助嗎？",
+        "description": "用戶可在此提供縮圖分析的回饋。",
+        "tooltip": ""
+      },
+      "user_feedback_button": {
+        "label": "Share Your Feedback",
+        "translation": "分享你的回饋",
+        "description": "提交縮圖分析回饋的按鈕。",
+        "tooltip": "點擊以提供縮圖分析回饋，幫助我們優化服務。"
+      },
+      "selected_too_many": {
+        "label": "You can upload up to 6 images",
+        "translation": "你最多只能上傳 6 張圖片",
+        "description": "用戶選擇圖片超過上限。",
+        "tooltip": "最多上傳 6 張圖片，請移除多餘圖片後再提交。"
+      },
+      "get_review": {
+        "label": "Get Review",
+        "translation": "取得分析",
+        "description": "取得單一縮圖的分析。",
+        "tooltip": "點擊以分析所選縮圖，獲得品質與規範回饋。"
+      },
+      "get_review_for_all": {
+        "label": "Get Review For All",
+        "translation": "全部取得分析",
+        "description": "取得所有縮圖的分析。",
+        "tooltip": "點擊以分析所有縮圖，獲得品質與規範回饋。"
+      },
+      "loading": {
+        "label": "分析中",
+        "translation": "分析中...",
+        "description": "讓用戶知道正在分析中",
+        "tooltip": "正在分析中，請稍等"
+      },
+      "select_box": {
+        "label": "Select",
+        "translation": "選擇",
+        "description": "方框用於選擇圖片以進行後續操作",
+        "tooltip": "選擇圖片以預覽、申請人工回饋或 AI 優化"
+      },
+      "favorate_box": {
+        "label": "Favorite",
+        "translation": "收藏",
+        "description": "星號用於將圖片加入收藏",
+        "tooltip": "將圖片加入收藏"
+      },
+      "download_box": {
+        "label": "Download",
+        "translation": "下載",
+        "description": "讓使用者再次下載圖片的按鈕",
+        "tooltip": "點擊下載"
+      },
+      "channel_section": {
+        "label": "My Channels",
+        "translation": "我的頻道",
+        "description": "該區域為用戶選擇頻道",
+        "tooltip": "選擇此縮圖對應的頻道"
+      },
+      "titles_section": {
+        "label": "Titles",
+        "translation": "標題區",
+        "description": "該區域為用戶提供其他標題",
+        "tooltip": "輸入多個版本的標題以供分析"
+      },
+      "add_title_button": {
+        "label": "Add Title",
+        "translation": "新增標題",
+        "description": "加入新的輸入欄位讓用戶輸入標題",
+        "tooltip": "點擊新增標題"
+      },
+      "remove_title_button": {
+        "label": "Remove Title",
+        "translation": "刪除標題",
+        "description": "讓使用者刪除標題欄位的功能",
+        "tooltip": "點擊刪除標題"
+      },
+      "video_type_section": {
+        "label": "Video",
+        "translation": "影片",
+        "description": "此區塊供用戶填寫影片相關資訊",
+        "tooltip": "請在此輸入影片資訊，以協助分析與影片目標一致"
+      },
+      "video_category": {
+        "label": "Video Category",
+        "translation": "影片類別",
+        "description": "下拉選單供選擇影片類別",
+        "tooltip": "請選擇影片類別，與 YouTube 分類一致"
+      },
+      "topic": {
+        "label": "Topic (Optional)",
+        "translation": "主題（選填）",
+        "description": "此欄位為影片主題",
+        "tooltip": "這部影片的主題是什麼？有助於縮圖與主題對齊"
+      },
+      "niche": {
+        "label": "Niche (Optional)",
+        "translation": "利基市場（選填）",
+        "description": "此欄位為影片的利基市場",
+        "tooltip": "請輸入影片所屬利基，有助於分析對齊度"
+      },
+      "theme": {
+        "label": "Theme (Optional)",
+        "translation": "主題概念（選填）",
+        "description": "此欄位為影片的主題概念",
+        "tooltip": "影片主旨越清楚，觀眾理解越容易"
+      },
+      "tags": {
+        "label": "Tags (Optional)",
+        "translation": "標籤（選填）",
+        "description": "此欄位為影片標籤",
+        "tooltip": "影片標籤可協助分類，便於進行人工審查"
+      },
+      "audience_section": {
+        "label": "Audience",
+        "translation": "觀眾",
+        "description": "顯示 AI 觀眾列表",
+        "tooltip": "AI 模擬的目標觀眾將從他們的角度提供回饋"
+      }
+    },
+    "ja": {
+      "page_header": {
+        "label": "Thumbnail Analyser",
+        "translation": "サムネイル分析ツール",
+        "description": "このページのタイトルは、ページの目的をユーザーに伝えるためのものです。",
+        "tooltip": "このページでは、アップロードされたサムネイルがプラットフォームの基準に適合しているかを分析できます。"
+      },
+      "title_header": {
+        "label": "Title",
+        "translation": "タイトル",
+        "description": "この入力欄は動画のタイトル用です。",
+        "tooltip": "ここにタイトルを入力し、別のバージョンは「別タイトル」セクションに追加してください。"
+      },
+      "Uploaded_Thumbnail": {
+        "label": "Upload Your Thumbnails",
+        "translation": "サムネイルをアップロード",
+        "description": "ユーザーがサムネイルをアップロードできるエリアを示します。",
+        "tooltip": "ここをクリックまたはサムネイルをドラッグ＆ドロップしてアップロードし、分析を開始します。"
+      },
+      "title_error": {
+        "label": "Title is required",
+        "translation": "タイトルは必須です",
+        "description": "タイトルは必須項目です。",
+        "tooltip": "ここに一時的なタイトルを入力しても、後で変更できます。"
+      },
+      "upload_area_note": {
+        "label": "Click or drag and drop your video thumbnails here and click Submit below",
+        "translation": "ここをクリックまたはサムネイルをドラッグしてアップロードし、「送信」をクリックしてください",
+        "description": "サムネイルのアップロード方法を説明します。",
+        "tooltip": "このエリアでは、クリックまたはドラッグ＆ドロップでサムネイルをアップロードできます。"
+      },
+      "submit": {
+        "label": "Submit",
+        "translation": "送信",
+        "description": "送信ボタンに表示されるテキストです。",
+        "tooltip": "画像をアップロード"
+      },
+      "submitting": {
+        "label": "Submitting",
+        "translation": "送信中",
+        "description": "アップロード中に表示される送信ボタンのテキストです。",
+        "tooltip": "画像をアップロード中です。しばらくお待ちください。"
+      },
+      "upload_info": {
+        "label": "Upload up to 6 images, then request an AI review.",
+        "translation": "最大6枚までアップロードし、AIレビューをリクエストできます",
+        "description": "アップロード制限と次のステップについてユーザーに伝えます。",
+        "tooltip": "最大6枚の画像をアップロードし、その後AIレビューをリクエストできます。"
+      },
+      "get_human_review": {
+        "label": "Get Human Review",
+        "translation": "人間によるレビューを依頼",
+        "description": "アップロードされたサムネイルの人間によるレビューをリクエストするボタンを示します。",
+        "tooltip": "ここをクリックして人間によるレビューをリクエストします。AIレビュー以外のフィードバックが欲しい場合に役立ちます。"
+      },
+      "user_feedback_title": {
+        "label": "Tell us if it helped you",
+        "translation": "役に立ちましたか？",
+        "description": "ユーザーがサムネイル分析に関するフィードバックを提供できるセクションを示します。",
+        "tooltip": ""
+      },
+      "user_feedback_button": {
+        "label": "Share Your Feedback",
+        "translation": "フィードバックを共有する",
+        "description": "フィードバックを送信するためのボタンです。",
+        "tooltip": "サムネイル分析についてのフィードバックを送信してください。サービス改善の参考にします。"
+      },
+      "selected_too_many": {
+        "label": "You can upload up to 6 images",
+        "translation": "最大6枚の画像をアップロードできます",
+        "description": "許容されている枚数より多く選択されたことを示します。",
+        "tooltip": "最大6枚までアップロードできます。余分な画像を削除してください。"
+      },
+      "get_review": {
+        "label": "Get Review",
+        "translation": "レビューを取得",
+        "description": "1つのサムネイルのレビューを取得することを示します。",
+        "tooltip": "選択したサムネイルのレビューを取得します。品質や基準の適合性に関するフィードバックを受け取れます。"
+      },
+      "get_review_for_all": {
+        "label": "Get Review For All",
+        "translation": "すべてのレビューを取得",
+        "description": "すべてのサムネイルのレビューを取得することを示します。",
+        "tooltip": "すべてのサムネイルのレビューを取得します。品質や基準の適合性に関するフィードバックを受け取れます。"
+      },
+      "loading": {
+        "label": "分析中",
+        "translation": "分析中...",
+        "description": "ユーザーに現在分析中であることを伝えます。",
+        "tooltip": "分析中です。しばらくお待ちください。"
+      },
+      "select_box": {
+        "label": "Select",
+        "translation": "選択",
+        "description": "The Square box for selecting the image or thumbnail to the next action",
+        "tooltip": "Select the image for device preview, human feedback or AI improvement"
+      },
+      "favorate_box": {
+        "label": "Favorite",
+        "translation": "お気に入り",
+        "description": "The Star for selecting the image or thumbnail to add to favorite",
+        "tooltip": "Add the image to favorite"
+      },
+      "download_box": {
+        "label": "Download",
+        "translation": "ダウンロード",
+        "description": "The download button for user to re-download the image",
+        "tooltip": "Click to download"
+      },
+      "channel_section": {
+        "label": "My Channels",
+        "translation": "マイチャンネル",
+        "description": "To indicate the section is for user to choose their channels",
+        "tooltip": "Select which channel this thumbnail is for"
+      },
+      "titles_section": {
+        "label": "Titles",
+        "translation": "タイトル",
+        "description": "To indicate the section is for user to alternative titles",
+        "tooltip": "Enter different versions of your titles here for analysis"
+      },
+      "add_title_button": {
+        "label": "Add Title",
+        "translation": "タイトルを追加",
+        "description": "To indicate the function adds a new input for the user to enter a title",
+        "tooltip": "Click to add a new title"
+      },
+      "remove_title_button": {
+        "label": "Remove Title",
+        "translation": "タイトルを削除",
+        "description": "To indicate the function adds a new input for the user to remove the title",
+        "tooltip": "Click to delete the title"
+      },
+      "video_type_section": {
+        "label": "Video",
+        "translation": "ビデオ",
+        "description": "To the section is for user to enter information about the video",
+        "tooltip": "Enter the information about the video here to help align the analysis with the video's goal"
+      },
+      "video_category": {
+        "label": "Video Category",
+        "translation": "ビデオカテゴリ",
+        "description": "To indicate the drop down list is for selecting the video category.",
+        "tooltip": "Select the video category here, this is the same as the Youtube video category"
+      },
+      "topic": {
+        "label": "Topic (Optional)",
+        "translation": "トピック（任意）",
+        "description": "To indicate the field is for the topic of the video.",
+        "tooltip": "What is the video about? It helps to align the thumbnail and the video topic"
+      },
+      "niche": {
+        "label": "Niche (Optional)",
+        "translation": "ニッチ（任意）",
+        "description": "To indicate the field is for the niche of the video.",
+        "tooltip": "Enter the niche here, it helps to check if the thumbnail is aligned in the niche"
+      },
+      "theme": {
+        "label": "Theme (Optional)",
+        "translation": "テーマ（任意）",
+        "description": "To indicate the field is for the theme of the video.",
+        "tooltip": "The main idea of the vidoe, the clearer the audience can understand it better"
+      },
+      "tags": {
+        "label": "Tags (Optional)",
+        "translation": "タグ（任意）",
+        "description": "To indicate the field is for the tags of the video.",
+        "tooltip": "The tags of the vidoe, which helps to categorize the video if you invite real human to review."
+      },
+      "audience_section": {
+        "label": "Audience",
+        "translation": "視聴者",
+        "description": "To show the list of AI avatar audience",
+        "tooltip": "The AI target audience will review on their perspective and share with you their ideas."
+      }
+    }
+  }
+}

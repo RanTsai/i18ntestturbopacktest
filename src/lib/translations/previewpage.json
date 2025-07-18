@@ -1,0 +1,337 @@
+{
+  "page_id": "device_preview_page",
+  "version": "v1",
+  "locales": {
+    "en": {
+      "page_header": {
+        "label": "Preview",
+        "translation": "Preview",
+        "description": "To tell the user this page helps them to preview their thumbnails",
+        "tooltip": "This page helps you to visualize your thumbnail real time on different devices"
+      },
+      "Homepage_view": {
+        "label": "Homepage View",
+        "translation": "Homepage View",
+        "description": "To indicate this tab is for Desktop or tablet",
+        "tooltip": "Helps you to visualize your thumbnail on the home page"
+      },
+      "Suggested_Video_view": {
+        "label": "Suggested Video View",
+        "translation": "Suggested Video View",
+        "description": "To tell the user this tab is for suggested video view",
+        "tooltip": "Helps you to visualize your thumbnail on the suggested video section"
+      },
+      "Mobile_view": {
+        "label": "Mobile View",
+        "translation": "Mobile View",
+        "description": "To tell the user this tab is for mobile view",
+        "tooltip": "Helps you to visualize your thumbnail on the mobile devices"
+      },
+      "channel_section": {
+        "label": "My Channels",
+        "translation": "My Channels",
+        "description": "To indicate the section is for user to choose their channels",
+        "tooltip": "Select which channel this thumbnail is for"
+      },
+      "titles_section": {
+        "label": "Titles",
+        "translation": "Titles",
+        "description": "To indicate the section is for user to alternative titles",
+        "tooltip": "Enter different versions of your titles here for analysis"
+      },
+      "add_title_button": {
+        "label": "Add Title",
+        "translation": "Add Title",
+        "description": "To indicate the function adds a new input for the user to enter a title",
+        "tooltip": "Click to add a new title"
+      },
+      "remove_title_button": {
+        "label": "Remove Title",
+        "translation": "Remove Title",
+        "description": "To indicate the function adds a new input for the user to remove the title",
+        "tooltip": "Click to delete the title"
+      },
+       "audience_section": {
+        "label": "Audience",
+        "translation": "Audience",
+        "description": "To show the list of AI avatar audience",
+        "tooltip": "The AI target audience will review on their perspective and share with you their ideas."
+      },
+      "thumbnails_tab": {
+        "label": "Thumbnails",
+        "translation": "Thumbnails",
+        "description": "To indicate the section is for user to upload thumbnails.",
+        "tooltip": "Drag and drop your thumbnails to preview"
+      },
+      "board_tab": {
+        "label": "Board",
+        "translation": "Board",
+        "description": "To indicate the section is for selected thumbnails on board",
+        "tooltip": "Select thumbnails by ticking and use the board for comparison"
+      },
+      "remix_button": {
+        "label": "Remix",
+        "translation": "Remix",
+        "description": "To indicate the user can click to remix",
+        "tooltip": "Click to mix your thumbnails in the page, and see if if they stand out"
+      },
+      "reset_button": {
+        "label": "Reset",
+        "translation": "Reset",
+        "description": "To incidcate the user can click to reset the mix",
+        "tooltip": "Click to remove your thumbnails from the preview"
+      },
+      "compare_button": {
+        "label": "Compare",
+        "translation": "Compare",
+        "description": "To tell user they can click to start a comparison with AI",
+        "tooltip": "Click to start a comparison with AI's assistance"
+      },
+      "Search_bar_placeholder": {
+        "label": "Search",
+        "translation": "Search",
+        "description": "Telling the user to enter keyword",
+        "tooltip": "Enter the search keywords and press enter to get live preview"
+      },
+      "select_box": {
+        "label": "Select",
+        "translation": "Select",
+        "description": "The Square box for selecting the image or thumbnail to the next action",
+        "tooltip": "Select the image for device preview, human feedback or AI improvement"
+      },
+      "favorate_box": {
+        "label": "Favorite",
+        "translation": "Favorite",
+        "description": "The Star for selecting the image or thumbnail to add to favorite",
+        "tooltip": "Add the image to favorite"
+      },
+      "download_box": {
+        "label": "Download",
+        "translation": "Download",
+        "description": "The download button for user to re-download the image",
+        "tooltip": "Click to download"
+      }      
+    },
+     "zh": {
+      "page_header": {
+        "label": "Preview",
+        "translation": "預覽",
+        "description": "此頁面可讓你預覽縮圖效果",
+        "tooltip": "即時在不同裝置上預覽你的縮圖"
+      },
+      "Homepage_view": {
+        "label": "Homepage View",
+        "translation": "首頁視圖",
+        "description": "這個頁籤用於桌機或平板裝置",
+        "tooltip": "在首頁模擬你的縮圖效果"
+      },
+      "Suggested_Video_view": {
+        "label": "Suggested Video View",
+        "translation": "推薦影片視圖",
+        "description": "這個頁籤是用來模擬推薦區塊",
+        "tooltip": "模擬你的縮圖在推薦影片區塊的效果"
+      },
+      "Mobile_view": {
+        "label": "Mobile View",
+        "translation": "手機視圖",
+        "description": "此頁籤為手機版預覽",
+        "tooltip": "模擬在手機裝置上的縮圖外觀"
+      },
+      "channel_section": {
+        "label": "My Channels",
+        "translation": "我的頻道",
+        "description": "此區域讓使用者選擇頻道",
+        "tooltip": "選擇這張縮圖所屬的頻道"
+      },
+      "titles_section": {
+        "label": "Titles",
+        "translation": "標題",
+        "description": "提供多個標題版本的區塊",
+        "tooltip": "輸入不同版本的標題以供分析"
+      },
+      "add_title_button": {
+        "label": "Add Title",
+        "translation": "新增標題",
+        "description": "新增一個標題輸入欄位",
+        "tooltip": "點擊以新增一個標題"
+      },
+      "remove_title_button": {
+        "label": "Remove Title",
+        "translation": "刪除標題",
+        "description": "刪除標題輸入欄位",
+        "tooltip": "點擊以刪除標題"
+      },
+      "audience_section": {
+        "label": "Audience",
+        "translation": "觀眾",
+        "description": "顯示 AI 模擬觀眾清單",
+        "tooltip": "AI 觀眾將分享他們的觀點"
+      },
+      "thumbnails_tab": {
+        "label": "Thumbnails",
+        "translation": "縮圖",
+        "description": "用戶上傳縮圖的區塊",
+        "tooltip": "拖曳縮圖到此以進行預覽"
+      },
+      "board_tab": {
+        "label": "Board",
+        "translation": "看板",
+        "description": "顯示已選縮圖的區塊",
+        "tooltip": "勾選縮圖後可用於比較"
+      },
+      "remix_button": {
+        "label": "Remix",
+        "translation": "混搭",
+        "description": "用戶可以點擊進行混搭",
+        "tooltip": "混合你的縮圖，看看哪個更吸睛"
+      },
+      "reset_button": {
+        "label": "Reset",
+        "translation": "重設",
+        "description": "點擊以重設混搭結果",
+        "tooltip": "從預覽中清除所有縮圖"
+      },
+      "compare_button": {
+        "label": "Compare",
+        "translation": "比較",
+        "description": "點擊開始與 AI 的比較",
+        "tooltip": "與 AI 協助進行縮圖比較"
+      },
+      "Search_bar_placeholder": {
+        "label": "Search",
+        "translation": "搜尋",
+        "description": "提示使用者輸入關鍵字",
+        "tooltip": "輸入關鍵字並按 Enter 查看即時預覽"
+      },
+      "select_box": {
+        "label": "Select",
+        "translation": "選取",
+        "description": "方框可用於選擇圖片進行操作",
+        "tooltip": "選擇圖片以預覽、回饋或 AI 優化"
+      },
+      "favorate_box": {
+        "label": "Favorite",
+        "translation": "收藏",
+        "description": "星號按鈕可加入收藏",
+        "tooltip": "將圖片加入收藏"
+      },
+      "download_box": {
+        "label": "Download",
+        "translation": "下載",
+        "description": "讓用戶重新下載圖片的按鈕",
+        "tooltip": "點擊以下載圖片"
+      }
+    },
+    "ja": {
+      "page_header": {
+        "label": "Preview",
+        "translation": "プレビュー",
+        "description": "このページではサムネイルのプレビューができます",
+        "tooltip": "様々なデバイスでサムネイルをリアルタイム表示"
+      },
+      "Homepage_view": {
+        "label": "Homepage View",
+        "translation": "ホームページ表示",
+        "description": "このタブはPCやタブレット用です",
+        "tooltip": "ホーム画面でのサムネイル表示を確認します"
+      },
+      "Suggested_Video_view": {
+        "label": "Suggested Video View",
+        "translation": "おすすめ動画表示",
+        "description": "おすすめ欄での表示を確認できます",
+        "tooltip": "おすすめ動画のセクションに表示された場合を確認"
+      },
+      "Mobile_view": {
+        "label": "Mobile View",
+        "translation": "モバイル表示",
+        "description": "モバイル端末での表示を確認できます",
+        "tooltip": "スマホ画面でのサムネイル表示を確認"
+      },
+      "channel_section": {
+        "label": "My Channels",
+        "translation": "マイチャンネル",
+        "description": "チャンネルを選択するためのセクションです",
+        "tooltip": "このサムネイルのチャンネルを選んでください"
+      },
+      "titles_section": {
+        "label": "Titles",
+        "translation": "タイトル",
+        "description": "別のタイトル案を入力するセクション",
+        "tooltip": "分析用に複数のタイトル案を入力"
+      },
+      "add_title_button": {
+        "label": "Add Title",
+        "translation": "タイトルを追加",
+        "description": "新しいタイトル入力欄を追加します",
+        "tooltip": "クリックしてタイトルを追加"
+      },
+      "remove_title_button": {
+        "label": "Remove Title",
+        "translation": "タイトルを削除",
+        "description": "タイトル入力欄を削除します",
+        "tooltip": "クリックしてタイトルを削除"
+      },
+      "audience_section": {
+        "label": "Audience",
+        "translation": "視聴者",
+        "description": "AIの視聴者リストを表示します",
+        "tooltip": "AI視聴者が意見を共有してくれます"
+      },
+      "thumbnails_tab": {
+        "label": "Thumbnails",
+        "translation": "サムネイル",
+        "description": "サムネイルをアップロードするためのセクション",
+        "tooltip": "ドラッグしてサムネイルをプレビュー"
+      },
+      "board_tab": {
+        "label": "Board",
+        "translation": "ボード",
+        "description": "選択したサムネイルの表示セクション",
+        "tooltip": "サムネイルを選択して比較ボードに追加"
+      },
+      "remix_button": {
+        "label": "Remix",
+        "translation": "リミックス",
+        "description": "サムネイルを混ぜてみる機能",
+        "tooltip": "サムネイルをミックスして目立つものを探す"
+      },
+      "reset_button": {
+        "label": "Reset",
+        "translation": "リセット",
+        "description": "ミックス結果をリセットできます",
+        "tooltip": "プレビューから全てのサムネイルを削除"
+      },
+      "compare_button": {
+        "label": "Compare",
+        "translation": "比較する",
+        "description": "AIによる比較を始められます",
+        "tooltip": "AIのアシストで比較を開始"
+      },
+      "Search_bar_placeholder": {
+        "label": "Search",
+        "translation": "検索",
+        "description": "キーワードを入力する欄",
+        "tooltip": "キーワードを入力してEnterでリアルタイム表示"
+      },
+      "select_box": {
+        "label": "Select",
+        "translation": "選択",
+        "description": "画像やサムネイルの選択用ボックス",
+        "tooltip": "画像を選択してプレビューやAI評価へ"
+      },
+      "favorate_box": {
+        "label": "Favorite",
+        "translation": "お気に入り",
+        "description": "画像をお気に入りに追加する星マーク",
+        "tooltip": "画像をお気に入りに追加"
+      },
+      "download_box": {
+        "label": "Download",
+        "translation": "ダウンロード",
+        "description": "画像を再度ダウンロードするボタン",
+        "tooltip": "クリックしてダウンロード"
+      }
+    }
+  }
+}
+ 
