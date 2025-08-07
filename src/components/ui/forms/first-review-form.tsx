@@ -6,7 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { useForm, Controller } from "react-hook-form";
 import { InsertUserSignUpQuestionareToSupabase } from "@/actions/supabase/supabase-user-signup";
-import { FormSchema } from "@/lib/schema/creator-signup-questionaire-schema"; // ⬅️ 你可抽出共用型別或直接 inline
+import { FormSchema } from "@/lib/schema/questionaire-schema"; // ⬅️ 你可抽出共用型別或直接 inline
 import GeneralQuestionaire from "./general-questionare";
 
 interface Props {

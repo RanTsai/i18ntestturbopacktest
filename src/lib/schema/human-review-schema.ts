@@ -1,24 +1,24 @@
 import { ITags, ITarget_audience } from "./user-channel-schema"
-import { FormSchema } from "./creator-signup-questionaire-schema";
+import { FormSchema, Question } from "./questionaire-schema";
 
 export interface IHumanReview {
-    human_review_id:number;
+    human_review_id?:number;
     created_at: string;
-    clerk_user_id: string;
-    supabase_user_id: number;
+    clerk_user_id?: string;
+    supabase_user_id?: number;
     project_summary: string; //for displaying latest version
-    review_rating: string; //JSONB
-    questionaire: FormSchema;
+    review_rating?: string; //JSONB
+    questionaire: Question[];
     channel_name: string;
     channel_logo: string; //Store as JSONB in Supabase
     reviewer: string[];
-    deadline: string; //Store as JSONB in Supabase
+    deadline: string | null; //Store as JSONB in Supabase
     creator_message_to_reviewer: string;
     tags: string[]; //Store as JSONB in Supabase
-    target_audence: ITarget_audience[] | null;
+    target_audience: ITarget_audience[] | null;
     credit_reward: number;
     compare_project_version: number;
-    updated_by: string;
+    updated_by?: string;
     language: string;
     is_closed: boolean;
     is_deleted: boolean;
@@ -30,7 +30,7 @@ export interface IHumanReview {
     view_count: number;
     thumbnails: string[];
     title:string;
-    niche:string[]
+    niche:string;
 };
 
 export interface IFollowingChannel{
@@ -41,3 +41,6 @@ export interface IFollowingChannel{
     logo:string;
     platform:string;
 }
+
+
+

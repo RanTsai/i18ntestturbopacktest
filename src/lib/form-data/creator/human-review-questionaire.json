@@ -12,31 +12,11 @@
             {
               "id": "review_deadline_date",
               "type": "date",
-              "label": "Select a deadline for when reviews must be completed.",
+              "label": "Select a deadline for when reviews must be completed.",              
               "required": true
             }
           ]
-        },
-        {
-          "id": "target_audience",
-          "title": "Choose Target Audience",
-          "questions": [
-            {
-              "id": "audience_selection",
-              "type": "multi-select",
-              "label": "Who is this thumbnail intended for?",
-              "options": [
-                { "value": "audience_0", "label": "Teens (13-19)" },
-                { "value": "audience_1", "label": "Young Adults (20-30)" },
-                { "value": "audience_2", "label": "Adults (30-50)" },
-                { "value": "audience_3", "label": "History Fans" },
-                { "value": "audience_4", "label": "Gamers" },
-                { "value": "audience_5", "label": "Casual Viewers" }
-              ],
-              "required": true
-            }
-          ]
-        },
+        },       
         {
           "id": "custom_questions_section",
           "title": "Custom Questions for Reviewers",
@@ -60,8 +40,14 @@
               "type": "radio",
               "label": "Do you want to make the review results public?",
               "options": [
-                { "value": "yes", "label": "Yes" },
-                { "value": "no", "label": "No" }
+                {
+                  "value": "yes",
+                  "label": "Yes"
+                },
+                {
+                  "value": "no",
+                  "label": "No"
+                }
               ],
               "required": true
             }
@@ -77,10 +63,64 @@
               "label": "Send me an email when new reviews come in."
             }
           ]
+        },
+        {
+          "id": "review_preferences",
+          "title": "Review Preferences",
+          "questions": [
+            {
+              "id": "rater_credit_reward",
+              "type": "number",
+              "label": "Would you like to reward the raters with credit?",
+              "placeholder": "Enter credits to reward"
+            },
+            {
+              "id": "wanted_review_count",
+              "type": "number",
+              "label": "How many ratings would you like to have?",
+              "placeholder": "Enter the number"
+            },
+            {
+              "id": "review_audience_visibility",
+              "type": "radio",
+              "label": "Would you make the review public? Not public means only your subscriber will see this.",
+              "options": [
+                {
+                  "value": "public",
+                  "label": "Public"
+                },
+                {
+                  "value": "private",
+                  "label": "Subscribers Only"
+                }
+              ],
+              "required": true
+            },
+            {
+              "id": "additional_message_to_rater",
+              "type": "text",
+              "label": "What additional message would you like to tell the rater?",
+              "placeholder": "e.g., Please be honest, your opinion matters!"
+            },
+            {
+              "id": "display_channel_detail",
+              "type": "radio",
+              "label": "Show channel information",
+              "options": [
+                {
+                  "value": "Yes",
+                  "label": "Show Channel information for more accurate rating"
+                },
+                {
+                  "value": "No",
+                  "label": "Don't Show channel information, I want to test the thumbnails and titles alone"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
-
     "zh": {
       "title": "人工審查設定",
       "sections": [
@@ -105,12 +145,30 @@
               "type": "multi-select",
               "label": "這張縮圖主要針對哪些觀眾？",
               "options": [
-                { "value": "audience_0", "label": "青少年（13-19歲）" },
-                { "value": "audience_1", "label": "年輕成人（20-30歲）" },
-                { "value": "audience_2", "label": "成年人（30-50歲）" },
-                { "value": "audience_3", "label": "歷史愛好者" },
-                { "value": "audience_4", "label": "遊戲玩家" },
-                { "value": "audience_5", "label": "休閒觀眾" }
+                {
+                  "value": "audience_0",
+                  "label": "青少年（13-19歲）"
+                },
+                {
+                  "value": "audience_1",
+                  "label": "年輕成人（20-30歲）"
+                },
+                {
+                  "value": "audience_2",
+                  "label": "成年人（30-50歲）"
+                },
+                {
+                  "value": "audience_3",
+                  "label": "歷史愛好者"
+                },
+                {
+                  "value": "audience_4",
+                  "label": "遊戲玩家"
+                },
+                {
+                  "value": "audience_5",
+                  "label": "休閒觀眾"
+                }
               ],
               "required": true
             }
@@ -139,8 +197,14 @@
               "type": "radio",
               "label": "你希望公開審查結果嗎？",
               "options": [
-                { "value": "yes", "label": "是" },
-                { "value": "no", "label": "否" }
+                {
+                  "value": "yes",
+                  "label": "是"
+                },
+                {
+                  "value": "no",
+                  "label": "否"
+                }
               ],
               "required": true
             }
@@ -159,7 +223,6 @@
         }
       ]
     },
-
     "ja": {
       "title": "人力レビュー設定",
       "sections": [
@@ -184,12 +247,30 @@
               "type": "multi-select",
               "label": "このサムネイルは誰を対象にしていますか？",
               "options": [
-                { "value": "audience_0", "label": "10代（13〜19歳）" },
-                { "value": "audience_1", "label": "若年層（20〜30歳）" },
-                { "value": "audience_2", "label": "大人（30〜50歳）" },
-                { "value": "audience_3", "label": "歴史ファン" },
-                { "value": "audience_4", "label": "ゲーマー" },
-                { "value": "audience_5", "label": "カジュアル視聴者" }
+                {
+                  "value": "audience_0",
+                  "label": "10代（13〜19歳）"
+                },
+                {
+                  "value": "audience_1",
+                  "label": "若年層（20〜30歳）"
+                },
+                {
+                  "value": "audience_2",
+                  "label": "大人（30〜50歳）"
+                },
+                {
+                  "value": "audience_3",
+                  "label": "歴史ファン"
+                },
+                {
+                  "value": "audience_4",
+                  "label": "ゲーマー"
+                },
+                {
+                  "value": "audience_5",
+                  "label": "カジュアル視聴者"
+                }
               ],
               "required": true
             }
@@ -218,8 +299,14 @@
               "type": "radio",
               "label": "レビュー結果を公開しますか？",
               "options": [
-                { "value": "yes", "label": "はい" },
-                { "value": "no", "label": "いいえ" }
+                {
+                  "value": "yes",
+                  "label": "はい"
+                },
+                {
+                  "value": "no",
+                  "label": "いいえ"
+                }
               ],
               "required": true
             }

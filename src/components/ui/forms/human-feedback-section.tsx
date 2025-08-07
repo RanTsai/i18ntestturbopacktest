@@ -6,7 +6,7 @@ import FeedbackDialog, { FeedbackData } from "@/components/ui/feedback/user-feed
 import GeneralQuestionaire from "@/components/ui/forms/general-questionare";
 import { AnimatePresence, motion } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { FormSchema } from "@/lib/schema/creator-signup-questionaire-schema";
+import { FormSchema } from "@/lib/schema/questionaire-schema";
 
 interface Props {
   formData: FormSchema;

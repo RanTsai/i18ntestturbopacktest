@@ -1,0 +1,113 @@
+{
+      "id": "q1",
+      "type": "image-select",
+      "label": "請選擇你覺得表現最佳的縮圖",
+      "required": true,
+      "options": [
+        {
+          "id": "thumb_1",
+          "label": "https://ijuyminrnhiekoxybhgm.supabase.co/storage/v1/object/public/fallback-thumbnails//TheMonkeyMan%20V3.jpg"
+        },
+        {
+          "id": "thumb_2",
+          "label": "https://ijuyminrnhiekoxybhgm.supabase.co/storage/v1/object/public/fallback-thumbnails//artwork%20(4).png"
+        },
+        {
+          "id": "thumb_3",
+          "label": "https://ijuyminrnhiekoxybhgm.supabase.co/storage/v1/object/public/fallback-thumbnails//Thumbnail%20-%20Short%202.png"
+        },
+        {
+          "id": "thumb_4",
+          "label": "https://ijuyminrnhiekoxybhgm.supabase.co/storage/v1/object/public/fallback-thumbnails//Thumbnail%20-%20Short%201.png"
+        }
+      ],
+      "placeholder": "thumb_4"
+    ,
+    {
+      "id": "q1_reason",
+      "type": "text",
+      "label": "請簡述你選擇此縮圖的原因",
+      "required": true,
+      "placeholder": "輸入原因…"
+    },
+    {
+      "id": "q2",
+      "type": "title-select",
+      "label": "請選擇你覺得最吸引人的標題",
+      "required": true,
+      "options": [
+        {
+          "id": "title_1",
+          "label": "你不會相信發生了什麼事…"
+        },
+        {
+          "id": "title_2",
+          "label": "這是2024最好的教學影片"
+        },
+        {
+          "id": "title_3",
+          "label": "看完這部影片，你會重新思考人生"
+        },
+        {
+          "id": "title_4",
+          "label": "這個標題為何點閱率爆炸？原因竟然是…"
+        }
+      ],
+      "placeholder": "title_2"
+    },
+    {
+      "id": "fcc7b0aa-bedb-4696-90f3-414155e22dda",
+      "type": "title-select",
+      "label": "請選擇你覺得最吸引人的標題 (Copy)",
+      "required": true,
+      "options": [
+        {
+          "id": "title_1",
+          "label": "你不會相信發生了什麼事…"
+        },
+        {
+          "id": "title_2",
+          "label": "這是2024最好的教學影片"
+        },
+        {
+          "id": "title_3",
+          "label": "看完這部影片，你會重新思考人生"
+        },
+        {
+          "id": "title_4",
+          "label": "這個標題為何點閱率爆炸？原因竟然是…"
+        }
+      ],
+      "placeholder": "title_2"
+    },
+    {
+      "id": "q2_reason",
+      "type": "text",
+      "label": "請簡述你選擇此標題的原因",
+      "required": true,
+      "placeholder": "輸入原因…"
+    },
+    {
+      "id": "24eb5583-3e96-4e2f-9da3-0ac4989ca936",
+      "type": "radio",
+      "label": "你覺得我應該在哪裡改進?",
+      "required": false,
+      "options": [
+        {
+          "id": "c55cce0f-481e-4edd-b5ae-0188fd58e760",
+          "label": "這是什麼"
+        },
+        {
+          "id": "472d6ce2-afd0-43f5-a876-e852d8445df5",
+          "label": "這是什麼2"
+        }
+      ]
+    },
+    {
+      "id": "7cc684db-0675-47fd-b4ae-dfa1068112bf",
+      "type": "text",
+      "label": "你覺得這個是OK嗎?",
+      "required": false,
+      "placeholder": "我覺得Ok..."
+    }
+    }

@@ -2,7 +2,7 @@ import React from "react";
 import DynamicSignupForm from "@/components/ui/forms/dynamic-signup-form";
 import fs from "fs";
 import path from "path";
-import { FormSchema } from "@/lib/schema/creator-signup-questionaire-schema"; 
+import { FormSchema } from "@/lib/schema/questionaire-schema"; 
 
 export default async function SignupPage() {
   const filePath = path.join(process.cwd(), "src/lib/form-data/reviewer/first-review-questionaire.json");

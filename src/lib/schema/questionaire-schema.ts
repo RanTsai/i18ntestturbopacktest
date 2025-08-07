@@ -4,12 +4,13 @@ export type QuestionType =
     | "checkbox"
     | "rating"
     | "textarea"
-    | "thumbnail-select"
+    | "image-select"
     | "title-select"
     | "date"
-    | "multi-text";
+    | "multi-text"
+    | "number";
 
-export interface OptionItem {
+export interface OptionItem {    
     value: string;       // ✅ 不變的 ID，如 "hobby"
     label: string;       // ✅ 顯示文字（可多語言）
 }
@@ -21,9 +22,10 @@ export interface Question {
     placeholder?: string;
     options?: OptionItem[];
     scale?: number;
-    optional_text?: boolean;
+    required?: boolean;    
     max?: number;
     min?: number;
+    answer?: string;
 }
 
 export interface Section {
@@ -49,3 +51,6 @@ export interface FormSchema {
     channel_name: string;
     channel_description: string;
 }
+
+
+

@@ -1,0 +1,147 @@
+{
+    "page_id": "human_review_design_page",
+    "version": "v1",
+    "locales": {
+        "en": {
+            "page_header": {
+                "label": "Human Design Review",
+                "translation": "What would you like to ask?",
+                "description": "To tell the user this page is to design human rating feedback",
+                "tooltip": "Ask any question and get answers from raters."
+            },
+            "submit_button": {
+                "label": "Publish",
+                "translation": "Publish",
+                "description": "To indicate this Button allows user to publish to community",
+                "tooltip": "Save and publish"
+            },
+            "save_button": {
+                "label": "Save",
+                "translation": "Save",
+                "description": "To indicate this button allows user to save the questionaire",
+                "tooltip": "Save the questions but not publish yet"
+            },
+            "question": {
+                "label": "Question",
+                "translation": "Question",
+                "description": "translation for question headers",
+                "tooltip": ""
+            },
+            "reset_button": {
+                "label": "Reset",
+                "translation": "Reset",
+                "description": "To tell the User this button resets all filters",
+                "tooltip": "Reset all settings"
+            },
+            "new_question": {
+                "label": "New Question",
+                "translation": "New Question",
+                "description": "To indicate the button allows user to add a new question",
+                "tooltip": "Add a new Question"
+            },
+            "required_ticker": {
+                "label": "Required",
+                "translation": "Required",
+                "description": "To indicate the tick box indiates that this is not optional",
+                "tooltip": "Tick to mark it non-optional, the rater must answer this question"
+            },
+            "copy_question_button": {
+                "label": "Duplicate",
+                "translation": "Duplicate",
+                "description": "To indicate this button is for duplicate the question",
+                "tooltip": "Duplicate this question below"
+            },
+            "delete_question_button": {
+                "label": "Delete",
+                "translation": "Delete",
+                "description": "To indicate this button is for delete the question",
+                "tooltip": "Delete this question, this cannot be undone"
+            },
+            "question_type_button": {
+                "label": "Type",
+                "translation": "Type",
+                "description": "To indicate the button allows the user to select question type",
+                "tooltip": "Select the format for this question"
+            },
+            "pick_a_date": {
+                "label": "Pick a Date",
+                "translation": "Pick a date",
+                "description": "",
+                "tooltip": ""
+            },
+            "review_settings": {
+                "label": "Review Settings",
+                "translation": "Review Settings",
+                "description": "To indicate the section is for questionaire settings",
+                "tooltip": "Settings for your rating"
+            },
+            "deadline_setting": {
+                "label": "Deadline",
+                "translation": "Deadline",
+                "description": "To indicate the deadline for the user",
+                "tooltip": "When the date is reached, the questionaire will be closed for rating and you can generate a report"
+            },
+            "audience_setting": {
+                "label": "Target Audience",
+                "translation": "Target Audience",
+                "description": "To allow the user select target audience",
+                "tooltip": "Click to move to target audience section"
+            },
+            "visibility_setting": {
+                "label": "Visibility",
+                "translation": "Visibility",
+                "description": "To move to making it public or private",
+                "tooltip": "Set your project public or private"
+            },
+             "questionaire_builder_title": {
+                "label": "What would you like to ask?",
+                "translation": "What would you like to ask?",
+                "description": "Title for the questionaire design section",
+                "tooltip": "Design your questions for the answers you want"
+            },            
+             "platform_title": {
+                "label": "Platform",
+                "translation": "Platform",
+                "description": "Title entry for channel information section",
+                "tooltip": "The platform for the thumbnail, like Youtube, Tiktok, Instagram, etc"
+            },
+            "worktype_title": {
+                "label": "Work Type",
+                "translation": "Work Type",
+                "description": "Title entry for channel information section, indicates the type of work for the user, like artile, music, or video",
+                "tooltip": "The work type for the reviewing"
+            },
+            "videotype_title": {
+                "label": "Video Type",
+                "translation": "Video Type",
+                "description": "Title entry for channel information section, indicating the type of video",
+                "tooltip": "The type of video on youtube"
+            },
+            "drag_handle": {
+                "label": "Drag Handle",
+                "translation": "Drag Handle",
+                "description": "Tell user they can drag",
+                "tooltip": "Drag to order the questions"
+            },
+            "new_image_drag": {
+                "label": "Double click or Drag Image",
+                "translation": "Double click or Drag Image",
+                "description": "Tell user they can drag",
+                "tooltip": "Double click to select image from your library, or drag and drop new image here"
+            },            
+            "image_select_dialog": {
+                "label": "Choose an image",
+                "translation": "Choose an image",
+                "description": "Tell user what to do",
+                "tooltip": ""
+            },
+             "new_title": {
+                "label": "New Title",
+                "translation": "New title",
+                "description": "Tell user to enter new title",
+                "tooltip": "Type new title"
+            }  
+
+        }        
+    }
+}

@@ -3,53 +3,100 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { OptionEditor } from "./option-editor";
-import { ReviewQuestion, QuestionType } from "@/lib/schema/review-question";
-import { MoreVertical, Star, Copy } from "lucide-react";
+import { Question, QuestionType } from "@/lib/schema/questionaire-schema";
+import { MoreVertical, Star, Copy, GripVertical, X } from "lucide-react";
 import { useState } from "react";
+import { EditableTitleOptions } from "./editable-title-options";
+import { EditableImageOptions } from "./editable-image-options";
+import { useParams } from "next/navigation";
+import useTranslationStore from "@/lib/global-store/use-translation-store";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 
 interface Props {
-  question: ReviewQuestion;
+  pageId: string,
+  question: Question;
   index: number;
-  onChange: (id: string, updated: Partial<ReviewQuestion>) => void;
+  onChange: (id: string, updated: Partial<Question>) => void;
   onDelete: (id: string) => void;
-  onCopy: (id: string) => void; // 加入這一行
+  onCopy: (id: string) => void;
+  dragHandleProps?: React.HTMLAttributes<HTMLElement>; // ✅ 新增
+  onFocus?: () => void;
 }
 
 export const QuestionCard = ({
+  pageId,
   question,
   index,
   onChange,
   onDelete,
-  onCopy
+  onCopy,
+  dragHandleProps, // ✅ 傳入
+  onFocus
 }: Props) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [hoveredStar, setHoveredStar] = useState<number | null>(null);
   const [selectedStar, setSelectedStar] = useState<number>(0);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  const { locale } = useParams() as { locale: string }
+
+  const { getTranslation } = useTranslationStore();
+  const translations = getTranslation(pageId, locale) || {};
 
   return (
     <div className="rounded-md p-4 bg-white space-y-3 relative shadow-sm border border-transparent hover:border-gray-300 transition">
       <div className="flex justify-between items-start">
-        <Label className="text-sm">Question {index + 1}</Label>
+        <div className="flex items-center gap-2">
+          {/* ✅ 拖曳手把，只這邊綁拖曳 */}
+          <span
+            {...dragHandleProps}
+            className="text-gray-400 cursor-grab active:cursor-grabbing"
+          >
+            <GripVertical className="w-4 h-4" />
+          </span>
+          <Label className="text-sm">{translations?.question?.translation ?? "Question"} {index + 1}</Label>
+        </div>
+
         <div className="flex gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onCopy(question.id)} // ← 複製
-            className="text-blue-500"
-          >
-            <Copy className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onDelete(question.id)} // ← 刪除
-            className="text-red-500"
-          >
-            ✕
-          </Button>
+          <div className="flex gap-1">
+            <TooltipProvider >
+              <Tooltip delayDuration={800}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onCopy(question.id)}
+                    className="text-blue-500"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent >{translations?.copy_question_button?.tooltip ?? "Duplicate this question below"}</TooltipContent>
+              </Tooltip>
+
+              <Tooltip delayDuration={800}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onDelete(question.id)}
+                    className="text-red-500"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{translations?.delete_question_button?.tooltip ?? "Delete this question, this cannot be undone"}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
       </div>
-      {/* 題目標籤輸入 + 下拉按鈕組合 */}
+
+      {/* 題目輸入 + 選單 */}
       <div className="relative group flex items-center gap-2">
         <Input
           className="border border-transparent hover:border-gray-300 focus:border-gray-500 transition w-full"
@@ -58,16 +105,23 @@ export const QuestionCard = ({
           onChange={(e) => onChange(question.id, { label: e.target.value })}
         />
 
-        {/* Hover 顯示的 3-dots 按鈕 */}
+        {/* 3-dot dropdown */}
         <div className="relative">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowDropdown((prev) => !prev)}
-            className="opacity-60 hover:opacity-100"
-          >
-            <MoreVertical className="w-4 h-4" />
-          </Button>
+          <TooltipProvider >
+            <Tooltip delayDuration={800}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowDropdown((prev) => !prev)}
+                  className="opacity-60 hover:opacity-100"
+                >
+                  <MoreVertical className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{translations?.question_type_button?.tooltip ?? "Select the format for this question"}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           {showDropdown && (
             <div className="absolute right-0 mt-1 z-10 bg-white border border-gray-200 rounded shadow w-56">
@@ -79,11 +133,12 @@ export const QuestionCard = ({
                 { value: "checkbox", label: "Checkbox (Multi Select)" },
               ].map((opt) => {
                 const isActive = opt.value === question.type;
-
                 return (
                   <div
                     key={opt.value}
-                    className={`flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer ${isActive ? "font-medium text-gray-900" : "text-gray-600"
+                    className={`flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer ${isActive
+                      ? "font-medium text-gray-900"
+                      : "text-gray-600"
                       }`}
                     onClick={() => {
                       const newType = opt.value as QuestionType;
@@ -106,82 +161,124 @@ export const QuestionCard = ({
               })}
             </div>
           )}
-
         </div>
       </div>
 
-      {/* 顯示選項編輯（只有 radio/checkbox 類型） */}
-      {(question.type === "radio" || question.type === "checkbox") && (
-        <>
+      {/* 顯示選項編輯 */}
+      {
+        (question.type === "radio" || question.type === "checkbox") && (
           <OptionEditor
             options={question.options || []}
-            onChange={(newOptions) =>
-              onChange(question.id, { options: newOptions })
+            onChange={(newOptions) => {
+              const update: Partial<Question> = { options: newOptions }
 
-            }
+              if (
+                question.type === "radio" &&
+                newOptions.length > 0 &&
+                !question.placeholder
+              ) {
+                update.placeholder = newOptions[0]?.value || ""
+              }
+              onChange(question.id, update)
+            }}
             questionType={question.type}
           />
-        </>
-      )}
+        )
+      }
 
-      {question.type === "rating" && (
-        <div className="mt-3">
-          <div className="flex gap-1 mt-1">
-            {Array.from({ length: 5 }).map((_, i) => {
-              const starIndex = i + 1;
-              const isActive =
-                hoveredStar !== null ? starIndex <= hoveredStar : starIndex <= selectedStar;
+      {
+        question.type === "image-select" && question.options && (
+          <EditableImageOptions pageId={pageId} question={question} onChange={onChange} key={question.id} />
+        )
+      }
 
-              return (
-                <Star
-                  key={i}
-                  onMouseEnter={() => setHoveredStar(starIndex)}
-                  onMouseLeave={() => setHoveredStar(null)}
-                  onClick={() => setSelectedStar(starIndex)}
-                  className={`w-6 h-6 cursor-pointer transition ${isActive
-                    ? "text-yellow-400 stroke-yellow-500 fill-yellow-300"
-                    : "text-gray-300 stroke-gray-400 fill-white"
-                    }`}
-                />
-              );
-            })}
+      {
+        question.type === "title-select" && question.options && (
+          <EditableTitleOptions pageId={pageId} question={question} onChange={onChange} key={question.id} />
+        )
+      }
+
+
+      {
+        question.type === "rating" && (
+          <div className="mt-1">
+            <div className="flex gap-1 mt-1">
+              {Array.from({ length: 5 }).map((_, i) => {
+                const starIndex = i + 1;
+                const isActive =
+                  hoveredStar !== null
+                    ? starIndex <= hoveredStar
+                    : starIndex <= selectedStar;
+
+                return (
+                  <Star
+                    key={i}
+                    onMouseEnter={() => setHoveredStar(starIndex)}
+                    onMouseLeave={() => setHoveredStar(null)}
+                    onClick={() => setSelectedStar(starIndex)}
+                    className={`w-6 h-6 cursor-pointer transition ${isActive
+                      ? "text-yellow-400 stroke-yellow-500 fill-yellow-300"
+                      : "text-gray-300 stroke-gray-400 fill-white"
+                      }`}
+                  />
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
-      {/* 預覽文字輸入框或 textarea */}
-      {question.type === "text" && (
-        <div className="mt-3">
-          <Input
-            placeholder="enter text"
-            className="mt-1 border border-gray-300"
-            readOnly
+      {
+        question.type === "text" && (
+          <div className="mt-1">
+            <Input
+              placeholder="enter text"
+              value={question.placeholder ?? ""}
+              onChange={(e) =>
+                onChange(question.id, { placeholder: e.target.value })
+              }
+              className="mt-1 border border-gray-300"
+            />
+          </div>
+        )
+      }
+
+      {
+        question.type === "textarea" && (
+          <div className="mt-1">
+            <textarea
+              placeholder="enter multiline text"
+              className="mt-1 w-full rounded border border-gray-300 p-2 text-sm resize-none"
+              rows={3}
+              readOnly
+            />
+          </div>
+        )
+      }
+
+      <TooltipProvider>
+        <label className="flex items-center gap-2 pt-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={question.required}
+            onChange={(e) =>
+              onChange(question.id, { required: e.target.checked })
+            }
           />
-        </div>
-      )}
+          <Tooltip delayDuration={800}>
+            <TooltipTrigger asChild>
+              <span>
+                {translations?.required?.translation ?? "Required"}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              {translations?.required?.tooltip ??
+                "Tick to mark it non-optional, the rater must answer this question"}
+            </TooltipContent>
+          </Tooltip>
+        </label>
+      </TooltipProvider>
 
-      {question.type === "textarea" && (
-        <div className="mt-3">
-          <textarea
-            placeholder="enter multiline text"
-            className="mt-1 w-full rounded border border-gray-300 p-2 text-sm resize-none"
-            rows={3}
-            readOnly
-          />
-        </div>
-      )}
-
-      {/* 是否必填 */}
-      <label className="flex items-center gap-2 pt-2">
-        <input
-          type="checkbox"
-          checked={question.required}
-          onChange={(e) =>
-            onChange(question.id, { required: e.target.checked })
-          }
-        />
-        Required
-      </label>
-    </div>
+    </div >
   );
 };

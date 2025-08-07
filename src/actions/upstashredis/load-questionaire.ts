@@ -1,6 +1,6 @@
 // actions/upstashredis/load-questionaire.ts
 import { redis } from '@/actions/upstashredis/redis'
-import { FormSchema } from '@/lib/schema/creator-signup-questionaire-schema'
+import { FormSchema } from '@/lib/schema/questionaire-schema'
 import { FetchQuestionaireFromSupabase } from '../supabase/supabase-fetcher'
 
 export async function loadQuestionnaire(

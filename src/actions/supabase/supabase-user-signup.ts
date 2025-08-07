@@ -2,7 +2,7 @@
 //actions/supabase/supabase-user-signup.ts
 "use server";
 import supabase from "@/config/supabase.config";
-import { FormSchema } from "@/lib/schema/creator-signup-questionaire-schema";
+import { FormSchema } from "@/lib/schema/questionaire-schema";
 import { auth } from "@clerk/nextjs/server";
 
 export const InsertUserSignUpQuestionareToSupabase = async (values: any) => {

@@ -5,9 +5,9 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { Controller, UseFormRegister, Control } from "react-hook-form";
-import { Star } from "lucide-react";
+import { Star, Plus } from "lucide-react";
 import { useState } from "react";
-import { FormSchema } from "@/lib/schema/creator-signup-questionaire-schema";
+import { FormSchema } from "@/lib/schema/questionaire-schema";
 import { DatePicker } from "../date-picker";
 interface Props {
   formData: FormSchema;
@@ -24,6 +24,8 @@ const GeneralQuestionaire = ({
   control,
   register,
 }: Props) => {
+
+ 
   return (
     <div className="max-w-2xl mx-auto space-y-10">
       {/* Branding Information from JSON */}
@@ -73,12 +75,12 @@ const GeneralQuestionaire = ({
                   render={({ field }) => (
                     <RadioGroup onValueChange={field.onChange} value={field.value}>
                       {q.options!.map((opt) => (
-                        <div key={`${q.id}_${opt.value}`} className="flex items-center gap-2">                          
-                        <RadioGroupItem
-                          key={opt.value}
-                          value={opt.value}
-                          id={`${q.id}-${opt.value}`}
-                        />
+                        <div key={`${q.id}_${opt.value}`} className="flex items-center gap-2">
+                          <RadioGroupItem
+                            key={opt.value}
+                            value={opt.value}
+                            id={`${q.id}-${opt.value}`}
+                          />
                           <label htmlFor={`${q.id}-${opt.value}`}>{opt.label}</label>
                         </div>
                       ))}
@@ -172,6 +174,15 @@ const GeneralQuestionaire = ({
                 <Textarea placeholder={q.placeholder} {...register(q.id)} />
               )}
 
+              {q.type === "number" && (
+                <Input
+                  type="number"
+                  step={1} // 限定為整數
+                  placeholder={q.placeholder}
+                  {...register(q.id, { valueAsNumber: true })}
+                />
+              )}
+
               {/* Checkbox: single boolean */}
               {q.type === "checkbox" && !q.options && (
                 <Controller
@@ -193,7 +204,7 @@ const GeneralQuestionaire = ({
 
 
               {/* Thumbnail Select */}
-              {q.type === "thumbnail-select" && formData.thumbnails && (
+              {q.type === "image-select" && formData.thumbnails && (
                 <Controller
                   name={q.id}
                   control={control}
@@ -269,7 +280,7 @@ const GeneralQuestionaire = ({
                           onClick={addQuestion}
                           disabled={values.length >= (q.max || 5)}
                         >
-                          Add Question
+                          <Plus/>
                         </Button>
                       </div>
                     );

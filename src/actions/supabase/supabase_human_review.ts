@@ -35,6 +35,7 @@ export const GetHumanReviewFromSupabase = async (
             .eq("language", language)
             .limit(rowcount);
             // .range(from, to);
+            console.log("loaded human review", data);
 
         if (error) {
             throw new Error(error.message);
@@ -58,4 +59,41 @@ export const GetHumanReviewFromSupabase = async (
             message: error.message,
         };
     }
+}
+
+export const SaveHumanReviewToSupabase = async (
+  review: IHumanReview
+): Promise<{
+  success: boolean;
+  message?: string;
+  code?: string;
+}> => {
+  try {
+    const clerkUser = await currentUser()
+    if (!clerkUser) {
+      throw new Error("Clerk user not found")
+    }
+
+    // 去除 created_at 欄位，讓 Supabase 自動生成
+    const { created_at, human_review_id, ...rest } = review
+
+    const { error } = await supabase.from("human_review").insert([
+      {
+        ...rest,
+        clerk_user_id: clerkUser.id, // 強制以登入者身份寫入
+        updated_by: clerkUser.id,
+      },
+    ])
+
+    if (error) {
+      throw new Error(error.message)
+    }
+
+    return { success: true }
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message,
+    }
+  }
 }

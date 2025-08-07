@@ -1,18 +1,19 @@
-// components/question-builder/OptionEditor.tsx
 "use client";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Option, QuestionType } from "@/lib/schema/review-question";
+import { OptionItem, QuestionType } from "@/lib/schema/questionaire-schema";
+import React, { useState } from "react";
 
 interface Props {
-  options: Option[];
-  onChange: (updated: Option[]) => void;
-  questionType: QuestionType; // 🆕 加這行
-
+  options: OptionItem[];
+  onChange: (updated: OptionItem[]) => void;
+  questionType: QuestionType; // "radio" | "checkbox"
 }
 
 export const OptionEditor = ({ options, onChange, questionType }: Props) => {
+  const [selected, setSelected] = useState<string[]>([]);
+
   const updateOption = (index: number, label: string) => {
     const updated = [...options];
     updated[index].label = label;
@@ -23,9 +24,9 @@ export const OptionEditor = ({ options, onChange, questionType }: Props) => {
     onChange([
       ...options,
       {
-        id: crypto.randomUUID(),
+        value: crypto.randomUUID(),
         label: "",
-      } as Option,
+      } as OptionItem,
     ]);
   };
 
@@ -35,13 +36,26 @@ export const OptionEditor = ({ options, onChange, questionType }: Props) => {
     onChange(updated);
   };
 
+  const handleSelect = (id: string) => {
+    if (questionType === "radio") {
+      setSelected([id]);
+    } else {
+      setSelected((prev) =>
+        prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      );
+    }
+  };
+
   return (
     <div className="space-y-2">
-      <Label className="text-sm">Options</Label>
+      {/* <Label className="text-sm">Options</Label> */}
       {options.map((opt, i) => (
-        <div key={i} className="flex gap-2 items-center">
-          <input type={questionType} onClick={(e) => e.preventDefault()} />
-
+        <div key={opt.value} className="flex gap-2 items-center">
+          <input
+            type={questionType}
+            checked={selected.includes(opt.value)}
+            onChange={() => handleSelect(opt.value)}
+          />
           <Input
             className="border border-transparent hover:border-gray-300 focus:border-gray-500 transition"
             placeholder={`Option ${i + 1}`}

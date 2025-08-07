@@ -12,14 +12,14 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { IHumanReview } from "@/lib/schema/human-review-schema"
 
 interface HumanReviewCardProps {
+  pageId:string;
   thumb: IHumanReview
   onGallery: (id: string) => void
   onSubmitReview: (id: number, newRating: number) => void
   reviewed: boolean
 }
 
-export function HumanReviewCard({ thumb, onGallery, onSubmitReview, reviewed }: HumanReviewCardProps) {
-  const pageId = "review_community_page";
+export function HumanReviewCard({ pageId, thumb, onGallery, onSubmitReview, reviewed }: HumanReviewCardProps) {
   const { getTranslation } = useTranslationStore();
   const { locale } = useParams() as { locale: string }
 
@@ -59,8 +59,8 @@ export function HumanReviewCard({ thumb, onGallery, onSubmitReview, reviewed }: 
         <div className="relative w-full h-40">
           <Link href="/helpothers">
             <Image
-              src={thumb.thumbnails[0]}
-              alt={thumb.title}
+              src={thumb.thumbnails[0]?? "https://placehold.co/600x400/png"}
+              alt={thumb.title?? "Image Not available"}
               layout="fill"
               objectFit="cover"
               className="transition-transform duration-300 ease-in-out group-hover:scale-105"
@@ -71,7 +71,6 @@ export function HumanReviewCard({ thumb, onGallery, onSubmitReview, reviewed }: 
           {reviewed && (
             <div className="absolute top-2 left-2 bg-green-600 text-white text-xs font-semibold px-2 py-1 rounded shadow">
               {translations?.rated?.translation || "Rated"}
-
             </div>
           )}
         </div>

@@ -15,7 +15,7 @@ import ThumbnailRankingBoard from "@/components/ui/review/thumbnailRankingBoard"
 import FeedbackDialog, { FeedbackData } from "@/components/ui/feedback/user-feedback-form";
 import { ThumbnailReview, AspectKey, AspectRating } from "@/components/ui/review/types"; // Added imports
 import GeneralQuestionaire from "@/components/ui/forms/general-questionare";
-import { FormSchema } from "@/lib/schema/creator-signup-questionaire-schema";
+import { FormSchema } from "@/lib/schema/questionaire-schema";
 import { AnimatePresence, motion } from "framer-motion"
 
 interface UploadedReview {

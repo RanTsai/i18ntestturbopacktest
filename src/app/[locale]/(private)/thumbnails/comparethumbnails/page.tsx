@@ -1,6 +1,4 @@
 import React from 'react'
-import { ThumbnailCard } from '../../reviewothershome/ThumbnailCard'
-import ThumbnailGallery from '@/components/ui/review/thumbnail-bar'
 import ChatAreaCompareProject from '@/components/ui/chat/chat-area-compare-project'
 function page() {
   return (

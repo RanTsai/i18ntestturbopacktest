@@ -51,4 +51,5 @@ export interface IUserChannel {
     clerk_user_id: string;
     updated_at: string;
     deleted_at: string | null;
+    niche:string | null;
 };

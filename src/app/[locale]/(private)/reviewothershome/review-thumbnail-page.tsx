@@ -198,7 +198,7 @@ export default function ReviewThumbnailsPage() {
       {/* Sort + Search */}
       <div className="flex items-center space-x-4 mb-6">
         <button onClick={() => setSortMode("trending")} className="px-4 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition">
-           {translations?.trending_button?.translation || "Trending"}
+          {translations?.trending_button?.translation || "Trending"}
         </button>
         <button onClick={() => setSortMode("latest")} className="px-4 py-1 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 transition">
           {translations?.latest_button?.translation || "Latest"}
@@ -207,7 +207,7 @@ export default function ReviewThumbnailsPage() {
         <div className="relative w-full">
           <input
             type="text"
-            placeholder= {translations?.search_bar?.translation || "Search Title / Channel Name / Tags"}
+            placeholder={translations?.search_bar?.translation || "Search Title / Channel Name / Tags"}
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             className="px-3 py-1 border rounded w-full focus:ring focus:ring-blue-200 transition"
@@ -247,6 +247,7 @@ export default function ReviewThumbnailsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredThumbnails.map((thumb) => (
             <HumanReviewCard
+              pageId={pageId}
               key={thumb.created_at}
               thumb={thumb}
               onGallery={handleGallery}
@@ -264,6 +265,7 @@ export default function ReviewThumbnailsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 opacity-70">
             {ratedThumbnails.map((thumb) => (
               <HumanReviewCard
+                pageId={pageId}
                 key={thumb.created_at + "-rated"}
                 thumb={thumb}
                 onGallery={handleGallery}

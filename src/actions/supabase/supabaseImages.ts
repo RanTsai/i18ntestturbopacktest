@@ -29,3 +29,18 @@ try{
     }
 }
 }
+
+export const getUserImage = async () => {
+try{
+       return {
+        success : true,
+        url : ["https://ijuyminrnhiekoxybhgm.supabase.co/storage/v1/object/public/fallback-thumbnails//TheMonkeyMan%20V3.jpg"]
+    }
+
+}catch (error:any){
+    return {
+        success:false,
+        message: error.message
+    }
+}
+}

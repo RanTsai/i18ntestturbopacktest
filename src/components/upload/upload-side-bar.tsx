@@ -197,19 +197,19 @@ export default function UploadSideBar({
     return (
         <div className="w-64 bg-[var(--sidebar)] text-[var(--sidebar-foreground)] flex flex-col p-4 space-y-4">
             <nav className="flex-1 flex flex-col space-y-2">
-               <ChannelSelector
-  expanded={isMyChannelExpanded}
-  setExpanded={setIsMyChannelExpanded}
-  userChannels={userChannels ?? []}
-  selectedId={selectedChannelId !== null ? `my-${selectedChannelId}` : null}
-  setSelectedId={(id) => {
-    const numId = id?.startsWith("my-") ? parseInt(id.replace("my-", ""), 10) : null;
-    setSelectedChannelId(numId);
-  }}
-  setMyChannel={setSelectedChannelId} // 跟上面同步
-  setSelectedChannel={setSelectedChannel}
-  pageId="signed_up_upload_review"
-/>
+                <ChannelSelector
+                    expanded={isMyChannelExpanded}
+                    setExpanded={setIsMyChannelExpanded}
+                    userChannels={userChannels ?? []}
+                    selectedId={selectedChannelId !== null ? `my-${selectedChannelId}` : null}
+                    setSelectedId={(id) => {
+                        const numId = id?.startsWith("my-") ? parseInt(id.replace("my-", ""), 10) : null;
+                        setSelectedChannelId(numId);
+                    }}
+                    setMyChannel={setSelectedChannelId} // 跟上面同步
+                    setSelectedChannel={setSelectedChannel}
+                    pageId="signed_up_upload_review"
+                />
 
                 <div className="border-t border-[var(--sidebar-border)] my-2" />
 

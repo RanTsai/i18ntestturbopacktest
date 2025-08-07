@@ -11,7 +11,7 @@ import ReviewCard from "@/components/ui/review/reviewcard";
 import ThumbnailRankingBoard from "@/components/ui/review/thumbnailRankingBoard";
 import { FeedbackData } from "@/components/ui/feedback/user-feedback-form";
 import { ThumbnailReview, AspectRating } from "@/components/ui/review/types"; // Added imports
-import { FormSchema } from "@/lib/schema/creator-signup-questionaire-schema";
+import { FormSchema } from "@/lib/schema/questionaire-schema";
 import { useThumbnailReview } from "@/hooks/ai-feedback/ai-image-review";
 import { useBatchReview } from "@/hooks/ai-feedback/ai-batch-image-review";
 import { MapAiScoreToThumbnailReview } from "@/lib/mappers/map-ai-score";
