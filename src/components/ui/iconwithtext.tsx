@@ -10,7 +10,7 @@ export interface IconWithTextProps {
 const IconWithText = ({ href, icon: Icon, text }: IconWithTextProps) => (
     <Link href={href}>
         <div className="flex flex-col items-center cursor-pointer">
-            <Icon className="h-10 w-10 text-[#ffffff]" />
+            <Icon className="h-8 w-8 text-primary" />
             <span className="text-xs text-gray-500 mt-1 cursor-pointer">{text}
             </span>
         </div>

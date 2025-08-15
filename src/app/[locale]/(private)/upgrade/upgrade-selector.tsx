@@ -47,7 +47,7 @@ const plansMock = [
   },
 ];
 
-export default function UpgradeSelectorTemp() {
+export default function UpgradeSelector() {
   const [isYearly, setIsYearly] = useState(true);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
 

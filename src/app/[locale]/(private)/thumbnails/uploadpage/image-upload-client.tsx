@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { useForm } from "react-hook-form";
 import MultiImageUploader from "@/components/ui/review/multiImageUploader";
 import userGlobalStore, { IUserGlobalStore } from "@/lib/global-store/users-store";
 import toast from "react-hot-toast";
@@ -19,15 +18,12 @@ import HumanFeedbackSection from "@/components/ui/forms/human-feedback-section";
 import { Download, Star, StarOff, Flame, Trash2, Square, SquareCheckBig } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UploadedVersions } from "@/lib/schema/userwork-schema"; // Assuming this is the correct path for UploadedReview
-import { InsertUserWorkToSupabase } from "@/actions/supabase/supabase-user-work";
+import { InsertUserWorkToSupabaseRPC } from "@/actions/supabase/supabase-user-work";
 import VideoSettingStore from "@/lib/global-store/upload-store";
 import UserChannelStore from "@/lib/global-store/user-channel-store";
 import { SerializeUploadedVersions, IUserWork } from "@/lib/schema/userwork-schema";
 import { GetUserWorkFromSupabseWithWorkID } from "@/actions/supabase/supabase-user-work";
 import { AIResponseSchema } from "@/lib/schema/aiscore-schema";
-import UseTranslationStore from '@/lib/global-store/use-translation-store';
-import { LoadPageTranslation } from "@/actions/upstashredis/load-page-translation";
-import { PageTranslations } from "@/i18n/interface";
 import useTranslationStore from "@/lib/global-store/use-translation-store";
 import { useParams } from "next/navigation";
 import {
@@ -42,13 +38,10 @@ interface Props {
 export default function ImageUploaderClient({ formData }: Props) {
   const { theUser } = userGlobalStore() as IUserGlobalStore;
   const [uploads, setUploads] = useState<UploadedVersions[]>([]);
-  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
-  const [isHumanReviewOpen, setIsHumanReviewOpen] = useState(false);
   const [userWork, setUserWork] = useState<IUserWork | null>(null);
-  const { control, handleSubmit, register, reset } = useForm();
   const [loading, setLoading] = useState(false);
-  const { reviewThumbnail, isReviewing } = useThumbnailReview();
-  const { batchReviewThumbnails, isBatchReviewing } = useBatchReview();
+  const { reviewThumbnail } = useThumbnailReview();
+  // const { batchReviewThumbnails, isBatchReviewing } = useBatchReview();
   const { selectedChannel, userChannels } = UserChannelStore();
   const { video_type, tags, titles, topic, theme, description, title, setTitle, niche } = VideoSettingStore();
   const [selectedImages, setSelectedImages] = useState<
@@ -61,9 +54,9 @@ export default function ImageUploaderClient({ formData }: Props) {
   const translations = getTranslation(pageId, locale) || {};
   console.log("translations", translations);
 
-  const onSubmit = async (values: any) => {
-    console.log("feedbacksubmitted");
-  };
+  // const onSubmit = async (values: any) => {
+  //   console.log("feedbacksubmitted");
+  // };
 
   // 上傳多張縮圖
   const handleUpload = async (files: File[], formtitle: string) => {
@@ -102,8 +95,8 @@ export default function ImageUploaderClient({ formData }: Props) {
       setUploads(newUploads);
       const serializedVersions = SerializeUploadedVersions(newUploads);
 
-      const response = await InsertUserWorkToSupabase(last_image_url ?? "", formtitle, theme, topic, tags, titles, version_count, serializedVersions, description, null, null, theUser?.language ?? "en", video_type);
-      //console.log("InsertUserWorkToSupabase response:", response);
+      const response = await InsertUserWorkToSupabaseRPC(last_image_url ?? "", formtitle, theme, topic, tags, titles, version_count, serializedVersions, description, null, null, theUser?.language ?? "en", video_type);
+      console.log("InsertUserWorkToSupabase response:", response);
       if (!response.success) {
         toast.error("Failed to save uploads to database");
         return;
@@ -134,7 +127,6 @@ export default function ImageUploaderClient({ formData }: Props) {
     });
   };
 
-
   // 單張縮圖送審
   const getReview = async (index: number): Promise<void> => {
     if (!userWork) {
@@ -157,6 +149,7 @@ export default function ImageUploaderClient({ formData }: Props) {
       userWork,
       file
     );
+    console.log("getting updatedversion success", success, " updatedupload ", updatedUpload);
 
     if (success && updatedUpload) {
       setUploads(prev =>
@@ -207,11 +200,6 @@ export default function ImageUploaderClient({ formData }: Props) {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleFeedbackSubmit = (feedback: FeedbackData) => {
-    console.log("User feedback:", feedback);
-    // TODO: 可串接 Supabase，儲存 user feedback
   };
 
   const reviewsForBoard: ThumbnailReview[] = useMemo(() => {

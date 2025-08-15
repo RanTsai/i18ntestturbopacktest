@@ -47,7 +47,6 @@ export interface IUserChannel {
     language: string;
     is_public: boolean;
     user_channel_id: number;
-    public_user_id: string;
     clerk_user_id: string;
     updated_at: string;
     deleted_at: string | null;

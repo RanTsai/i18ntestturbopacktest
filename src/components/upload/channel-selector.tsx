@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, ChevronDown, ChevronRight } from "lucide-react";
+import { Home, ChevronDown, ChevronRight, TvMinimalPlay } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import {
@@ -68,7 +68,7 @@ export default function MyChannelSelector({
         }}
       >
         <div className="flex items-center space-x-2 text-[var(--foreground)]">
-          <Home className="h-4 w-4" />
+          <TvMinimalPlay className="h-4 w-4" />
 
           <Tooltip delayDuration={300}>
             <TooltipTrigger asChild>

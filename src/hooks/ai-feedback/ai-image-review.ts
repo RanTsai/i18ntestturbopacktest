@@ -35,7 +35,7 @@ const reviewThumbnail = async (
 
     const result = await DeductUserCredits(50);
     if (!result.success) {
-      toast.error(result.message);
+      toast.error(result.message?? "failed to deduct user credit");
       return { success: false, updatedUpload: null };
     }
     console.log("user langage", theUser?.language);
@@ -78,7 +78,7 @@ const reviewThumbnail = async (
       isLoading: false,
     };
 
-    const { success } = await UserWorkWithAIAnalaysisToSupabase(
+    const { success, message } = await UserWorkWithAIAnalaysisToSupabase(
       userWork.public_id,
       userWork.image_url,
       title,
@@ -104,6 +104,7 @@ const reviewThumbnail = async (
       50,
       1
     );
+    console.log("success updating supabase", success, " message ", message)
 
     return { success, updatedUpload: success ? newUpload : null };
   } catch (err) {

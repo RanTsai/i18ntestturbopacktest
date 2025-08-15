@@ -1,5 +1,4 @@
 // app/[locale]/(private)/humanreviewdesign/layout.tsx
-import Topbar from "@/components/navigation/top-bar";
 export default async function LocaleLayout({
     children,
 }: {
@@ -8,7 +7,6 @@ export default async function LocaleLayout({
 
     return (
         <>
-            <Topbar />
             <main>
                 {children}</main>
         </>

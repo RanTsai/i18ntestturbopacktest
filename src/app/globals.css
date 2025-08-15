@@ -120,3 +120,23 @@
     @apply bg-background text-foreground;
   }
 }
+/* === Auto-hide scrollbar utilities === */
+
+/* Auto-hide scrollbar */
+.hide-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+.hide-scrollbar::-webkit-scrollbar { display:none; width:0; height:0; }
+.scrollbar-visible { scrollbar-width:thin; scrollbar-color:rgba(0,0,0,.45) transparent; }
+.scrollbar-visible::-webkit-scrollbar { width:8px; height:8px; }
+.scrollbar-visible::-webkit-scrollbar-thumb { background:rgba(0,0,0,.45); border-radius:4px; }
+.scrollbar-visible::-webkit-scrollbar-track { background:transparent; }
+
+@layer components {
+  .input-interactive { @apply border border-transparent rounded-md transition-all; }
+  .input-interactive:hover { @apply border-purple-300; }
+  .input-interactive:focus,
+  .input-interactive:focus-visible {
+    /* 移除 border-2，改成保持 1px 邊框 */
+    @apply border border-purple-500 ring-2 ring-purple-500;
+  }
+}
+

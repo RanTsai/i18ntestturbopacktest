@@ -1,0 +1,80 @@
+{
+    "page_id": "human_review_design_page",
+    "version": "v1",
+    "locales": {
+        "en": {
+            "logo": {
+                "label": "Mr. Click",
+                "translation": "Mr. Click",
+                "description": "Indicates this is logo and lead to home page",
+                "tooltip": "Home page"
+            },
+            "preview_button": {
+                "label": "Preview",
+                "translation": "Preview",
+                "description": "To indicate this Button leads to Youtube or other platform preview",
+                "tooltip": "Live preview your thumbnails on different devices"
+            },
+            "dashboard_button": {
+                "label": "Dashboard",
+                "translation": "Dashboard",
+                "description": "To indicate this button leads to Dashboard",
+                "tooltip": "Where all your stuff is"
+            },
+            "analysis_button": {
+                "label": "AI Analysis",
+                "translation": "AI Analysis",
+                "description": "To indicate this button leads to AI analysis",
+                "tooltip": "Upload and get instant AI analysis"
+            },
+            "help_others_button": {
+                "label": "Help others",
+                "translation": "Help others",
+                "description": "To indicate this button leads to Rating community",
+                "tooltip": "Rate other creator's work and get credit rewards"
+            },
+            "upgrade_button": {
+                "label": "Upgrade",
+                "translation": "Upgrade",
+                "description": "To indicate the button leads to upgrade page",
+                "tooltip": "Unlock access to advanced features that can help you more"
+            },
+            "account_button": {
+                "label": "Account",
+                "translation": "Account",
+                "description": "To indicate this button is for account settings",
+                "tooltip": "Change your account preferences and settings"
+            },
+            "menu_button": {
+                "label": "Quick Settings",
+                "translation": "Quick Settings",
+                "description": "To indicate this button is for more settings",
+                "tooltip": "Change settings like theme and language"
+            },
+               "theme_toggle": {
+                "label": "Theme",
+                "translation": "Theme",
+                "description": "To indicate this button is for setting theme",
+                "tooltip": "Change theme to light mode or dark mode"
+            },
+               "language_selector": {
+                "label": "Language",
+                "translation": "Language",
+                "description": "To indicate this button is for duplicate the question",
+                "tooltip": "Select the language you use"
+            },       
+                "sign_in_button": {
+                "label": "Sign In",
+                "translation": "Sign In",
+                "description": "To indicate this button is for duplicate the question",
+                "tooltip": "Sign in"
+            },      
+                "sign_out_button": {
+                "label": "Sign Out",
+                "translation": "Sign Out",
+                "description": "To indicate this button is for duplicate the question",
+                "tooltip": "Sign out"
+            }                   
+        }        
+    }
+}

@@ -6,15 +6,15 @@ export interface IHumanReview {
     created_at: string;
     clerk_user_id?: string;
     supabase_user_id?: number;
-    project_summary: string; //for displaying latest version
-    review_rating?: string; //JSONB
+    project_summary: string; 
+    review_rating?: string; 
     questionaire: Question[];
     channel_name: string;
-    channel_logo: string; //Store as JSONB in Supabase
+    channel_logo: string; //URL
     reviewer: string[];
-    deadline: string | null; //Store as JSONB in Supabase
+    deadline: string | null; 
     creator_message_to_reviewer: string;
-    tags: string[]; //Store as JSONB in Supabase
+    tags: string[]; 
     target_audience: ITarget_audience[] | null;
     credit_reward: number;
     compare_project_version: number;
@@ -42,5 +42,27 @@ export interface IFollowingChannel{
     platform:string;
 }
 
+export interface IHumanAnswer {
+    human_answer_id?:number;
+    human_review_id?:number;
+    created_at: string;
+    reviewer_clerk_id?: string;
+    questionaire: Question[];
+    message_to_creator: string;
+    credit_reward: boolean;
+    is_deleted: boolean;
+    deleted_at: string;
+    is_public: boolean;
+    deleted_by: string;
+    selected_work: string;  
+    follow_creator:boolean;
+    creator_support_credit:number;
+};
 
 
+export type IHumanAnswerWithProfile = IHumanAnswer & {
+  rater?: {
+    username: string | null;
+    profile_pic_url: string | null;
+  };
+};

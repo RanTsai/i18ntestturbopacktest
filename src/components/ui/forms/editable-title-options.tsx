@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { X, Plus } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
-import { Question, QuestionType } from "@/lib/schema/questionaire-schema"
+import { Question } from "@/lib/schema/questionaire-schema"
 import { useParams } from "next/navigation";
 import useTranslationStore from "@/lib/global-store/use-translation-store";
 import {
@@ -12,7 +12,6 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "@/components/ui/tooltip";
-
 
 export function EditableTitleOptions({
   pageId,
@@ -73,10 +72,9 @@ export function EditableTitleOptions({
           return (
             <div
               key={opt.value}
+              tabIndex={0}
               onClick={() => {
-                if (!isEditing) {
-                  onChange(question.id, { placeholder: opt.value })
-                }
+                if (!isEditing) onChange(question.id, { placeholder: opt.value })
               }}
               onDoubleClick={() => {
                 setEditingIndex(index)
@@ -84,8 +82,16 @@ export function EditableTitleOptions({
               }}
               onMouseEnter={() => setHoverIndex(index)}
               onMouseLeave={() => setHoverIndex(null)}
-              className={`relative p-3 text-sm border rounded-md transition cursor-pointer ${isSelected ? "border-purple-500 bg-purple-50" : "border-gray-200"
-                }`}
+              onKeyDown={(e) => {
+                if (!isEditing && (e.key === "Enter" || e.key === " ")) {
+                  e.preventDefault()
+                  onChange(question.id, { placeholder: opt.value })
+                }
+              }}
+              className={`relative p-3 text-sm rounded-md transition cursor-pointer
+                          input-interactive
+                          hover:!border-purple-300 focus:!border-purple-500 focus:!ring-purple-500
+                          ${isSelected ? "!border-2 !border-purple-500 bg-purple-50" : "border-gray-200"}`}
             >
               {isEditing ? (
                 <Input
@@ -97,6 +103,7 @@ export function EditableTitleOptions({
                     if (e.key === "Escape") handleCancel()
                   }}
                   onBlur={handleCancel}
+                  className="input-interactive hover:!border-purple-300 focus:!border-purple-500 focus:!ring-purple-500"
                 />
               ) : (
                 <TooltipProvider >
@@ -104,7 +111,9 @@ export function EditableTitleOptions({
                     <TooltipTrigger asChild>
                       <span>{opt.label}</span>
                     </TooltipTrigger>
-                    <TooltipContent>{translations?.title_input?.tooltip?? "Double Click to edit"}</TooltipContent>
+                    <TooltipContent>
+                      {translations?.title_input?.tooltip ?? "Double Click to edit"}
+                    </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               )}
@@ -120,6 +129,7 @@ export function EditableTitleOptions({
                     }
                   }}
                   className="absolute top-1 right-1 p-1 text-red-500 hover:text-red-700"
+                  aria-label="Delete title"
                 >
                   <X size={14} />
                 </button>
@@ -129,7 +139,6 @@ export function EditableTitleOptions({
         })}
       </div>
 
-      {/* 新增按鈕 */}
       {options.length < 4 && (
         <Button
           type="button"

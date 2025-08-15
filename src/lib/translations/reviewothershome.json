@@ -34,10 +34,22 @@
                 "tooltip": "Reset all filters"
             },
             "reviewed_by_you_section": {
-                "label": "Reviewed By You",
-                "translation": "Reviewed By You",
+                "label": "Rated By You",
+                "translation": "Rated By You",
                 "description": "To indicate the section is for user already reviewed",
                 "tooltip": "This section includes your past reviewed thumbnails"
+            },
+            "review_others_section": {
+                "label": "Rate Others",
+                "translation": "Rate Others",
+                "description": "To indicate the section is for other's rating project",
+                "tooltip": "This section is for other creator's work you can review"
+            },
+            "your_questinaire_section": {
+                "label": "Your Questionaire",
+                "translation": "Your Questionaire",
+                "description": "To indicate the section is for user's own questinnaire",
+                "tooltip": "This section is for your published questionaires"
             },
             "channel_section": {
                 "label": "My Channels",

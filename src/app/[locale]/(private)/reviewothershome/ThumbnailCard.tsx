@@ -3,23 +3,25 @@
 import Link from "next/link"
 import Image from "next/image"
 import dayjs from "dayjs"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import useTranslationStore from "@/lib/global-store/use-translation-store"
 import { Clock, Ban, Coins, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
+
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { IHumanReview } from "@/lib/schema/human-review-schema"
 
 interface HumanReviewCardProps {
-  pageId:string;
+  pageId: string;
   thumb: IHumanReview
   onGallery: (id: string) => void
   onSubmitReview: (id: number, newRating: number) => void
   reviewed: boolean
+  isOwner: boolean
 }
 
-export function HumanReviewCard({ pageId, thumb, onGallery, onSubmitReview, reviewed }: HumanReviewCardProps) {
+export function HumanReviewCard({ pageId, thumb, onGallery, onSubmitReview, reviewed, isOwner }: HumanReviewCardProps) {
   const { getTranslation } = useTranslationStore();
   const { locale } = useParams() as { locale: string }
 
@@ -29,13 +31,14 @@ export function HumanReviewCard({ pageId, thumb, onGallery, onSubmitReview, revi
   const deadlineDate = dayjs(thumb.deadline)
   const diff = deadlineDate.diff(now, "day")
 
+  const router = useRouter();
   const isStillOpen = diff >= 0
   const formattedDeadline = isStillOpen
     ? `${translations?.Closing_days_noticiation?.translation || "Closing in"} ${diff} ${translations?.days?.translation || "day"}`
     : `${translations?.Closed_days_noticiation?.translation || "Closed"} ${Math.abs(diff)}  ${translations?.days_ago?.translation || "days ago"}`
 
-    // ? `${translations?.Closing_days_noticiation?.translation || "Closing in"} ${diff} ${translations?.days?.translation || "day"}${diff === 1 ? "" : "s"}`
-    // : `${translations?.Closed_days_noticiation?.translation || "Closed"} ${Math.abs(diff)}  ${translations?.days_ago?.translation || "days"} ${Math.abs(diff) === 1 ? "" : "s"} ago`
+  // ? `${translations?.Closing_days_noticiation?.translation || "Closing in"} ${diff} ${translations?.days?.translation || "day"}${diff === 1 ? "" : "s"}`
+  // : `${translations?.Closed_days_noticiation?.translation || "Closed"} ${Math.abs(diff)}  ${translations?.days_ago?.translation || "days"} ${Math.abs(diff) === 1 ? "" : "s"} ago`
   return (
     <>
       <div className="group w-full md:w-72 rounded-2xl overflow-hidden shadow hover:shadow-lg transition-all bg-white">
@@ -56,16 +59,22 @@ export function HumanReviewCard({ pageId, thumb, onGallery, onSubmitReview, revi
         </div>
 
         {/* ✅ 圖片區域 */}
-        <div className="relative w-full h-40">
-          <Link href="/helpothers">
-            <Image
-              src={thumb.thumbnails[0]?? "https://placehold.co/600x400/png"}
-              alt={thumb.title?? "Image Not available"}
-              layout="fill"
-              objectFit="cover"
-              className="transition-transform duration-300 ease-in-out group-hover:scale-105"
-            />
-          </Link>
+      <div className="relative w-full h-40">
+  <Link
+    href={
+      isOwner === false
+        ? `/helpothers/${thumb.human_review_id}?reviewed=${reviewed}`
+        : `/thumbnailanalysisreport/${thumb.human_review_id}?reviewed=${reviewed}`
+    }
+  >
+    <Image
+      src={thumb.thumbnails[0] ?? "https://placehold.co/600x400/png"}
+      alt={thumb.title ?? "Image Not available"}
+      fill
+      className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+    />
+  </Link>
+
 
           {/* ✅ 已評分標籤 */}
           {reviewed && (
@@ -112,12 +121,18 @@ export function HumanReviewCard({ pageId, thumb, onGallery, onSubmitReview, revi
               <Button variant="outline" size="sm" disabled>
                 {translations?.thank_you_for_rating_button?.translation || "Thank you for rating"}              </Button>
             ) : (
-              <Button variant="outline" size="sm" onClick={() => { }}>
-                {/* To do, write */}
-                {translations?.review_and_get_button?.translation || "Rate and get"} {thumb.credit_reward} <Coins className="ml-1 w-4 h-4" />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  router.push(`/helpothers/${thumb.human_review_id}?reviewed=${reviewed}`)
+                }
+                className="hover:bg-green-500 hover:text-white transition-colors"
+              >
+                {translations?.review_and_get_button?.translation || "Rate and get"}{" "}
+                {thumb.credit_reward} <Coins className="ml-1 w-4 h-4" />
               </Button>
             )}
-
           </div>
         </div>
       </div>

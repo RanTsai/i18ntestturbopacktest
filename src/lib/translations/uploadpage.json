@@ -23,7 +23,7 @@
       },
       "title_error": {
         "label": "Title is required",
-        "translation": "Thumbnail Analyser",
+        "translation": "Title is required",
         "description": "To indicate the title is a required field.",
         "tooltip": "Upload a title here, even if it is temporary, you can change it later."
       },
@@ -145,37 +145,73 @@
         "label": "Video Category",
         "translation": "Video Category",
         "description": "To indicate the drop down list is for selecting the video category.",
-        "tooltip": "Select the video category here, this is the same as the Youtube video category"
+        "tooltip": "Select the Youtube video category, helps AI to analyse your thumbnail."
       },
-      "topic": {
+      "topic_label": {
         "label": "Topic (Optional)",
         "translation": "Topic (Optional)",
         "description": "To indicate the field is for the topic of the video.",
-        "tooltip": "What is the video about? It helps to align the thumbnail and the video topic"
+        "tooltip": "The main subject your thumbnail is about. Helps AI judge if the thumbnail matches the topic."
       },
-      "niche": {
+      "niche_label": {
         "label": "Niche (Optional)",
         "translation": "Niche (Optional)",
-        "description": "To indicate the field is for the niche of the video.",
-        "tooltip": "Enter the niche here, it helps to check if the thumbnail is aligned in the niche"
+        "description": "The specific group of viewers the content is made for. For example: 'Gamers', 'Startup Founders', 'History Buffs'.",
+        "tooltip": "Who you are making this for. Helps AI review from your audience’s perspective."
       },
-      "theme": {
+      "theme_label": {
         "label": "Theme (Optional)",
         "translation": "Theme (Optional)",
         "description": "To indicate the field is for the theme of the video.",
-        "tooltip": "The main idea of the vidoe, the clearer the audience can understand it better"
+        "tooltip": "The style or mood of your content. Helps AI understand the tone your thumbnail should match."
       },
       "tags": {
         "label": "Tags (Optional)",
         "translation": "Tags (Optional)",
         "description": "To indicate the field is for the tags of the video.",
-        "tooltip": "The tags of the vidoe, which helps to categorize the video if you invite real human to review."
+        "tooltip": "The tags of the video, which helps to categorize the video if you invite real human to review."
       },
-      "audience_section": {
-        "label": "Audience",
-        "translation": "Audience",
+      "topic_placeholder": {
+        "label": "My topic is...",
+        "translation": "My topic is...",
+        "description": "To guide the user for topic",
+        "tooltip": "Main subject or idea shown in the thumbnail. For example: 'Space Travel', 'Healthy Eating', 'Stock Market Crash'. Helps AI judge if the thumbnail matches the topic."
+      },
+      "niche_placeholder": {
+        "label": "My audience is...",
+        "translation": "My audience is...",
+        "description": "Placeholder text to prompt the user to enter a target audience.",
+        "tooltip": "Describe the group of people you want to reach. For example: 'Gamers', 'Startup Founders', 'History Buffs'."
+      },
+      "theme_placeholder": {
+        "label": "My theme is...",
+        "translation": "My theme is...",
         "description": "To show the list of AI avatar audience",
-        "tooltip": "The AI target audience will review on their perspective and share with you their ideas."
+        "tooltip": "Describe the overall style or mood (e.g., playful, dramatic, professional)."
+      },
+      "title_placeholder": {
+        "label": "New title",
+        "translation": "New title",
+        "description": "Tells the user this field is for entering new title",
+        "tooltip": "Enter a video title here for comparison"
+      },
+      "title_remove_button": {
+        "label": "X",
+        "translation": "X",
+        "description": "Tell the user this cannot be undone",
+        "tooltip": "Delete this title, it cannot be undone"
+      },
+      "title_input": {
+        "label": "Enter a title",
+        "translation": "Enter a title",
+        "description": "Tells the user this field is for entering new title",
+        "tooltip": "Enter a video title here, you can change it later"
+      },
+       "file_error": {
+        "label": "You can upload PNG, JPG, or JPEG files up to 2MB.",
+        "translation": "You can upload PNG, JPG, or JPEG files up to 2MB.",
+        "description": "Tell the user the error",
+        "tooltip": ""
       }
     },
     "zh": {
@@ -211,13 +247,13 @@
       },
       "submit": {
         "label": "Submit",
-        "translation": "提交",
-        "description": "提交按鈕上的文字。",
+        "translation": "上傳",
+        "description": "上船按鈕上的文字。",
         "tooltip": "上傳你的圖片"
       },
       "submitting": {
         "label": "Submitting",
-        "translation": "提交中",
+        "translation": "上傳中",
         "description": "上傳進行中時的按鈕文字。",
         "tooltip": "正在上傳圖片，請稍候…"
       },

@@ -24,7 +24,7 @@ export function EditableImageOptions({
   question: Question;
   onChange: (id: string, updated: Partial<Question>) => void;
 }) {
-  const { locale } = useParams() as { locale: string }
+  const { locale } = useParams() as { locale: string };
 
   const { getTranslation } = useTranslationStore();
   const translations = getTranslation(pageId, locale) || {};
@@ -34,8 +34,6 @@ export function EditableImageOptions({
   const targetImageIdRef = useRef<string | null>(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
   const options = question.options || [];
-
-
 
   const handleDelete = (id: string) => {
     const updated = options.filter((opt) => opt.value !== id);
@@ -145,18 +143,26 @@ export function EditableImageOptions({
             return (
               <div
                 key={opt.value}
+                tabIndex={0} // 讓 focus 樣式生效（鍵盤可聚焦）
                 onMouseEnter={() => setHoverIndex(index)}
                 onMouseLeave={() => setHoverIndex(null)}
                 onClick={() => {
                   onChange(question.id, { placeholder: opt.value });
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onChange(question.id, { placeholder: opt.value });
+                  }
                 }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   targetImageIdRef.current = opt.value;
                   setSelectorOpen(true);
                 }}
-                className={`group relative border-2 rounded-md overflow-hidden cursor-pointer transition aspect-video select-none ${isSelected ? "border-purple-500" : "border-gray-200"
-                  }`}
+                className={`group relative overflow-hidden cursor-pointer transition aspect-video select-none input-interactive ${
+                  isSelected ? "border-2 border-purple-500" : ""
+                }`}
               >
                 <img
                   src={opt.label}
@@ -170,6 +176,7 @@ export function EditableImageOptions({
                       handleDelete(opt.value);
                     }}
                     className="absolute top-1 right-1 p-1 text-red-500 hover:text-red-700 bg-white rounded-full shadow-sm"
+                    aria-label="刪除圖片"
                   >
                     <X size={14} />
                   </button>
@@ -179,23 +186,34 @@ export function EditableImageOptions({
           })}
 
           {options.length < 4 && (
-            <TooltipProvider >
+            <TooltipProvider>
               <Tooltip delayDuration={800}>
                 <TooltipTrigger asChild>
                   <div
+                    role="button"
+                    tabIndex={0}
                     onClick={handleAddPlaceholder}
-                    className={`border-2 border-dashed rounded-md flex flex-col items-center justify-center text-gray-400 cursor-pointer h-32 transition ${dragging ? "bg-purple-100 border-purple-400" : ""
-                      }`}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleAddPlaceholder();
+                      }
+                    }}
+                    className={`border-2 border-dashed flex flex-col items-center justify-center text-gray-400 cursor-pointer h-32 transition input-interactive ${
+                      dragging ? "bg-purple-100 border-purple-400" : ""
+                    }`}
                   >
                     <div className="flex items-center justify-center mb-1">
                       <Plus size={16} className="mr-1" />
-                      {translations?.new_image_drag?.translation ?? "Double click or Drag Image"}
+                      {translations?.new_image_drag?.translation ??
+                        "Double click or Drag Image"}
                     </div>
                     <ImagePlus size={30} />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {translations?.new_image_drag?.tooltip ?? "Double click to select image from your library, or drag and drop new image here"}
+                  {translations?.new_image_drag?.tooltip ??
+                    "Double click to select image from your library, or drag and drop new image here"}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -205,3 +223,4 @@ export function EditableImageOptions({
     </>
   );
 }
+

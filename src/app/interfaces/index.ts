@@ -28,23 +28,36 @@ export interface IAIScore{
     relevance: number,
     emotion: number
 };
+export interface ITitles{
+    titles: string[],
+};
 
 export interface IUserWork{
-    //supabase_user_id: number;
     user_work_id: number;
+    supabase_user_id: number;
     created_at: string;
     image_url: string; //for displaying latest version
     title: string; 
     description: string;
-    ai_comment: string;
-    
+    ai_comment: string;    
     ai_score: IAIScore | null; //Store as JSONB in Supabase
+
     view_count: number;
     rating_count:number;
     public_id: string;
     language:string;
     versions:IVersions | null; //Store as JSONB in Supabase
     clerk_user_id:string;
+    tags?:string[]
+    titles?:ITitles
+    topic?:string
+    theme?:string
+    user_channel_id?:number
+    updated_at?:string
+    is_public?:boolean
+    is_deleted?:boolean
+    deleted_by?:string
+    updated_by?:string
 };
 
 

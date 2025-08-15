@@ -15,6 +15,7 @@ interface Props {
   onSubmit: (data: any) => void;
   control: Control<any>;
   register: UseFormRegister<any>;
+  displaySubmit?: boolean;
 }
 
 const GeneralQuestionaire = ({
@@ -23,9 +24,10 @@ const GeneralQuestionaire = ({
   onSubmit,
   control,
   register,
+  displaySubmit = false
 }: Props) => {
 
- 
+
   return (
     <div className="max-w-2xl mx-auto space-y-10">
       {/* Branding Information from JSON */}
@@ -280,7 +282,7 @@ const GeneralQuestionaire = ({
                           onClick={addQuestion}
                           disabled={values.length >= (q.max || 5)}
                         >
-                          <Plus/>
+                          <Plus />
                         </Button>
                       </div>
                     );
@@ -340,11 +342,11 @@ const GeneralQuestionaire = ({
         </div>
       ))}
 
-
-
-      <Button type="submit" disabled={loading} className="w-full">
-        {loading ? "Submitting..." : "Submit"}
-      </Button>
+      {displaySubmit && (
+        <Button type="submit" disabled={loading} className="w-full">
+          {loading ? "Submitting..." : "Submit"}
+        </Button>
+      )}
     </div>
   );
 };

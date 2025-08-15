@@ -35,7 +35,7 @@ export const GetHumanReviewFromSupabase = async (
             .eq("language", language)
             .limit(rowcount);
             // .range(from, to);
-            console.log("loaded human review", data);
+            //console.log("loaded human review", data);
 
         if (error) {
             throw new Error(error.message);
@@ -96,4 +96,49 @@ export const SaveHumanReviewToSupabase = async (
       message: error.message,
     }
   }
+}
+
+export const GetTestHumanReview = async (human_review_id: any): Promise<{
+    success: boolean;
+    data: IHumanReview[] | null;
+    code?: string;
+    message?: string;
+}> => {
+    try {
+        const clerkUser = await currentUser();
+        if (!clerkUser) {
+            throw new Error("Clerk user not found");
+        }
+
+        const { data, count, error } = await supabase
+            .from("human_review")
+            .select("*", { count: "exact" })  // ✅ count 回傳總筆數
+            .eq("human_review_id", human_review_id)
+            .eq("language", "en")
+            .limit(1);
+            // .range(from, to);
+            console.log("loaded human review", data);
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        if (data && data.length > 0) {
+            return {
+                success: true,
+                data: data,
+            };
+        }
+        return {
+            success: false,
+            data: null,
+            message: "No channels found for the user.",
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            data: null,
+            message: error.message,
+        };
+    }
 }

@@ -19,7 +19,7 @@ export async function LoadPageTranslation(
     // ✅ 1. Redis 讀取
     //const data = await redis.get<string>(key);
     const data = await redis.get(key)
-    console.log("checking in Redis", data, " key ", key);
+    //console.log("checking in Redis", data, " key ", key);
     if (data) {
         console.log("found in Redis", data, " key ", key);
         return {

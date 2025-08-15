@@ -7,7 +7,7 @@ import { nanoid } from "nanoid";
 //Base function to insert new usage to user credit history
 //insert new user usage history to supabase
 export async function InsertUsageHistoryToSupabase(
-    supabase_user_id: number,
+    clerk_user_id: string,
     action_type: string,
     credit_consumed: number,
     user_work_id: string,
@@ -16,7 +16,7 @@ export async function InsertUsageHistoryToSupabase(
 ) {
     try {
         const user_usage = {
-            supabase_user_id: supabase_user_id,
+            supabase_user_id: clerk_user_id,
             action_type: action_type,
             credit_consumed: credit_consumed,
             user_work_id: user_work_id,

@@ -3,7 +3,7 @@ import createNextIntlPlugin from 'next-intl/plugin';
  
 const nextConfig: NextConfig = {
    images: {
-    domains: ['ijuyminrnhiekoxybhgm.supabase.co','placehold.co'], // ✅ 加入你的 Supabase domain
+    domains: ['ijuyminrnhiekoxybhgm.supabase.co','placehold.co', 'img.clerk.com'], // ✅ 加入你的 Supabase domain
     },
      experimental: {
     serverActions: {

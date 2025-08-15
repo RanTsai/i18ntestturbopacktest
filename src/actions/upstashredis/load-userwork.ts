@@ -1,7 +1,7 @@
 // actions/upstashredis/load-userwork.ts
 import { redis } from '@/actions/upstashredis/redis'
 import { IUserWork } from '@/app/interfaces'
-import { GetUserWorkFromSupabseWithUserID } from '../supabase/supabase-user-work'
+import { GetUserWorkFromSupabseWithUserIDRPC } from '../supabase/supabase-user-work'
 import { auth } from "@clerk/nextjs/server"
 
 export async function loadAllUserWork(): Promise<{
@@ -16,39 +16,39 @@ export async function loadAllUserWork(): Promise<{
     return { found: false, content: null, from: null, total:0 };
   }
 
-  const ids = await redis.zrange(`userwork:${userId}:index`, 0, 19, { rev: true });
+  // const ids = await redis.zrange(`userwork:${userId}:index`, 0, 19, { rev: true });
 
-  if (ids.length > 0) {
-    const keys = ids.map(id => `userwork:${userId}:${id}`);
-    console.log("loading user work Key from redis", keys);
+  // if (ids.length > 0) {
+  //   const keys = ids.map(id => `userwork:${userId}:${id}`);
+  //   console.log("loading user work Key from redis", keys);
 
-    const results = await redis.mget(...keys);
+  //   const results = await redis.mget(...keys);
 
-    const parsedResults = results
-      .filter(Boolean)
-      .map((r) => typeof r === 'string' ? JSON.parse(r) : r);
+  //   const parsedResults = results
+  //     .filter(Boolean)
+  //     .map((r) => typeof r === 'string' ? JSON.parse(r) : r);
 
-    // ✅ 檢查 Redis 中所有值是否都遺失 → fallback
-    if (parsedResults.length === 0) {
-      // 🧹 清除過期的 index，避免再次卡住
-      await redis.del(`userwork:${userId}:index`);
+  //   // ✅ 檢查 Redis 中所有值是否都遺失 → fallback
+  //   if (parsedResults.length === 0) {
+  //     // 🧹 清除過期的 index，避免再次卡住
+  //     await redis.del(`userwork:${userId}:index`);
 
-      // 🔁 再次呼叫自己（遞迴）→ 此次會走 supabase
-      return await loadAllUserWork();
-    }
+  //     // 🔁 再次呼叫自己（遞迴）→ 此次會走 supabase
+  //     return await loadAllUserWork();
+  //   }
 
-    return {
-      found: true,
-      content: parsedResults,
-      from: 'redis',
-      total:parsedResults.length
-    };
-  }
+  //   return {
+  //     found: true,
+  //     content: parsedResults,
+  //     from: 'redis',
+  //     total:parsedResults.length
+  //   };
+  // }
 
   console.log("loading supabase");
 
   // 🔁 從 Supabase 讀取
-  const { success, data: supaData } = await GetUserWorkFromSupabseWithUserID();
+  const { success, data: supaData } = await GetUserWorkFromSupabseWithUserIDRPC();//{ limit: 100, offset: 0 }
   console.log("loading supabase success", success, "data", supaData);
 
   if (success && Array.isArray(supaData) && supaData.length > 0) {
@@ -127,7 +127,7 @@ export async function loadUserWorkPage(page: number = 1, perPage: number = 10): 
 
   // 🔁 從 Supabase 讀取
   // fallback 到 Supabase
-  const { success, data: supaData } = await GetUserWorkFromSupabseWithUserID();
+  const { success, data: supaData } = await GetUserWorkFromSupabseWithUserIDRPC();
 
   if (success && Array.isArray(supaData) && supaData.length > 0) {
     for (const work of supaData) {

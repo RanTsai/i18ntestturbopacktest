@@ -1,0 +1,171 @@
+{
+  "form_id": "reviewer_feedback_settings",
+  "version": "v1",
+  "locales": {
+    "en": {
+      "title": "Your feedback",
+      "sections": [
+        {
+          "id": "rater_feedback_preferences",
+          "title": "Reviewer Preferences and Support",
+          "questions": [
+            {
+              "id": "accept_reward",
+              "type": "radio",
+              "label": "Do you want to receive credits as a reward?",
+              "options": [
+                { "value": "yes", "label": "Yes, I want credits" },
+                { "value": "no", "label": "No, I'm happy to help for free" }
+              ],
+              "required": true
+            },
+            {
+              "id": "follow_creator_for_future",
+              "type": "radio",
+              "label": "Would you like to follow this creator and review their future content?",
+              "options": [
+                { "value": "yes", "label": "Yes, I'd love to help again" },
+                { "value": "no", "label": "No, just this time" }
+              ],
+              "required": true
+            },
+            {
+              "id": "allow_public_display",
+              "type": "radio",
+              "label": "Do you allow your review and rating to be shown publicly?",
+              "options": [
+                { "value": "yes", "label": "Yes, show my review" },
+                { "value": "no", "label": "No, keep it anonymous" }
+              ],
+              "required": true
+            },
+            {
+              "id": "message_to_creator",
+              "type": "text",
+              "label": "Would you like to leave a message for the creator?",
+              "placeholder": "e.g., I really liked your style. Keep going!",
+              "required": false
+            },
+            {
+              "id": "support_creator_credit",
+              "type": "number",
+              "label": "Would you like to support this creator with extra credits?",
+              "placeholder": "Enter the number of credits you'd like to give",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    "zh": {
+      "title": "你的反饋",
+      "sections": [
+        {
+          "id": "rater_feedback_preferences",
+          "title": "評價者偏好與支持",
+          "questions": [
+            {
+              "id": "accept_reward",
+              "type": "radio",
+              "label": "你是否希望獲得點數作為回饋？",
+              "options": [
+                { "value": "yes", "label": "是的，我希望獲得點數" },
+                { "value": "no", "label": "不用，我很樂意免費協助" }
+              ],
+              "required": true
+            },
+            {
+              "id": "follow_creator_for_future",
+              "type": "radio",
+              "label": "你是否願意追蹤此創作者並在未來協助評價他們的作品？",
+              "options": [
+                { "value": "yes", "label": "願意，很樂意再次幫忙" },
+                { "value": "no", "label": "不，只限這一次" }
+              ],
+              "required": true
+            },
+            {
+              "id": "allow_public_display",
+              "type": "radio",
+              "label": "你是否願意讓你的評價公開展示？",
+              "options": [
+                { "value": "yes", "label": "可以，請公開我的評價" },
+                { "value": "no", "label": "不想，請匿名保留" }
+              ],
+              "required": true
+            },
+            {
+              "id": "message_to_creator",
+              "type": "text",
+              "label": "你想給創作者留下一段訊息嗎？",
+              "placeholder": "例如：我很喜歡你的風格，請繼續努力！",
+              "required": false
+            },
+            {
+              "id": "support_creator_credit",
+              "type": "number",
+              "label": "你是否願意用額外點數支持這位創作者？",
+              "placeholder": "請輸入你想給予的點數數量",
+              "required": false
+            }
+          ]
+        }
+      ]
+    },
+    "ja": {
+      "title": "あなたのフィードバック",
+      "sections": [
+        {
+          "id": "rater_feedback_preferences",
+          "title": "レビュアーの希望とサポート",
+          "questions": [
+            {
+              "id": "accept_reward",
+              "type": "radio",
+              "label": "報酬としてクレジットを受け取りたいですか？",
+              "options": [
+                { "value": "yes", "label": "はい、クレジットが欲しいです" },
+                { "value": "no", "label": "いいえ、無償で協力します" }
+              ],
+              "required": true
+            },
+            {
+              "id": "follow_creator_for_future",
+              "type": "radio",
+              "label": "このクリエイターをフォローして、今後の作品もレビューしたいですか？",
+              "options": [
+                { "value": "yes", "label": "はい、また協力したいです" },
+                { "value": "no", "label": "いいえ、今回は一度きりで" }
+              ],
+              "required": true
+            },
+            {
+              "id": "allow_public_display",
+              "type": "radio",
+              "label": "あなたのレビューと評価を公開してもよろしいですか？",
+              "options": [
+                { "value": "yes", "label": "はい、公開しても構いません" },
+                { "value": "no", "label": "いいえ、匿名にしてください" }
+              ],
+              "required": true
+            },
+            {
+              "id": "message_to_creator",
+              "type": "text",
+              "label": "クリエイターへのメッセージを残しますか？",
+              "placeholder": "例：あなたのスタイルが好きです。頑張ってください！",
+              "required": false
+            },
+            {
+              "id": "support_creator_credit",
+              "type": "number",
+              "label": "このクリエイターを追加のクレジットで支援しますか？",
+              "placeholder": "支援したいクレジット数を入力してください",
+              "required": false
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

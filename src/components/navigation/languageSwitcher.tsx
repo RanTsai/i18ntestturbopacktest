@@ -44,13 +44,7 @@ export default function LanguageSwitcher() {
       </option>
     ))}
   </select>
-  <Image
-    src="/globe.svg"
-    width={20}
-    height={20}
-    alt="Globe"
-    className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none"
-  />
+  
 </div>
   );
 }

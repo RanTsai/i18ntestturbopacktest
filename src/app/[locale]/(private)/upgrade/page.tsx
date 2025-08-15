@@ -3,9 +3,8 @@
 import React from 'react'
 import { getSubscriptionsFromSupabase } from '@/actions/supabase/supabaseSubscription';
 import { IProduct } from '@/app/interfaces';
-import UpgradeSelector from './upgradeSelector'
 import PaypalProvider from '@/context/paypalprovider';
-import UpgradeSelectorTemp from './upgrade-selector-temp';
+import UpgradeSelector from './upgrade-selector';
 
 async function page({ params }: { params: { locale: string } }) {
   let subscriptions: IProduct[] = [];
@@ -30,7 +29,7 @@ async function page({ params }: { params: { locale: string } }) {
       <div>
         <PaypalProvider currency={subscriptions[0]?.currency.toUpperCase() || "USD"}>
           {/* <UpgradeSelector subscriptions={subscriptions} /> */}
-          <UpgradeSelectorTemp />
+          <UpgradeSelector />
         </PaypalProvider>
       </div>
     </>

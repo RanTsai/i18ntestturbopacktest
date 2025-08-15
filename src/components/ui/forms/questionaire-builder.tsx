@@ -10,7 +10,6 @@ import { useQuestionnaireStore } from '@/lib/global-store/human-review-questiona
 import { Plus } from 'lucide-react'
 import { FormSchema } from '@/lib/schema/questionaire-schema'
 import { useEffect } from 'react'
-import { mockQuestions } from '@/app/[locale]/(private)/humanreviewdesign/mock-data'
 import { motion, AnimatePresence } from "framer-motion"
 import UserChannelStore from '@/lib/global-store/user-channel-store'
 import { IHumanReview } from '@/lib/schema/human-review-schema'
@@ -49,8 +48,50 @@ import { useParams } from 'next/navigation'
 interface Props {
   pageId: string,
   formData: FormSchema
-  questionRefs: React.RefObject<Record<string, HTMLDivElement | null>>
+  questionRefs: React.RefObject<Record<string, HTMLElement | null>>
 }
+
+export const mockQuestions: Question[] = [
+  {
+    id: "q1",
+    type: "image-select",
+    label: "請選擇你覺得表現最佳的縮圖",
+    required: true,
+    options: [
+      { value: "thumb_1", label: "https://ijuyminrnhiekoxybhgm.supabase.co/storage/v1/object/public/fallback-thumbnails//TheMonkeyMan%20V3.jpg" },
+      { value: "thumb_2", label: "https://ijuyminrnhiekoxybhgm.supabase.co/storage/v1/object/public/fallback-thumbnails//artwork%20(4).png" },
+      { value: "thumb_3", label: "https://ijuyminrnhiekoxybhgm.supabase.co/storage/v1/object/public/fallback-thumbnails//Thumbnail%20-%20Short%202.png" },
+      { value: "thumb_4", label: "https://ijuyminrnhiekoxybhgm.supabase.co/storage/v1/object/public/fallback-thumbnails//Thumbnail%20-%20Short%201.png" }
+    ]
+  },
+  {
+    id: "q1_reason",
+    type: "text",
+    label: "請簡述你選擇此縮圖的原因",
+    required: true,
+    placeholder: "輸入原因…"
+  },
+  {
+    id: "q2",
+    type: "title-select",
+    label: "請選擇你覺得最吸引人的標題",
+    required: true,
+    options: [
+      { value: "title_1", label: "你不會相信發生了什麼事…" },
+      { value: "title_2", label: "這是2024最好的教學影片" },
+      { value: "title_3", label: "看完這部影片，你會重新思考人生" },
+      { value: "title_4", label: "這個標題為何點閱率爆炸？原因竟然是…" }
+    ]
+  },
+  {
+    id: "q2_reason",
+    type: "text",
+    label: "請簡述你選擇此標題的原因",
+    required: true,
+    placeholder: "輸入原因…"
+  }
+]
+
 
 export default function QuestionnaireBuilder({ pageId, formData, questionRefs }: Props) {
   const { getTranslation } = useTranslationStore()
@@ -81,10 +122,7 @@ export default function QuestionnaireBuilder({ pageId, formData, questionRefs }:
   const { control, register, handleSubmit, getValues } = useForm<Record<string, any>>({ defaultValues })
 
   const {
-    userChannels,
-    setChannels,
     selectedChannel,
-    setSelectedChannel,
   } = UserChannelStore()
 
   const {
@@ -118,7 +156,6 @@ export default function QuestionnaireBuilder({ pageId, formData, questionRefs }:
     }
   }, [locale])
 
-
   const handleDragEnd = (event: any) => {
     const { active, over } = event
     if (!over || active.id === over.id) return
@@ -128,17 +165,11 @@ export default function QuestionnaireBuilder({ pageId, formData, questionRefs }:
     reorderQuestions(oldIndex, newIndex)
   }
 
-  const onQuestionnaireSubmit = async (values: any) => {
-    setLoading(true)
-    console.log('👤 Human Feedback Submitted', values)
-    setLoading(false)
-  }
-
   const handleAddQuestion = () => {
     const newQuestion: Question = {
       id: crypto.randomUUID(),
       type: 'text',
-      label: 'New Question',
+      label: translations?.new_question?.translation?? "New Question",
       required: false,
     }
     addQuestion(newQuestion)
@@ -191,7 +222,6 @@ export default function QuestionnaireBuilder({ pageId, formData, questionRefs }:
     navigator.clipboard.writeText(jsonStr)
     alert("📋 Payload 已複製")
     console.log("📦 Payload:", payload)
-
   }
 
   return (
@@ -385,6 +415,9 @@ export function buildHumanReviewPayload(
 
   const formDataWithAnswers = assignAnswersToQuestionsInFormSchema(formData, values);
 
+  // ✅ 在這裡做 value ← label 的覆寫
+  const normalizedQuestions = normalizeOptionValuesForSubmit(questions);
+
   const extract = (id: string) => {
     for (const section of formDataWithAnswers.sections) {
       const found = section.questions.find((q) => q.id === id);
@@ -393,26 +426,25 @@ export function buildHumanReviewPayload(
     return null;
   };
 
-  const thumbnails: string[] = extractThumbnailUrls(questions);
-  const titles = extractTitleOptions(questions);
+  const thumbnails: string[] = extractThumbnailUrls(normalizedQuestions);
+  const titles = extractTitleOptions(normalizedQuestions);
 
-  //console.log("user setting data", formData);
   return {
     human_review_id: 0,
     created_at: "",
     clerk_user_id,
     supabase_user_id,
-    project_summary: "",  // 也可以讓使用者自定摘要
-    questionaire: questions,
+    project_summary: "",
+    questionaire: normalizedQuestions, // ✅ 用正規化後的 questions
     channel_name: selectedChannel?.channel_name ?? "",
     channel_logo: selectedChannel?.logo ?? "",
-    reviewer: [],  // 初始空陣列
-    deadline: extract('review_deadline_date'), // ✅ 日期選項
+    reviewer: [],
+    deadline: extract('review_deadline_date'),
     creator_message_to_reviewer: extract('additional_message_to_rater') || '',
-    tags: selectedChannel?.tags?.map(tag => tag.label) ?? [], // 你可以從 form 裡取，或讓使用者另外設定
+    tags: selectedChannel?.tags?.map(tag => tag.label) ?? [],
     target_audience: [],
     credit_reward: Number(extract('rater_credit_reward') || 0),
-    compare_project_version: 1,  // 初始版本
+    compare_project_version: 1,
     updated_by: clerk_user_id,
     language: selectedChannel?.language ?? defaultlocale,
     is_closed: false,
@@ -423,11 +455,12 @@ export function buildHumanReviewPayload(
     wanted_review_count: Number(extract('wanted_review_count') || 1),
     rating_count: 0,
     view_count: 0,
-    thumbnails: thumbnails,
+    thumbnails,
     title: titles[0],
-    niche: selectedChannel?.niche ?? "", // 可從 form 或另設欄位匯入
+    niche: selectedChannel?.niche ?? "",
   }
 }
+
 export const extractAnswerFromForm = (
   formSchema: FormSchema,
   id: string
@@ -481,4 +514,23 @@ export function extractTitleOptions(questions: Question[]): string[] {
     .filter(q => q.type === "title-select")
     .flatMap(q => q.options?.map(opt => opt.label) ?? [])
     .filter(Boolean);
+}
+
+// ✅ 只在提交時把 radio/checkbox 的 option.value 覆寫成 label（若 label 為空則保留原 value）
+function normalizeOptionValuesForSubmit(questions: Question[]): Question[] {
+  return questions.map((q) => {
+    if ((q.type === "radio" || q.type === "checkbox") && q.options?.length) {
+      return {
+        ...q,
+        options: q.options.map((opt) => {
+          const nextValue = (opt.label ?? "").trim();
+          return {
+            ...opt,
+            value: nextValue !== "" ? nextValue : opt.value, // 空 label 就不動
+          };
+        }),
+      };
+    }
+    return q;
+  });
 }

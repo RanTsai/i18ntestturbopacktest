@@ -11,7 +11,6 @@ import UserChannelStore from "@/lib/global-store/user-channel-store"
 import useFollowingChannelStore from "@/lib/global-store/following-channel-store"
 import userGlobalStore from "@/lib/global-store/users-store"
 import useTranslationStore from "@/lib/global-store/use-translation-store"
-import { PageTranslations } from "@/i18n/interface"
 
 export function getChannelNameById(id: number): string {
   const userStore = UserChannelStore.getState()
@@ -238,12 +237,37 @@ export default function ReviewThumbnailsPage() {
         </Button>
       </div>
 
+      {/* Your projects */}
+      {ratedThumbnails.length > 0 && (
+        <div className="mt-10">
+          <h2 className="text-lg font-bold mb-4">{translations?.your_questinaire_section?.translation || "Your Questionaire"}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 opacity-70">
+            {ratedThumbnails.map((thumb) => (
+              <HumanReviewCard
+                pageId={pageId}
+                key={thumb.created_at + "-rated"}
+                thumb={thumb}
+                onGallery={handleGallery}
+                onSubmitReview={handleReviewSubmit}
+                reviewed={true}
+                isOwner={true}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+
       {/* Review Cards */}
+      <div className="mt-10">
+      <h2 className="text-lg font-bold mb-4">{translations?.review_others_section?.translation || "Rate Others"}</h2>
+
       {isLoading ? (
         <p>{translations?.loading?.translation || "Loading..."}</p>
       ) : filteredThumbnails.length === 0 ? (
         <p>{translations?.no_thumbnails_found?.translation || "No thumbnails matching the search critiera"}</p>
       ) : (
+        
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredThumbnails.map((thumb) => (
             <HumanReviewCard
@@ -253,10 +277,12 @@ export default function ReviewThumbnailsPage() {
               onGallery={handleGallery}
               onSubmitReview={handleReviewSubmit}
               reviewed={false}
+              isOwner={false}
             />
           ))}
         </div>
       )}
+      </div>
 
       {/* Reviewed By You */}
       {ratedThumbnails.length > 0 && (
@@ -271,6 +297,7 @@ export default function ReviewThumbnailsPage() {
                 onGallery={handleGallery}
                 onSubmitReview={handleReviewSubmit}
                 reviewed={true}
+                isOwner={false}
               />
             ))}
           </div>

@@ -140,7 +140,18 @@
                 "translation": "New title",
                 "description": "Tell user to enter new title",
                 "tooltip": "Type new title"
-            }  
+            },  
+            "max_four_titles": {
+                "label": "The max number you can add is 4",
+                "translation": "The max number you can add is 4",
+                "description": "Tell user to enter new title",
+                "tooltip": "Type new title"
+            }, "title_input": {
+                "label": "Double Click to edit",
+                "translation": "Double Click to edit",
+                "description": "Tell user to double click if they want to edit",
+                "tooltip": "Double Click to edit"
+            }
 
         }        
     }

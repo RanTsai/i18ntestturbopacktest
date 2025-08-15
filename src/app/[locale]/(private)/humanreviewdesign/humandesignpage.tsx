@@ -9,43 +9,40 @@ import QuestionnaireBuilder from '@/components/ui/forms/questionaire-builder';
 import { FormSchema } from '@/lib/schema/questionaire-schema';
 
 interface Props {
-    locale: string;
-    translationContent: any;
-    formData: FormSchema;
-    pageId: string;
+  locale: string;
+  translationContent: any;
+  formData: FormSchema;
+  pageId: string;
 }
 
 export default function HumanReviewDesignPage({
-    locale,
-    translationContent,
-    formData,
-    pageId,
+  locale,
+  translationContent,
+  formData,
+  pageId,
 }: Props) {
+  const questionRefs = useRef<Record<string, HTMLElement | null>>({});
 
-    const questionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  return (
+    <VideoProvider>
+      <QuestionRefContext.Provider value={questionRefs}>
+        <div className="flex h-screen bg-background text-foreground">
+          {/* Sidebar 交給元件自己控制寬度/邊框/黏頂 */}
+          <QuestionaireBuilderSideBar
+            pageId={pageId}
+            fallbackTranslations={translationContent}
+          />
 
-    return (
-        <VideoProvider>
-            <QuestionRefContext.Provider value={questionRefs}>
-                <div className="flex h-screen bg-background text-foreground">
-                    {/* Sidebar */}
-                    <div className="sticky top-0 h-screen w-[280px] border-r overflow-y-auto">
-                        <QuestionaireBuilderSideBar
-                            pageId={pageId}
-                            fallbackTranslations={translationContent}
-                        />
-                    </div>
-
-                    {/* Main Area */}
-                    <main className="flex-1 overflow-y-auto p-6">
-                        <QuestionnaireBuilder
-                            pageId={pageId}
-                            formData={formData}
-                            questionRefs={questionRefs}
-                        />
-                    </main>
-                </div>
-            </QuestionRefContext.Provider>
-        </VideoProvider>
-    );
+          {/* Main Area：跟著 Sidebar 收納/展開自適應寬度 */}
+          <main className="flex-1 min-w-0 overflow-y-auto p-6">
+            <QuestionnaireBuilder
+              pageId={pageId}
+              formData={formData}
+              questionRefs={questionRefs}
+            />
+          </main>
+        </div>
+      </QuestionRefContext.Provider>
+    </VideoProvider>
+  );
 }

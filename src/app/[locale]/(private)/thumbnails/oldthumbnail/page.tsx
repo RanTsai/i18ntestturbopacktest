@@ -3,10 +3,7 @@ import React from 'react'
 import { GetUserWorkFromSupabseWithWorkID } from '@/actions/supabase/supabase-user-work';
 import Spinner from '@/components/ui/spinner';
 import ReviewCard from '@/components/ui/review/reviewcard';
-import { UserWork } from '@/lib/schema/userwork-schema';
 import UserWorkGlobalStore from '@/lib/global-store/user-work-store';
-import { User } from '@clerk/nextjs/server';
-import { set } from 'mongoose';
 import Link from 'next/link';
 import ThumbnailDecisionReport from './thumbnail-decision-report';
 
@@ -24,7 +21,7 @@ export default function page() {
                 console.log("fetching work data...");
             try {
                 setLoading(true);
-                const res = await GetUserWorkFromSupabseWithWorkID({ user_work_id: 30 });
+                const res = await GetUserWorkFromSupabseWithWorkID({public_id : "30"});
                 if (res.success && res.data) {
                     console.log("Fetched work data:", res.data);
                     //setWorkData(res.data);

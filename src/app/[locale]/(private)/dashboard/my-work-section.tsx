@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
@@ -20,11 +20,10 @@ export default function MyWorkSection({ userWorks }: { userWorks: IUserWork[] })
   const [currentPage, setCurrentPage] = useState<number>(1);
   const paginatedWorks = userWorks.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    //sectionRef.current?.scrollIntoView({ behavior: 'smooth' }); // ✅ 滾動回頂部
-  };
+  // const handlePageChange = (page: number) => {
+  //   setCurrentPage(page);
+  //   //sectionRef.current?.scrollIntoView({ behavior: 'smooth' }); // ✅ 滾動回頂部
+  // };
 
   return (
     <motion.section
@@ -34,7 +33,7 @@ export default function MyWorkSection({ userWorks }: { userWorks: IUserWork[] })
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <h2 className="text-2xl font-bold">My Work</h2>
+      <h2 className="text-2xl font-bold">Your Thumbnails</h2>
 
       {userWorks.length === 0 ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -60,7 +59,11 @@ export default function MyWorkSection({ userWorks }: { userWorks: IUserWork[] })
               className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 "
             >
               {paginatedWorks.map((work) => (
-                <Card key={work.user_work_id} className="relative group overflow-hidden p-0 shadow-md">
+                <Card
+                  key={work.user_work_id}
+                  className="relative group overflow-hidden p-0 shadow-md 
+               border-2 border-transparent hover:border-blue-500  transition-colors duration-300"
+                >
                   <div className="relative">
                     <Link href={`/aichat/${work.public_id}`}>
                       <Image
@@ -68,7 +71,7 @@ export default function MyWorkSection({ userWorks }: { userWorks: IUserWork[] })
                         alt={work.title}
                         width={400}
                         height={300}
-                        className="w-full h-40 object-cover"
+                        className="rounded-md w-full h-40 object-cover transform transition-transform duration-300 group-hover:scale-110"
                       />
                     </Link>
                     <Button
@@ -88,6 +91,7 @@ export default function MyWorkSection({ userWorks }: { userWorks: IUserWork[] })
                   </CardContent>
                 </Card>
               ))}
+
             </motion.div>
           </AnimatePresence>
 

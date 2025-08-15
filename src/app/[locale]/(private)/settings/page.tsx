@@ -1,6 +1,5 @@
 "use client";
 import React from 'react'
-import ReviewCard from '@/components/ui/review/reviewcard';
 import UserWorkGlobalStore from '@/lib/global-store/user-work-store';
 import ProfileSettings from './profile-settings';
 
@@ -14,7 +13,6 @@ export default function page() {
     return (
         <>
         <ProfileSettings/>
-
         </>)
 }
 
