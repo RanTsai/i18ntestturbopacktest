@@ -51,7 +51,7 @@ const VideoSettingStore = create<IVideoSettingStore>()(
       setDescription: (desc) => set({ description: desc }),
 
       reset: () =>{
-          sessionStorage.removeItem("video-settings");
+          localStorage.removeItem("video-settings");
 
         set({
           video_type: "",
@@ -71,16 +71,16 @@ const VideoSettingStore = create<IVideoSettingStore>()(
       storage: {
         getItem: (name) => {
           if (typeof window === "undefined") return null;
-          const item = sessionStorage.getItem(name);
+          const item = localStorage.getItem(name);
           return item ? JSON.parse(item) : null;
         },
         setItem: (name, value) => {
           if (typeof window === "undefined") return;
-          sessionStorage.setItem(name, JSON.stringify(value));
+          localStorage.setItem(name, JSON.stringify(value));
         },
         removeItem: (name) => {
           if (typeof window === "undefined") return;
-          sessionStorage.removeItem(name);
+          localStorage.removeItem(name);
         },
       },
     }

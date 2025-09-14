@@ -1,18 +1,15 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import MultiImageUploader from "@/components/ui/review/multiImageUploader";
+import MultiImageUploader from "./multiImageUploader";
 import userGlobalStore, { IUserGlobalStore } from "@/lib/global-store/users-store";
 import toast from "react-hot-toast";
 import { uploadThumbnailAndGetUrl } from "@/actions/supabase/supabaseImages";
 import { Button } from "@/components/ui/button";
 import ReviewCard from "@/components/ui/review/reviewcard";
-import ThumbnailRankingBoard from "@/components/ui/review/thumbnailRankingBoard";
-import { FeedbackData } from "@/components/ui/feedback/user-feedback-form";
 import { ThumbnailReview, AspectRating } from "@/components/ui/review/types"; // Added imports
 import { FormSchema } from "@/lib/schema/questionaire-schema";
 import { useThumbnailReview } from "@/hooks/ai-feedback/ai-image-review";
-import { useBatchReview } from "@/hooks/ai-feedback/ai-batch-image-review";
 import { MapAiScoreToThumbnailReview } from "@/lib/mappers/map-ai-score";
 import HumanFeedbackSection from "@/components/ui/forms/human-feedback-section";
 import { Download, Star, StarOff, Flame, Trash2, Square, SquareCheckBig } from "lucide-react";
@@ -21,42 +18,46 @@ import { UploadedVersions } from "@/lib/schema/userwork-schema"; // Assuming thi
 import { InsertUserWorkToSupabaseRPC } from "@/actions/supabase/supabase-user-work";
 import VideoSettingStore from "@/lib/global-store/upload-store";
 import UserChannelStore from "@/lib/global-store/user-channel-store";
-import { SerializeUploadedVersions, IUserWork } from "@/lib/schema/userwork-schema";
+import type { IUserWork } from "@/app/interfaces";
+import { SerializeUploadedVersions } from "@/lib/schema/userwork-schema";
 import { GetUserWorkFromSupabseWithWorkID } from "@/actions/supabase/supabase-user-work";
 import { AIResponseSchema } from "@/lib/schema/aiscore-schema";
-import useTranslationStore from "@/lib/global-store/use-translation-store";
 import { useParams } from "next/navigation";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import { useTranslationViewModel } from "@/lib/view-models/use-translation-view-model";
+import { CachedTranslation } from "@/lib/idb/translation-idb";
+
 interface Props {
   formData: FormSchema;
+  initialTranslation?: CachedTranslation;
 }
 
-export default function ImageUploaderClient({ formData }: Props) {
+export default function ImageUploaderClient({ formData, initialTranslation }: Props) {
+  const { locale } = useParams() as { locale: string };
+  const pageId = "signed_up_upload_review";
+  const { translation, hydrateTranslation } = useTranslationViewModel(pageId, locale);
+  useEffect(() => {
+    if (
+      initialTranslation
+    ) {
+      hydrateTranslation(initialTranslation.content, initialTranslation.version);
+    }
+  }, [initialTranslation]);
+
   const { theUser } = userGlobalStore() as IUserGlobalStore;
   const [uploads, setUploads] = useState<UploadedVersions[]>([]);
   const [userWork, setUserWork] = useState<IUserWork | null>(null);
   const [loading, setLoading] = useState(false);
   const { reviewThumbnail } = useThumbnailReview();
-  // const { batchReviewThumbnails, isBatchReviewing } = useBatchReview();
   const { selectedChannel, userChannels } = UserChannelStore();
   const { video_type, tags, titles, topic, theme, description, title, setTitle, niche } = VideoSettingStore();
   const [selectedImages, setSelectedImages] = useState<
     { index: number; image_url: string; version_number: number }[]
   >([]);
-
-  const { getTranslation } = useTranslationStore();
-  const { locale } = useParams() as { locale: string };
-  const pageId = "signed_up_upload_review";
-  const translations = getTranslation(pageId, locale) || {};
-  console.log("translations", translations);
-
-  // const onSubmit = async (values: any) => {
-  //   console.log("feedbacksubmitted");
-  // };
 
   // 上傳多張縮圖
   const handleUpload = async (files: File[], formtitle: string) => {
@@ -166,14 +167,11 @@ export default function ImageUploaderClient({ formData }: Props) {
       );
     }
   };
-
-
   const getReviewForAll = async () => {
     if (!userWork) {
       toast.error("User work not found. Please upload images first.");
       return;
     }
-
     try {
       setLoading(true);
 
@@ -278,21 +276,24 @@ export default function ImageUploaderClient({ formData }: Props) {
       console.log("Fetched user work data:", response.data);
 
       if (response.success && response.data) {
-        setUserWork(response.data);
+        setUserWork(response.data); // 這裡就不會型別衝突了
 
-        const reloadedUploads: UploadedVersions[] = (response.data.versions ?? []).map((item: any, index: number) => {
-          console.log(`🔍 Version raw - aifeedback:`, item.ai_feedback);
+        const versionsArr = Array.isArray(response.data.versions)
+          ? response.data.versions
+          : response.data.versions
+            ? [response.data.versions]
+            : [];
+
+        const reloadedUploads: UploadedVersions[] = versionsArr.map((item, index) => {
           const parsed = AIResponseSchema.safeParse(item.ai_feedback);
-          console.log(`🔍 Version parsed - aifeedback:`, parsed);
-          console.log(`🔍 Version ${index} - aifeedback:`, item);
-
           return {
             ...item,
-            file: undefined, // 不需要 file，因為已經上傳過了
-            isLoading: false, // 初始狀態不需要 loading
-            aiFeedback: parsed ?? null, // 確保 aiFeedback 有值
+            file: undefined,
+            isLoading: false,
+            ai_feedback: parsed.success ? parsed.data : null,
           };
         });
+
         setUploads(reloadedUploads);
       }
     };
@@ -331,10 +332,6 @@ export default function ImageUploaderClient({ formData }: Props) {
   };
 
   useEffect(() => {
-    //fetchTranslation();
-  }, [theUser?.language])
-
-  useEffect(() => {
     fetchUserWork();
 
     console.log("user language", theUser?.language ?? "en");
@@ -351,205 +348,203 @@ export default function ImageUploaderClient({ formData }: Props) {
     }
   }, []);
 
-  return(
-  <div className="space-y-6">
-  {/* 頁首 */}
-  <h1 className="text-2xl font-semibold text-[var(--foreground)] text-center">
-    {translations?.page_header?.translation ?? "AI Thumbnail Analyser"}
-  </h1>
+  return (
+    <div className="space-y-6">
+      {/* 頁首 */}
+      <h1 className="text-2xl font-semibold text-[var(--foreground)] text-center">
+        {translation?.page_header?.translation ?? "AI Thumbnail Analyser"}
+      </h1>
 
-  {/* 上傳區塊 */}
-  <div className="w-full max-w-md mx-auto border border-dashed border-[var(--border)] bg-[var(--card)] p-4 rounded-md flex flex-col items-center text-center space-y-2">
-    <MultiImageUploader onUpload={async (files, title) => await handleUpload(files, title)} />
-    <p className="text-xs text-muted-foreground">
-      {translations?.upload_info?.translation ?? "Upload up to 6 images"}
-    </p>
-  </div>
-
-  {/* Get Review 按鈕 */}
-  {uploads.length > 0 && (
-    <Button
-      onClick={getReviewForAll}
-      disabled={loading}
-      className={`text-white font-bold py-2 px-4 rounded w-full md:w-auto mx-auto ${
-        loading
-          ? "bg-gray-500 cursor-not-allowed"
-          : "bg-green-500 hover:bg-green-600"
-      }`}
-    >
-      {loading
-        ? translations?.loading?.translation ?? "Loading..."
-        : `${translations?.get_review_for_all?.translation ?? "Get Review"} 50`}
-      <Flame className="text-yellow-300 ml-2" />
-    </Button>
-  )}
-
-  {/* Review Card 列表 */}
-  <div className="space-y-4">
-    {uploads.map((item, index) => (
-      <div
-        key={index}
-        className="group relative rounded p-2 flex flex-col md:flex-row gap-4 bg-[var(--card)] border border-[var(--border)]"
-      >
-        {/* 左側縮圖區塊 */}
-        <div className="w-full md:w-64">
-          <div className="relative w-full">
-            <img
-              src={item.image_url}
-              alt="Uploaded Thumbnail"
-              className="w-full h-auto rounded"
-            />
-
-            {/* 左上角 Version */}
-            <Tooltip delayDuration={300}>
-              <TooltipTrigger asChild>
-                <div className="absolute top-1 left-1 text-xs px-2 py-0.5 rounded bg-[var(--muted)] text-[var(--muted-foreground)]">
-                  v{item.version_number}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">
-                {translations?.version_number?.tooltip ?? "Thumbnail version"}
-              </TooltipContent>
-            </Tooltip>
-
-            {/* 左下角 Download */}
-            <Tooltip delayDuration={300}>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => handleDownload(item.image_url)}
-                  className="absolute bottom-1 left-1 z-10 text-[var(--foreground)] hover:text-[var(--muted-foreground)] transition"
-                >
-                  <Download className="w-5 h-5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">
-                {translations?.download_box?.tooltip ?? "Download the image"}
-              </TooltipContent>
-            </Tooltip>
-
-            {/* 右上角選取 */}
-            <Tooltip delayDuration={300}>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => handleSelect(index)}
-                  className={`absolute top-1 right-1 p-1 rounded-full z-10 transition ${
-                    selectedImages.find(i => i.image_url === item.image_url)
-                      ? "opacity-100"
-                      : "opacity-0 group-hover:opacity-100"
-                  } text-[var(--foreground)] hover:text-green-400`}
-                >
-                  {selectedImages.find(i => i.image_url === item.image_url) ? (
-                    <SquareCheckBig className="w-5 h-5 text-green-400" />
-                  ) : (
-                    <Square className="w-5 h-5" />
-                  )}
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">
-                {selectedImages.find(i => i.image_url === item.image_url)
-                  ? translations?.select_box?.tooltip ?? "Deselect image"
-                  : translations?.select_box?.tooltip ?? "Select image"}
-              </TooltipContent>
-            </Tooltip>
-
-            {/* 右下角 Favorite */}
-            <Tooltip delayDuration={300}>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => toggleFavourite(index)}
-                  className="absolute bottom-1 right-1 z-10 text-[var(--muted-foreground)] hover:text-yellow-300 transition"
-                >
-                  {true ? (
-                    <Star className="w-5 h-5 fill-yellow-400" />
-                  ) : (
-                    <StarOff className="w-5 h-5" />
-                  )}
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">
-                {translations?.favorate_box.tooltip ?? "Toggle Favorite"}
-              </TooltipContent>
-            </Tooltip>
-          </div>
-
-          {/* 影片資訊欄 */}
-          <div className="flex mt-2 px-1">
-            <img
-              src={selectedChannel?.logo || userChannels?.[0]?.logo || "/logo/logo.png"}
-              alt="Channel Logo"
-              className="w-9 h-9 rounded-full object-cover"
-            />
-            <div className="ml-2 flex-1 text-[var(--foreground)]">
-              <p className="text-[10px] font-medium break-all leading-snug">{item.title}</p>
-              <p className="text-xs text-muted-foreground">
-                {selectedChannel?.channel_name || userChannels?.[0]?.channel_name || "channel"}
-              </p>
-              <p className="text-xs text-muted-foreground">1.2M views • 1 min ago</p>
-            </div>
-          </div>
-        </div>
-
-        {/* 右側內容（按鈕/卡片） */}
-        <div className="flex-1 space-y-2 relative">
-          {!item.ai_feedback && !item.isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-              <Button className="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold py-1 px-2 rounded" onClick={() => getReview(index)}>
-                {translations?.get_review?.translation} 10 <Flame className="text-yellow-300 font-extrabold" />
-              </Button>
-            </div>
-          )}
-
-          {item.isLoading ? (
-            <div className="space-y-2">
-              <Skeleton className="w-full h-[160px] rounded-md" />
-              <Skeleton className="w-3/4 h-4" />
-              <Skeleton className="w-full h-3" />
-              <Skeleton className="w-full h-3" />
-              <Skeleton className="w-5/6 h-3" />
-            </div>
-          ) : (
-            item.ai_feedback && (
-              <ReviewCard
-                thumbnailUrl={item.image_url}
-                title={item.title}
-                score={item.ai_score?.clickability ?? 0}
-                aspects={(item.ai_score
-                  ? [
-                      { tooltip: "Clickability", value: item.ai_score.clickability, label: "Clickability", color: "#fbbf24" },
-                      { tooltip: "Curiosity", value: item.ai_score.curiosity, label: "Curiosity", color: "#34d399" },
-                      { tooltip: "Brightness", value: item.ai_score.brightness, label: "Brightness", color: "#60a5fa" },
-                      { tooltip: "Relevance", value: item.ai_score.relevance, label: "Relevance", color: "#f472b6" },
-                      { tooltip: "Emotion", value: item.ai_score.emotion, label: "Emotion", color: "#f87171" },
-                    ]
-                  : []
-                ).filter(a => typeof a.value === "number")}
-                aiMarkdown={`### Overall Impression\n${item.ai_feedback.overall_impression}\n\n### Title Strength\n${item.ai_feedback.title_strength}\n\n### Thumbnail Strength\n${item.ai_feedback.thumbnail_strength}\n\n### Synergy\n${item.ai_feedback.synergy}\n\n### Explanation\n${item.ai_feedback.explanation}`}
-              />
-            )
-          )}
-
-          {/* 刪除按鈕 */}
-          <Tooltip delayDuration={300}>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => handleRemoveFile(index)}
-                className="absolute top-1 right-1 p-1 rounded-full z-10 text-[var(--muted-foreground)] hover:text-purple-600 opacity-0 group-hover:opacity-100 transition"
-              >
-                <Trash2 />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="text-xs">
-              {translations?.download_box?.tooltip ?? "Delete this Thumbnail"}
-            </TooltipContent>
-          </Tooltip>
-        </div>
+      {/* 上傳區塊 */}
+      <div className="w-full max-w-md mx-auto border border-dashed border-[var(--border)] bg-[var(--card)] p-4 rounded-md flex flex-col items-center text-center space-y-2">
+        <MultiImageUploader onUpload={async (files, title) => await handleUpload(files, title)} />
+        <p className="text-xs text-muted-foreground">
+          {translation?.upload_info?.translation ?? "Upload up to 6 images"}
+        </p>
       </div>
-    ))}
-  </div>
 
-  {/* 使用者回饋區塊 */}
-  <HumanFeedbackSection formData={formData} />
-</div>
+      {/* Get Review 按鈕 */}
+      {uploads.length > 0 && (
+        <Button
+          onClick={getReviewForAll}
+          disabled={loading}
+          className={`text-white font-bold py-2 px-4 rounded w-full md:w-auto mx-auto ${loading
+            ? "bg-gray-500 cursor-not-allowed"
+            : "bg-green-500 hover:bg-green-600"
+            }`}
+        >
+          {loading
+            ? translation?.loading?.translation ?? "Loading..."
+            : `${translation?.get_review_for_all?.translation ?? "Get Review"} 50`}
+          <Flame className="text-yellow-300 ml-2" />
+        </Button>
+      )}
+
+      {/* Review Card 列表 */}
+      <div className="space-y-4">
+        {uploads.map((item, index) => (
+          <div
+            key={index}
+            className="group relative rounded p-2 flex flex-col md:flex-row gap-4 bg-[var(--card)] border border-[var(--border)]"
+          >
+            {/* 左側縮圖區塊 */}
+            <div className="w-full md:w-64">
+              <div className="relative w-full">
+                <img
+                  src={item.image_url}
+                  alt="Uploaded Thumbnail"
+                  className="w-full h-auto rounded"
+                />
+
+                {/* 左上角 Version */}
+                <Tooltip delayDuration={300}>
+                  <TooltipTrigger asChild>
+                    <div className="absolute top-1 left-1 text-xs px-2 py-0.5 rounded bg-[var(--muted)] text-[var(--muted-foreground)]">
+                      v{item.version_number}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="text-xs">
+                    {translation?.version_number?.tooltip ?? "Thumbnail version"}
+                  </TooltipContent>
+                </Tooltip>
+
+                {/* 左下角 Download */}
+                <Tooltip delayDuration={300}>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => handleDownload(item.image_url)}
+                      className="absolute bottom-1 left-1 z-10 text-[var(--foreground)] hover:text-[var(--muted-foreground)] transition"
+                    >
+                      <Download className="w-5 h-5" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="text-xs">
+                    {translation?.download_box?.tooltip ?? "Download the image"}
+                  </TooltipContent>
+                </Tooltip>
+
+                {/* 右上角選取 */}
+                <Tooltip delayDuration={300}>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => handleSelect(index)}
+                      className={`absolute top-1 right-1 p-1 rounded-full z-10 transition ${selectedImages.find(i => i.image_url === item.image_url)
+                        ? "opacity-100"
+                        : "opacity-0 group-hover:opacity-100"
+                        } text-[var(--foreground)] hover:text-green-400`}
+                    >
+                      {selectedImages.find(i => i.image_url === item.image_url) ? (
+                        <SquareCheckBig className="w-5 h-5 text-green-400" />
+                      ) : (
+                        <Square className="w-5 h-5" />
+                      )}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="text-xs">
+                    {selectedImages.find(i => i.image_url === item.image_url)
+                      ? translation?.select_box?.tooltip ?? "Deselect image"
+                      : translation?.select_box?.tooltip ?? "Select image"}
+                  </TooltipContent>
+                </Tooltip>
+
+                {/* 右下角 Favorite */}
+                <Tooltip delayDuration={300}>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => toggleFavourite(index)}
+                      className="absolute bottom-1 right-1 z-10 text-[var(--muted-foreground)] hover:text-yellow-300 transition"
+                    >
+                      {true ? (
+                        <Star className="w-5 h-5 fill-yellow-400" />
+                      ) : (
+                        <StarOff className="w-5 h-5" />
+                      )}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="text-xs">
+                    {translation?.favorate_box.tooltip ?? "Toggle Favorite"}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+
+              {/* 影片資訊欄 */}
+              <div className="flex mt-2 px-1">
+                <img
+                  src={selectedChannel?.logo || userChannels?.[0]?.logo || "/logo/logo.png"}
+                  alt="Channel Logo"
+                  className="w-9 h-9 rounded-full object-cover"
+                />
+                <div className="ml-2 flex-1 text-[var(--foreground)]">
+                  <p className="text-[10px] font-medium break-all leading-snug">{item.title}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {selectedChannel?.channel_name || userChannels?.[0]?.channel_name || "channel"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">1.2M views • 1 min ago</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 右側內容（按鈕/卡片） */}
+            <div className="flex-1 space-y-2 relative">
+              {!item.ai_feedback && !item.isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                  <Button className="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold py-1 px-2 rounded" onClick={() => getReview(index)}>
+                    {translation?.get_review?.translation} 10 <Flame className="text-yellow-300 font-extrabold" />
+                  </Button>
+                </div>
+              )}
+
+              {item.isLoading ? (
+                <div className="space-y-2">
+                  <Skeleton className="w-full h-[160px] rounded-md" />
+                  <Skeleton className="w-3/4 h-4" />
+                  <Skeleton className="w-full h-3" />
+                  <Skeleton className="w-full h-3" />
+                  <Skeleton className="w-5/6 h-3" />
+                </div>
+              ) : (
+                item.ai_feedback && (
+                  <ReviewCard
+                    thumbnailUrl={item.image_url}
+                    title={item.title}
+                    score={item.ai_score?.clickability ?? 0}
+                    aspects={(item.ai_score
+                      ? [
+                        { tooltip: "Clickability", value: item.ai_score.clickability, label: "Clickability", color: "#fbbf24" },
+                        { tooltip: "Curiosity", value: item.ai_score.curiosity, label: "Curiosity", color: "#34d399" },
+                        { tooltip: "Brightness", value: item.ai_score.brightness, label: "Brightness", color: "#60a5fa" },
+                        { tooltip: "Relevance", value: item.ai_score.relevance, label: "Relevance", color: "#f472b6" },
+                        { tooltip: "Emotion", value: item.ai_score.emotion, label: "Emotion", color: "#f87171" },
+                      ]
+                      : []
+                    ).filter(a => typeof a.value === "number")}
+                    aiMarkdown={`### Overall Impression\n${item.ai_feedback.overall_impression}\n\n### Title Strength\n${item.ai_feedback.title_strength}\n\n### Thumbnail Strength\n${item.ai_feedback.thumbnail_strength}\n\n### Synergy\n${item.ai_feedback.synergy}\n\n### Explanation\n${item.ai_feedback.explanation}`}
+                  />
+                )
+              )}
+
+              {/* 刪除按鈕 */}
+              <Tooltip delayDuration={300}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => handleRemoveFile(index)}
+                    className="absolute top-1 right-1 p-1 rounded-full z-10 text-[var(--muted-foreground)] hover:text-purple-600 opacity-0 group-hover:opacity-100 transition"
+                  >
+                    <Trash2 />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-xs">
+                  {translation?.download_box?.tooltip ?? "Delete this Thumbnail"}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* 使用者回饋區塊 */}
+      <HumanFeedbackSection formData={formData} />
+    </div>
 
   );
 

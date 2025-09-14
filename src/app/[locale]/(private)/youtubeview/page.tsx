@@ -9,19 +9,29 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useVideoContext } from "@/context/youtube-video-provider";
 import TabletYouTubeHome from "@/components/ui/review/youtube-home-tablet";
-import useTranslationStore from "@/lib/global-store/use-translation-store";
+import { useTranslationViewModel } from "@/lib/view-models/use-translation-view-model";
+import { CachedTranslation } from "@/lib/idb/translation-idb";
 
 type ViewMode = "desktop" | "tablet" | "mobile";
+interface Props {
+  initialTranslation?: CachedTranslation
+}
 
-export default function Page() {
-  const { getTranslation } = useTranslationStore();
+export default function Page({ initialTranslation,
+}: Props) {
+  const { locale } = useParams() as { locale: string };
+  const pageId = "device_preview_page";
+  const { translation, hydrateTranslation } = useTranslationViewModel(pageId, locale)
+  useEffect(() => {
+    if (
+      initialTranslation
+    ) {
+      hydrateTranslation(initialTranslation.content, initialTranslation.version);
+    }
+  }, [initialTranslation]);
 
   const [viewMode, setViewMode] = useState<ViewMode>("desktop");
   const [inputTerm, setInputTerm] = useState("");
-  const pageId = "device_preview_page";
-  const { locale } = useParams() as { locale: string };
-
-  const translations = getTranslation(pageId, locale) || {};
 
   const {
     searchTerm,
@@ -45,6 +55,7 @@ export default function Page() {
   };
 
   useEffect(() => {
+    console.log("Initial fetch for trending videos");
     (async () => {
       const res = await fetch("/api/youtube?q=trending");
       const data = await res.json();
@@ -59,7 +70,7 @@ export default function Page() {
       <div className="flex items-center justify-center gap-2 max-w-md mx-auto">
         <Input
           type="text"
-          placeholder=  {translations?.Search_bar_placeholder?.translation || "Search"}
+          placeholder={translation?.Search_bar_placeholder?.translation || "Search"}
           value={inputTerm}
           onChange={(e) => setInputTerm(e.target.value)}
           className="w-full"
@@ -73,23 +84,36 @@ export default function Page() {
       {/* 📱 View Mode Buttons */}
       <div className="flex justify-center space-x-4 mb-4">
         <Button
-          variant={viewMode === "desktop" ? "default" : "outline"}
           onClick={() => setViewMode("desktop")}
+          className={`px-4 py-2 rounded border transition-colors font-medium
+      ${viewMode === "desktop"
+              ? "bg-green-600 text-primary"
+              : "bg-transparent text-foreground border-border hover:bg-blue-500 hover:text-secondary-foreground hover:border-secondary"}
+    `}
         >
-          {translations?.Homepage_view?.translation || "Homepage View"}
+          {translation?.Homepage_view?.translation || "Homepage View"}
+        </Button>
 
-        </Button>
         <Button
-          variant={viewMode === "tablet" ? "default" : "outline"}
           onClick={() => setViewMode("tablet")}
+          className={`px-4 py-2 rounded border transition-colors font-medium
+      ${viewMode === "tablet"
+              ? "bg-green-600 text-primary"
+              : "bg-transparent text-foreground border-border hover:bg-blue-500 hover:text-secondary-foreground hover:border-secondary"}
+    `}
         >
-          {translations?.Suggested_Video_view?.translation || "Suggested Video View"}
+          {translation?.Suggested_Video_view?.translation || "Suggested Video View"}
         </Button>
+
         <Button
-          variant={viewMode === "mobile" ? "default" : "outline"}
           onClick={() => setViewMode("mobile")}
+          className={`px-4 py-2 rounded border transition-colors font-medium
+      ${viewMode === "mobile"
+              ? "bg-green-600 text-primary"
+              : "bg-transparent text-foreground border-border hover:bg-blue-500 hover:text-secondary-foreground hover:border-secondary"}
+    `}
         >
-          {translations?.Mobile_view?.translation || "Mobile View"}
+          {translation?.Mobile_view?.translation || "Mobile View"}
         </Button>
       </div>
 

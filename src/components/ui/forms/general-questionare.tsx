@@ -30,27 +30,6 @@ const GeneralQuestionaire = ({
 
   return (
     <div className="max-w-2xl mx-auto space-y-10">
-      {/* Branding Information from JSON */}
-      {formData.channel_name && (
-        <div className="flex flex-col items-center text-center space-y-3">
-          {formData.channel_logo && (
-            <img
-              src={formData.channel_logo}
-              alt={`${formData.channel_name} logo`}
-              className="w-20 h-20 object-cover rounded-md border shadow-sm"
-            />
-          )}
-          <h2 className="text-xl font-semibold text-gray-900">
-            {formData.channel_name}
-          </h2>
-          {formData.channel_description && (
-            <p className="text-sm text-gray-600 max-w-md">
-              {formData.channel_description}
-            </p>
-          )}
-        </div>
-      )}
-
       <h1 className="text-2xl font-bold text-center">{formData.title}</h1>
 
       {formData.sections.map((section) => (

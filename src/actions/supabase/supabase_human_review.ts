@@ -109,11 +109,13 @@ export const GetTestHumanReview = async (human_review_id: any): Promise<{
         if (!clerkUser) {
             throw new Error("Clerk user not found");
         }
-
+        
+        const id = Number(human_review_id);
+        console.log("numbered human review id", id);
         const { data, count, error } = await supabase
             .from("human_review")
             .select("*", { count: "exact" })  // ✅ count 回傳總筆數
-            .eq("human_review_id", human_review_id)
+            .eq("human_review_id", id)
             .eq("language", "en")
             .limit(1);
             // .range(from, to);

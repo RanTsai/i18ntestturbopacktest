@@ -1,8 +1,6 @@
 // context/question-ref-context.ts
-import { createContext, useContext, useRef } from "react";
-import type { RefObject } from "react";
+import { createContext, useContext, type RefObject } from "react";
 
-// 定義 context 類型
 export type QuestionRefMap = Record<string, HTMLElement | null>;
 
 export const QuestionRefContext = createContext<RefObject<QuestionRefMap> | null>(null);

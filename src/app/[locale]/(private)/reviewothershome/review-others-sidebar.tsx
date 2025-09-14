@@ -55,8 +55,8 @@ export default function ReviewOthersSideBar({
   } = UserChannelStore()
 
   const {
-    selectedMyChannelId,
-    selectedFollowingChannelId,
+    selectedMyChannelName,
+    selectedFollowingChannelName,
     activeFilterGroup,
     setMyChannel,
     setFollowingChannel,
@@ -81,57 +81,57 @@ export default function ReviewOthersSideBar({
   }, [locale, fallbackTranslations])
 
   const followingIds = useMemo(
-    () => followingChannels?.map((c) => c.user_channel_id) ?? [],
+    () => followingChannels?.map((c) => c.channel_name) ?? [],
     [followingChannels]
   )
 
-  const myChannelId = selectedChannel?.user_channel_id ?? null
+  const myChannelId = selectedChannel?.channel_name ?? null
 
   const exploreUsers: IUserChannel[] = useMemo(() => {
     return (userChannels ?? []).filter(
       (c) =>
-        c.user_channel_id !== myChannelId &&
-        !followingIds.includes(c.user_channel_id)
+        c.channel_name !== myChannelId &&
+        !followingIds.includes(c.channel_name)
     )
   }, [userChannels, myChannelId, followingIds])
 
   const handleSelect = (
     type: "my" | "following" | "explore",
-    id: number,
+    channel_name: string,
     channel?: IUserChannel
   ) => {
     if (type === "my") {
-      if (activeFilterGroup === "myChannels" && selectedMyChannelId === id) {
+      if (activeFilterGroup === "myChannels" && selectedMyChannelName){
         setMyChannel(null)
         setSelectedChannel(null)
       } else {
-        setMyChannel(id)
+        setMyChannel(channel_name)
         setSelectedChannel(channel ?? null)
       }
     } else if (type === "following") {
-      if (activeFilterGroup === "following" && selectedFollowingChannelId === id) {
+      if (activeFilterGroup === "following" && selectedFollowingChannelName === channel_name) {
         setFollowingChannel(null)
       } else {
-        setFollowingChannel(id)
+        setFollowingChannel(channel_name)
         setSelectedChannel(null)
       }
     } else {
-      if (activeFilterGroup === "myChannels" && selectedMyChannelId === id) {
+      if (activeFilterGroup === "myChannels" && selectedMyChannelName){
         setMyChannel(null)
         setSelectedChannel(null)
       } else {
-        setMyChannel(id)
+        setMyChannel(channel_name)
         setSelectedChannel(channel ?? null)
       }
     }
   }
 
-  const isSelected = (type: "my" | "following" | "explore", id: number) => {
+  const isSelected = (type: "my" | "following" | "explore", channel_name: string) => {
     if (type === "my" || type === "explore") {
-      return activeFilterGroup === "myChannels" && selectedMyChannelId === id
+      return activeFilterGroup === "myChannels" && selectedMyChannelName
     }
     if (type === "following") {
-      return activeFilterGroup === "following" && selectedFollowingChannelId === id
+      return activeFilterGroup === "following" && selectedFollowingChannelName === channel_name
     }
     return false
   }
@@ -148,15 +148,15 @@ export default function ReviewOthersSideBar({
       className="overflow-hidden flex flex-wrap gap-4 px-2 pt-2"
     >
       {list.map((user) => {
-        const isActive = isSelected(type, user.user_channel_id)
+        const isActive = isSelected(type, user.channel_name)
 
         return (
-          <Tooltip key={user.user_channel_id}>
+          <Tooltip key={user.channel_name}>
             <TooltipTrigger asChild>
               <div
                 className="flex flex-col items-center w-16 cursor-pointer"
                 onClick={() =>
-                  handleSelect(type, user.user_channel_id, user as IUserChannel)
+                  handleSelect(type, user.channel_name, user as IUserChannel)
                 }
               >
                 <Image
@@ -280,12 +280,7 @@ export default function ReviewOthersSideBar({
                 <MyChannelSelector
                   expanded={isMyChannelsExpanded}
                   setExpanded={setMyChannelsExpanded}
-                  userChannels={userChannels ?? []}
-                  setSelectedChannel={setSelectedChannel}
-                  pageId={pageId}
-                  selectedId={selectedMyChannelId ? String(selectedMyChannelId) : null}
-                  setSelectedId={(id: string | null) => setMyChannel(id ? Number(id) : null)}
-                  setMyChannel={setMyChannel}
+                  translations={translations!}
                 />
               </div>
 

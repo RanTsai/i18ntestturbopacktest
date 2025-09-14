@@ -36,7 +36,6 @@ export default function HumanReviewDesignPage({
           {/* Main Area：跟著 Sidebar 收納/展開自適應寬度 */}
           <main className="flex-1 min-w-0 overflow-y-auto p-6">
             <QuestionnaireBuilder
-              pageId={pageId}
               formData={formData}
               questionRefs={questionRefs}
             />

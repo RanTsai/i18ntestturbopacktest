@@ -13,20 +13,23 @@ import {
 } from "lucide-react";
 import VideoCard from "@/components/ui/review/video-card";
 import ShortsSection from "@/components/ui/review/shorts-section";
-import { useVideoContext } from "@/context/youtube-video-provider";
-import useVideoSelectionStore from "@/lib/global-store/video-selection-store"; // ✅ 加入 store
+import useVideoSelectionStore from "@/lib/global-store/video-selection-store";
+import { YoutubeVideo } from "@/lib/schema/youtube-video-schema";
 
-export default function MobileYouTubeHomeMock() {
-  const { videos, searchTerm } = useVideoContext();
-  const { selectedVideos, addVideo, removeVideo } = useVideoSelectionStore(); // ✅ 呼叫 store
+interface Props {
+  videos: YoutubeVideo[];
+  shorts: YoutubeVideo[];
+}
+
+export default function MobileYouTubeHomeMock({ videos, shorts }: Props) {
+  const { selectedVideos, addVideo, removeVideo } = useVideoSelectionStore();
 
   const beforeShorts = videos.slice(0, 4);
   const afterShorts = videos.slice(4);
 
   // ✅ 判斷是否選取
-  const isVideoSelected = (thumbnail: string) => {
-    return selectedVideos.some((v) => v.thumbnail === thumbnail);
-  };
+  const isVideoSelected = (thumbnail: string) =>
+    selectedVideos.some((v) => v.thumbnail === thumbnail);
 
   // ✅ 處理選取邏輯
   const handleSelect = (video: { title: string; thumbnail: string }) => {
@@ -60,9 +63,7 @@ export default function MobileYouTubeHomeMock() {
           <span className="bg-foreground text-background px-3 py-1 rounded-full text-xs font-semibold">
             All
           </span>
-          <span className="bg-muted px-3 py-1 rounded-full text-xs">
-            Gaming
-          </span>
+          <span className="bg-muted px-3 py-1 rounded-full text-xs">Gaming</span>
           <span className="bg-muted px-3 py-1 rounded-full text-xs whitespace-nowrap">
             Movie
           </span>
@@ -90,7 +91,9 @@ export default function MobileYouTubeHomeMock() {
               />
             </div>
           ))}
-          <ShortsSection variant="mobile" keyword={searchTerm} />
+
+          <ShortsSection variant="mobile" shorts={shorts} />
+
           {afterShorts.map((video) => (
             <div
               key={video.id}
@@ -105,6 +108,7 @@ export default function MobileYouTubeHomeMock() {
               />
             </div>
           ))}
+
           {videos.length === 0 && (
             <p className="text-center text-muted-foreground mt-10">
               No videos found.

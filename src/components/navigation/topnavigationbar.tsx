@@ -7,7 +7,7 @@ import Image from "next/image";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { ImagePlus, LockOpen, LogIn, MoreVertical, Youtube } from "lucide-react";
 import IconWithText from "@/components/ui/iconwithtext";
-import { LaptopMinimal, Handshake } from "lucide-react";    
+import { LaptopMinimal, Handshake } from "lucide-react";
 import LanguageSwitcher from "./languageSwitcher";
 import ThemeToggle from "./theme-toggle";
 import {
@@ -16,12 +16,26 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { PageTranslations } from "@/i18n/interface";
+import { useParams } from "next/navigation";
+import { useTranslationViewModel } from "@/lib/view-models/use-translation-view-model";
+import { CachedTranslation } from "@/lib/idb/translation-idb";
 
-interface Props{
-    translations:PageTranslations
+interface Props {
+    initialTranslation?: CachedTranslation
 }
-export default function TopNavigationBar({translations}: Props) {
+export default function TopNavigationBar({ initialTranslation }: Props) {
+    const pageId = "top_navigation_bar";
+    const { locale } = useParams() as { locale: string }
+
+    const { translation, hydrateTranslation } = useTranslationViewModel(pageId, locale);
+    useEffect(() => {
+        if (
+            initialTranslation
+        ) {
+            hydrateTranslation(initialTranslation.content, initialTranslation.version);
+        }
+    }, [initialTranslation]);
+
     const [open, setOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -49,11 +63,11 @@ export default function TopNavigationBar({translations}: Props) {
                     <Tooltip delayDuration={800}>
                         <TooltipTrigger asChild>
                             <Link href="/" className="flex items-center gap-2">
-                                <Image src="/logo/logo.png" alt="Mr. Click Logo" width={34} height={34} />
-                                <span className="text-sm text-muted-foreground hidden sm:inline">{translations?.logo?.translation?? "Mr. Click"}</span>
+                                <Image src="/logo/logo.png" alt="Mr. Click Logo" width={34} height={34} priority />
+                                <span className="text-sm text-muted-foreground hidden sm:inline">{translation?.logo?.translation ?? "Mr. Click"}</span>
                             </Link>
                         </TooltipTrigger>
-                        <TooltipContent side="bottom">{translations?.logo?.tooltip?? "Home page"}</TooltipContent>
+                        <TooltipContent side="bottom">{translation?.logo?.tooltip ?? "Home page"}</TooltipContent>
                     </Tooltip>
 
                     {/* 中：IconWithText（保持原樣） */}
@@ -61,46 +75,46 @@ export default function TopNavigationBar({translations}: Props) {
                         <Tooltip delayDuration={800}>
                             <TooltipTrigger asChild>
                                 <span className="inline-flex">
-                                    <IconWithText href="/youtubeview" icon={Youtube} text={translations?.preview_button?.translation?? "Preview"} />
+                                    <IconWithText href="/youtubeview" icon={Youtube} text={translation?.preview_button?.translation ?? "Preview"} />
                                 </span>
                             </TooltipTrigger>
-                            <TooltipContent side="bottom">{translations?.preview_button?.tooltip?? "Live preview your thumbnails on different devices"}</TooltipContent>
+                            <TooltipContent side="bottom">{translation?.preview_button?.tooltip ?? "Live preview your thumbnails on different devices"}</TooltipContent>
                         </Tooltip>
 
                         <Tooltip delayDuration={800}>
                             <TooltipTrigger asChild>
                                 <span className="inline-flex">
-                                    <IconWithText href="/dashboard" icon={LaptopMinimal} text={translations?.dashboard_button?.translation?? "Dashboard"} />
+                                    <IconWithText href="/dashboard" icon={LaptopMinimal} text={translation?.dashboard_button?.translation ?? "Dashboard"} />
                                 </span>
                             </TooltipTrigger>
-                            <TooltipContent side="bottom">{translations?.dashboard_button?.tooltip?? "Where all your stuff is"}</TooltipContent>
+                            <TooltipContent side="bottom">{translation?.dashboard_button?.tooltip ?? "Where all your stuff is"}</TooltipContent>
                         </Tooltip>
 
                         <Tooltip delayDuration={800}>
                             <TooltipTrigger asChild>
                                 <span className="inline-flex">
-                                    <IconWithText href="/thumbnails/uploadpage" icon={ImagePlus} text={translations?.analysis_button?.translation?? "AI Analysis"} />
+                                    <IconWithText href="/thumbnails/uploadpage" icon={ImagePlus} text={translation?.analysis_button?.translation ?? "AI Analysis"} />
                                 </span>
                             </TooltipTrigger>
-                            <TooltipContent side="bottom">{translations?.analysis_button?.tooltip?? "Upload and get instant AI analysis"}</TooltipContent>
+                            <TooltipContent side="bottom">{translation?.analysis_button?.tooltip ?? "Upload and get instant AI analysis"}</TooltipContent>
                         </Tooltip>
 
                         <Tooltip delayDuration={800}>
                             <TooltipTrigger asChild>
                                 <span className="inline-flex">
-                                    <IconWithText href="/reviewothershome" icon={Handshake} text={translations?.help_others_button?.translation?? "AI Analysis"} />
+                                    <IconWithText href="/reviewothershome" icon={Handshake} text={translation?.help_others_button?.translation ?? "Help others"} />
                                 </span>
                             </TooltipTrigger>
-                            <TooltipContent side="bottom">{translations?.help_others_button?.tooltip?? "AI Analysis"}</TooltipContent>
+                            <TooltipContent side="bottom">{translation?.help_others_button?.tooltip ?? "Community"}</TooltipContent>
                         </Tooltip>
 
                         <Tooltip delayDuration={800}>
                             <TooltipTrigger asChild>
                                 <span className="inline-flex">
-                                    <IconWithText href="/upgrade" icon={LockOpen} text={translations?.upgrade_button?.translation?? "AI Analysis"} />
+                                    <IconWithText href="/upgrade" icon={LockOpen} text={translation?.upgrade_button?.translation ?? "Upgrade"} />
                                 </span>
                             </TooltipTrigger>
-                            <TooltipContent side="bottom">{translations?.upgrade_button?.tooltip?? "AI Analysis"}</TooltipContent>
+                            <TooltipContent side="bottom">{translation?.upgrade_button?.tooltip ?? "Upgrade"}</TooltipContent>
                         </Tooltip>
                     </div>
 
@@ -115,7 +129,7 @@ export default function TopNavigationBar({translations}: Props) {
                                             <LogIn className="h-6 w-6 cursor-pointer" />
                                         </SignInButton>
                                     </TooltipTrigger>
-                                    <TooltipContent side="bottom">{translations?.sign_in_button?.tooltip?? "Sign in"}</TooltipContent>
+                                    <TooltipContent side="bottom">{translation?.sign_in_button?.tooltip ?? "Sign in"}</TooltipContent>
                                 </Tooltip>
                             </SignedOut>
 
@@ -127,7 +141,7 @@ export default function TopNavigationBar({translations}: Props) {
                                             <UserButton appearance={{ elements: { avatarBox: "h-8 w-8" } }} />
                                         </span>
                                     </TooltipTrigger>
-                                    <TooltipContent side="bottom">{translations?.account_button?.tooltip?? "Change your account preferences and settings"}</TooltipContent>
+                                    <TooltipContent side="bottom">{translation?.account_button?.tooltip ?? "Change your account preferences and settings"}</TooltipContent>
                                 </Tooltip>
                             </SignedIn>
 
@@ -142,7 +156,7 @@ export default function TopNavigationBar({translations}: Props) {
                                         <MoreVertical className="h-6 w-6" />
                                     </button>
                                 </TooltipTrigger>
-                                <TooltipContent side="bottom">{translations?.menu_button?.tooltip?? "Change settings like theme and language"}</TooltipContent>
+                                <TooltipContent side="bottom">{translation?.menu_button?.tooltip ?? "Change settings like theme and language"}</TooltipContent>
                             </Tooltip>
                         </div>
 
@@ -156,14 +170,14 @@ export default function TopNavigationBar({translations}: Props) {
                                 {/* Theme */}
                                 <div className="p-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-muted-foreground">{translations?.theme_toggle?.translation?? "Theme"} </span>
+                                        <span className="text-sm text-muted-foreground">{translation?.theme_toggle?.translation ?? "Theme"} </span>
                                         <Tooltip delayDuration={800}>
                                             <TooltipTrigger asChild>
                                                 <span className="inline-flex">
                                                     <ThemeToggle />
                                                 </span>
                                             </TooltipTrigger>
-                                            <TooltipContent side="bottom">{translations?.theme_toggle?.tooltip?? "Change theme to light mode or dark mode"}</TooltipContent>
+                                            <TooltipContent side="bottom">{translation?.theme_toggle?.tooltip ?? "Change theme to light mode or dark mode"}</TooltipContent>
                                         </Tooltip>
                                     </div>
                                 </div>
@@ -171,14 +185,14 @@ export default function TopNavigationBar({translations}: Props) {
                                 {/* Language */}
                                 <div className="px-3 pb-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-muted-foreground">{translations?.language_selector?.translation?? "Language"}</span>
+                                        <span className="text-sm text-muted-foreground">{translation?.language_selector?.translation ?? "Language"}</span>
                                         <Tooltip delayDuration={800}>
                                             <TooltipTrigger asChild>
                                                 <span className="inline-flex">
                                                     <LanguageSwitcher />
                                                 </span>
                                             </TooltipTrigger>
-                                            <TooltipContent side="bottom">{translations?.language_selector?.tooltip?? "Select the language you use"}</TooltipContent>
+                                            <TooltipContent side="bottom">{translation?.language_selector?.tooltip ?? "Select the language you use"}</TooltipContent>
                                         </Tooltip>
                                     </div>
                                 </div>

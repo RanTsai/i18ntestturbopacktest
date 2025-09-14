@@ -8,54 +8,41 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { IUserChannel } from "@/lib/schema/user-channel-schema";
-import useTranslationStore from "@/lib/global-store/use-translation-store";
-import { useParams } from "next/navigation";
+import { useUserChannelViewModel } from "@/lib/view-models/use-user-channel-view-model";
+import { PageTranslations } from "@/i18n/interface";
 
 interface Props {
   expanded: boolean;
   setExpanded: (val: boolean) => void;
-  userChannels: IUserChannel[];
-  selectedId: string | null;
-  setSelectedId: (id: string | null) => void;
-
-  setMyChannel: (id: number | null) => void;
-  setSelectedChannel: (channel: IUserChannel) => void;
-  pageId: string;
+  translations?: PageTranslations;
 }
 
 export default function MyChannelSelector({
   expanded,
   setExpanded,
-  userChannels,
-  selectedId,
-  setSelectedId,
-  setMyChannel,
-  setSelectedChannel,
-  pageId,
+  translations,
 }: Props) {
-  const { getTranslation } = useTranslationStore();
-  const { locale } = useParams() as { locale: string };
-  const translations = getTranslation(pageId, locale) || {};
+  const {
+    userChannels,
+    selectedChannel,
+    setSelectedChannel,
+  } = useUserChannelViewModel();
 
-  const handleSelect = (channel: IUserChannel) => {
-    const visualId = `my-${channel.user_channel_id}`;
-    if (selectedId === visualId) {
-      // Unselect
-      setSelectedId(null);
-      setMyChannel(null); // fallback to show all my channels
-    } else {
-      setSelectedId(visualId);
-      setMyChannel(channel.user_channel_id);
-      setSelectedChannel(channel);
+  const visualId = selectedChannel
+    ? `my-${selectedChannel.channel_name}`
+    : null;
+
+  const handleSelect = (channelName: string) => {
+    console.log("Selecting channel:", channelName);
+    const matchedChannel = userChannels?.find(
+      (c) => c.channel_name === channelName
+    );
+    if (matchedChannel) {
+      setSelectedChannel(matchedChannel); 
+      console.log("Mateched", matchedChannel);
     }
   };
 
-  const handleHeaderClick = () => {
-    // Header click = full group select (no specific channel selected)
-    setSelectedId(null);
-    setMyChannel(null);
-  };
 
   return (
     <>
@@ -64,7 +51,6 @@ export default function MyChannelSelector({
         className="flex items-center justify-between cursor-pointer p-2 rounded hover:bg-[var(--muted)]"
         onClick={() => {
           setExpanded(!expanded);
-          handleHeaderClick();
         }}
       >
         <div className="flex items-center space-x-2 text-[var(--foreground)]">
@@ -100,21 +86,21 @@ export default function MyChannelSelector({
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="overflow-hidden grid grid-cols-4 gap-2 ml-2 mt-1"
           >
-            {userChannels.map((channel) => {
-              const visualId = `my-${channel.user_channel_id}`;
-              const isSelected = selectedId === visualId;
+            {userChannels?.map((channel) => {
+              const id = `my-${channel.channel_name}`;
+              const isSelected = visualId === id;
 
               return (
-                <Tooltip key={channel.user_channel_id} delayDuration={300}>
+                <Tooltip key={channel.channel_name} delayDuration={300}>
                   <TooltipTrigger asChild>
                     <div
-                      onClick={() => handleSelect(channel)}
+                      onClick={() => handleSelect(channel.channel_name)}
                       className={`
                         w-10 h-10 flex items-center justify-center
                         rounded-full border-2 cursor-pointer
                         transition
-                        ${isSelected ? "border-purple-400" : "border-transparent"}
-                        hover:border-[var(--ring)]
+                        ${isSelected ? "border-green-500" : "border-transparent"}
+                        hover:border-purple-400 hover:bg-purple-100
                       `}
                     >
                       <Image

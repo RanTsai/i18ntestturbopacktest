@@ -1,84 +1,94 @@
 // app/api/chat/route.ts
-import { NextResponse } from 'next/server';
-import { redis } from '@/actions/upstashredis/redis';
-import { getChatById, saveChatToMongo } from '@/lib/chat-service/chat-service';
-import { google } from '@ai-sdk/google';
 import { openai } from '@ai-sdk/openai';
+import { streamText } from 'ai';
 
-import { generateText, streamText, generateObject, streamObject } from 'ai';
-import { Message } from 'ai';
-import { nanoid } from 'nanoid';
-// 儲存 Redis 時使用的 prefix
-const REDIS_KEY_PREFIX = 'chat:';
+import {
+  createChatThreadIfNeeded,
+  persistChatRun,
+  type AttachmentMeta,
+} from '@/actions/supabase/supabase-ai-chat';
+
 
 export async function POST(req: Request) {
-    try {
-        const { messages, chatId } = await req.json();
+  try {
+    const { messages, chatId, userWorkPublicId } = await req.json();
 
-        if (!messages || !Array.isArray(messages)) {
-            return new Response(JSON.stringify({ error: 'Missing or invalid messages' }), {
-                status: 400,
-                headers: { 'Content-Type': 'application/json' },
-            });
-        }
-
-        const finalChatId = chatId || nanoid();
-        const redisKey = `${REDIS_KEY_PREFIX}${finalChatId}`;
-
-        const result = await streamText({
-            // model: google('gemini-2.5-pro'),
-              model: openai('gpt-4o'),
-
-            messages,
-            
-
-        });
-        console.log(`[${new Date().toISOString()}] 🎯 streamText started`);
-
-        const stream = result.toDataStream();
-        const reader = stream.getReader();
-
-        let fullResponse = '';
-
-        const transformedStream = new ReadableStream({
-            async start(controller) {
-                let first = true;
-
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-
-                    const text = typeof value === 'string' ? value : new TextDecoder().decode(value);
-                    fullResponse += text;
-                    controller.enqueue(value);
-
-                    if (first) {
-                        console.log(`[${new Date().toISOString()}] 📤 First token streamed`);
-                        first = false;
-                    }
-                }
-
-                controller.close();
-
-                // 非同步儲存
-                Promise.resolve().then(async () => {
-                    const updatedMessages = [...messages, { role: 'assistant', content: fullResponse }];
-                    await redis.set(redisKey, JSON.stringify(updatedMessages), { ex: 3600 });
-                    console.log(`[${new Date().toISOString()}] 💾 Redis write finished`);
-                });
-            },
-        });
-
-        return new Response(transformedStream, {
-            headers: {
-                'Content-Type': 'text/plain',
-            },
-        });
-    } catch (err: any) {
-        console.error('[CHAT_API_ERROR]', err);
-        return new Response(JSON.stringify({ error: err.message || 'Internal Server Error' }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' },
-        });
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return new Response(JSON.stringify({ error: "Missing or invalid messages" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
+
+    const last = messages[messages.length - 1];
+    const userText = typeof last?.content === "string" ? last.content : "";
+    const userAttachments = Array.isArray(last?.experimental_attachments)
+      ? last.experimental_attachments.map((a: any) => ({
+          url: a?.url,
+          mimeType: a?.mimeType,
+          name: a?.name,
+        }))
+      : [];
+
+    // 1) 確認 thread
+    const created = await createChatThreadIfNeeded({
+      threadPublicId: chatId ?? null,
+      projectPublicId: userWorkPublicId ?? null,
+      titleSeed: userText ? userText.slice(0, 48) : "New Chat",
+      userWorkPublicId: userWorkPublicId,
+    });
+
+    if (!created.success || !created.data?.thread_public_id) {
+      return new Response(JSON.stringify({ error: created.message || "Thread init failed" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const threadPublicId = created.data.thread_public_id as string;
+
+    // 2) 啟動串流
+    const result = await streamText({
+      model: openai("gpt-4o-mini"),
+      messages,
+    });
+
+    // 3) 串流結束後 persist
+    result.text
+      .then(async (full) => {
+        try {
+          const persisted = await persistChatRun({
+            threadPublicId,
+            userText,
+            userAttachments,
+            userReferenceId: last?.referenceId ?? null,
+            userParentMessageId: last?.parentMessageId ?? null,
+            userVersionNumber: last?.versionNumber ?? null,
+            assistantText: full,
+            assistantStructured: null,
+          });
+          if (!persisted.success) {
+            console.error("[persistChatRun error]", persisted.message);
+          } else {
+            console.log("[persistChatRun ok]", persisted.data);
+          }
+        } catch (e) {
+          console.error("[persistChatRun throw]", e);
+        }
+      })
+      .catch((e: any) => {
+        console.error("[finalText error]", e);
+      });
+
+    // 4) 串流 response
+    const res = result.toDataStreamResponse();
+    res.headers.set("X-Thread-Id", threadPublicId);
+    return res;
+  } catch (err: any) {
+    console.error("[CHAT_API_ERROR]", err);
+    return new Response(JSON.stringify({ error: err?.message || "Internal Server Error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 }

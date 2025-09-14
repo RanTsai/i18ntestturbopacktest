@@ -45,11 +45,7 @@ import { IUserChannel } from '@/lib/schema/user-channel-schema'
 import { locale } from 'dayjs';
 import { useParams } from 'next/navigation'
 
-interface Props {
-  pageId: string,
-  formData: FormSchema
-  questionRefs: React.RefObject<Record<string, HTMLElement | null>>
-}
+
 
 export const mockQuestions: Question[] = [
   {
@@ -92,14 +88,19 @@ export const mockQuestions: Question[] = [
   }
 ]
 
+interface Props {
+  formData: FormSchema
+  questionRefs: React.RefObject<Record<string, HTMLElement | null>>
+  translations?: PageTranslations;
+}
 
-export default function QuestionnaireBuilder({ pageId, formData, questionRefs }: Props) {
-  const { getTranslation } = useTranslationStore()
-  const [translations, setTranslations] = useState<PageTranslations | null>(null)
+export default function QuestionnaireBuilder({ formData, questionRefs, translations }: Props) {
   const [loading, setLoading] = useState(false)
-  const { locale } = useParams() as { locale: string };
+  const pageId = "human_review_design_page";
 
   const defaultValues: Record<string, any> = {}
+  const localeParams = useParams() as { locale: string };
+  const locale = localeParams?.locale || "en";
 
   console.log("Form data", formData);
   formData.sections.forEach((section) => {
@@ -149,12 +150,7 @@ export default function QuestionnaireBuilder({ pageId, formData, questionRefs }:
     }
   }, [questions])
 
-  useEffect(() => {
-    const cached = getTranslation(pageId, locale)
-    if (cached) {
-      setTranslations(cached)
-    }
-  }, [locale])
+
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event
@@ -397,7 +393,6 @@ export default function QuestionnaireBuilder({ pageId, formData, questionRefs }:
           </Tooltip>
         </TooltipProvider>
 
-        {/* <Button onClick={handleSubmit(onSubmit)}>🧾 Copy Payload</Button> */}
       </div>
     </div>
   )
@@ -435,7 +430,7 @@ export function buildHumanReviewPayload(
     clerk_user_id,
     supabase_user_id,
     project_summary: "",
-    questionaire: normalizedQuestions, // ✅ 用正規化後的 questions
+    questionaire: questions, // ✅ 用正規化後的 questions
     channel_name: selectedChannel?.channel_name ?? "",
     channel_logo: selectedChannel?.logo ?? "",
     reviewer: [],

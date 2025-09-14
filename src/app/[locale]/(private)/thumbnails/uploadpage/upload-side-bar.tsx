@@ -4,8 +4,7 @@ import React, { useEffect, useState } from "react";
 import { PlusCircle, XCircle, Film, Heading, ChevronsLeft, ChevronsRight, ChevronDown, ChevronRight, Menu } from "lucide-react";
 import UserChannelStore from "@/lib/global-store/user-channel-store";
 import { motion, AnimatePresence } from "framer-motion";
-import ChannelSelector from "../../../../../components/upload/channel-selector";
-import useTranslationStore from "@/lib/global-store/use-translation-store";
+import MyChannelSelector from "../../../../../components/upload/channel-selector";
 import {
   Tooltip,
   TooltipContent,
@@ -15,12 +14,12 @@ import {
 
 import { UseLoadChannels } from "@/hooks/loading-user-data/load-channels";
 import VideoSettingStore from "@/lib/global-store/upload-store";
-import { PageTranslations } from "@/i18n/interface";
 import { useParams } from "next/navigation";
+import { useTranslationViewModel } from "@/lib/view-models/use-translation-view-model";
+import { CachedTranslation } from "@/lib/idb/translation-idb";
 
-interface UploadSideBarProps {
-  setShowSidebar?: (open: boolean) => void;
-  fallbackTranslations?: PageTranslations;
+interface Props {
+  initialTranslation?: CachedTranslation;
 }
 
 const videoCategories = [
@@ -42,9 +41,19 @@ const videoCategories = [
 ];
 
 export default function UploadSideBar({
-  setShowSidebar,
-  fallbackTranslations,
-}: UploadSideBarProps) {
+  initialTranslation,
+}: Props) {
+  const { locale } = useParams() as { locale: string };
+  const pageId = "signed_up_upload_review";
+  const { translation, hydrateTranslation } = useTranslationViewModel(pageId, locale);
+  useEffect(() => {
+    if (
+      initialTranslation
+    ) {
+      hydrateTranslation(initialTranslation.content, initialTranslation.version);
+    }
+  }, [initialTranslation]);
+
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedChannelId, setSelectedChannelId] = useState<number | null>(null);
   //   const [tagInput, setTagInput] = useState("");
@@ -53,11 +62,7 @@ export default function UploadSideBar({
   const [isAudienceExpanded, setIsAudienceExpanded] = useState(false);
   const [isTitleExpanded, setIsTitleExpanded] = useState(true);
   const { userChannels, selectedChannel, setSelectedChannel } = UserChannelStore();
-  const { getTranslation, setTranslation } = useTranslationStore();
-  const [translations, setTranslations] = useState<PageTranslations | null>(null);
 
-  const { locale } = useParams() as { locale: string };
-  const pageId = "signed_up_upload_review";
   const [isVideoTypeExpanded, setIsVideoTypeExpanded] = useState(true);
   const { video_type, setVideoType, theme, setTheme, topic, setTopic, titles, setTitles, tags, setTags, niche, setNiche } =
     VideoSettingStore();
@@ -66,18 +71,6 @@ export default function UploadSideBar({
   const COLLAPSED_W = 56; // 收納窄欄
 
   const [collapsed, setCollapsed] = useState(false);
-
-  useEffect(() => {
-    const cached = getTranslation(pageId, locale);
-    if (cached) {
-      setTranslations(cached);
-    } else if (fallbackTranslations) {
-      setTranslation(pageId, locale, fallbackTranslations);
-      setTranslations(fallbackTranslations);
-    } else {
-      // TODO: call LoadPageTranslation API if需要
-    }
-  }, [locale, fallbackTranslations]);
 
   const handleTitleChange = (index: number, value: string) => {
     const updated = [...titles];
@@ -133,7 +126,7 @@ export default function UploadSideBar({
           {/* 展開後才顯示標題 */}
           {!collapsed && (
             <h2 className="text-xl font-semibold opacity-80">
-              {translations?.page_header?.translation ?? "Thumbnail Analyser"}
+              {translation?.page_header?.translation ?? "Thumbnail Analyser"}
             </h2>
           )}
 
@@ -165,7 +158,7 @@ export default function UploadSideBar({
               className="flex flex-col flex-1 p-4 pt-0 space-y-2"
             >
               <nav className="flex-1 flex flex-col space-y-2">
-                <ChannelSelector
+                <MyChannelSelector
                   expanded={isMyChannelExpanded}
                   setExpanded={setIsMyChannelExpanded}
                   userChannels={userChannels ?? []}
@@ -176,7 +169,7 @@ export default function UploadSideBar({
                   }}
                   setMyChannel={setSelectedChannelId}
                   setSelectedChannel={setSelectedChannel}
-                  pageId="signed_up_upload_review"
+                  translations={translation}
                 />
 
                 <div className="border-t border-[var(--sidebar-border)] my-2" />
@@ -192,11 +185,11 @@ export default function UploadSideBar({
                       <Tooltip delayDuration={500}>
                         <TooltipTrigger asChild>
                           <span className="cursor-help text-sm">
-                            {translations?.titles_section?.translation ?? "My Channels"}
+                            {translation?.titles_section?.translation ?? "My Channels"}
                           </span>
                         </TooltipTrigger>
                         <TooltipContent side="top" className="text-xs">
-                          {translations?.titles_section?.tooltip ?? ""}
+                          {translation?.titles_section?.tooltip ?? ""}
                         </TooltipContent>
                       </Tooltip>
                     </div>
@@ -228,14 +221,14 @@ export default function UploadSideBar({
                                   <input
                                     type="text"
                                     className="w-full px-2 py-1 rounded bg-[var(--input)] text-xs text-[var(--foreground)] border border-[var(--border)] focus:outline-none focus:ring-1 focus:ring-purple-500"
-                                    placeholder={translations?.title_placeholder?.translation ??
+                                    placeholder={translation?.title_placeholder?.translation ??
                                       "New title"}
                                     value={title}
                                     onChange={(e) => handleTitleChange(i, e.target.value)}
                                   />
                                 </TooltipTrigger>
                                 <TooltipContent side="top" className="text-xs max-w-xs">
-                                  {translations?.title_placeholder?.tooltip ??
+                                  {translation?.title_placeholder?.tooltip ??
                                     "Enter a video title here for comparison"}
                                 </TooltipContent>
                               </Tooltip>
@@ -251,7 +244,7 @@ export default function UploadSideBar({
                                   </button>
                                 </TooltipTrigger>
                                 <TooltipContent side="top" className="text-xs max-w-xs">
-                                  {translations?.title_remove_button?.tooltip ??
+                                  {translation?.title_remove_button?.tooltip ??
                                     "Delete this title, it cannot be undone"}
                                 </TooltipContent>
                               </Tooltip>
@@ -269,7 +262,7 @@ export default function UploadSideBar({
                             </button>
                           </TooltipTrigger>
                           <TooltipContent side="top" className="text-xs max-w-xs">
-                            {translations?.add_title_button?.tooltip ??
+                            {translation?.add_title_button?.tooltip ??
                               "Click to add a new title"}
                           </TooltipContent>
                         </Tooltip>
@@ -288,7 +281,7 @@ export default function UploadSideBar({
                   >
                     <div className="flex items-center space-x-2">
                       <Film className="h-4 w-4" />
-                      <span className="text-sm">{translations?.video_type_section?.translation ?? "Video Type"}</span>
+                      <span className="text-sm">{translation?.video_type_section?.translation ?? "Video Type"}</span>
                     </div>
                     {isVideoTypeExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                   </div>
@@ -306,7 +299,7 @@ export default function UploadSideBar({
                         {/* Video Category */}
                         <div className="flex flex-col">
                           <label className="text-xs text-muted-foreground mb-1">
-                            {translations?.video_category?.translation ?? "Video Category"}
+                            {translation?.video_category?.translation ?? "Video Category"}
                           </label>
                           <select
                             value={video_type}
@@ -327,11 +320,11 @@ export default function UploadSideBar({
                             <Tooltip delayDuration={500}>
                               <TooltipTrigger asChild>
                                 <span>
-                                  {translations?.topic_label?.translation ?? "Topic (Optional)"}
+                                  {translation?.topic_label?.translation ?? "Topic (Optional)"}
                                 </span>
                               </TooltipTrigger>
                               <TooltipContent side="top" className="text-xs max-w-xs">
-                                {translations?.topic_label?.tooltip ??
+                                {translation?.topic_label?.tooltip ??
                                   "The main subject your thumbnail is about. Helps AI judge if the thumbnail matches the topic."}
                               </TooltipContent>
                             </Tooltip>
@@ -344,11 +337,11 @@ export default function UploadSideBar({
                                 value={topic}
                                 onChange={(e) => setTopic(e.target.value)}
                                 className="px-2 py-1 rounded bg-[var(--input)] text-xs text-[var(--foreground)] border border-[var(--border)] focus:outline-none focus:ring-1 focus:ring-purple-500"
-                                placeholder={translations?.topic_placeholder?.translation ?? "My topic is..."}
+                                placeholder={translation?.topic_placeholder?.translation ?? "My topic is..."}
                               />
                             </TooltipTrigger>
                             <TooltipContent side="top" className="text-xs max-w-xs">
-                              {translations?.topic_placeholder?.tooltip ??
+                              {translation?.topic_placeholder?.tooltip ??
                                 "Main subject or idea shown in the thumbnail. For example: 'Space Travel', 'Healthy Eating', 'Stock Market Crash'. Helps AI judge if the thumbnail matches the topic."}
                             </TooltipContent>
                           </Tooltip>
@@ -360,11 +353,11 @@ export default function UploadSideBar({
                             <Tooltip delayDuration={500}>
                               <TooltipTrigger asChild>
                                 <span>
-                                  {translations?.niche_label?.translation ?? "Niche (Optional)"}
+                                  {translation?.niche_label?.translation ?? "Niche (Optional)"}
                                 </span>
                               </TooltipTrigger>
                               <TooltipContent side="top" className="text-xs max-w-xs">
-                                {translations?.niche_label?.tooltip ??
+                                {translation?.niche_label?.tooltip ??
                                   "Who you are making this for. Helps AI review from your audience’s perspective."}
                               </TooltipContent>
                             </Tooltip>
@@ -377,11 +370,11 @@ export default function UploadSideBar({
                                 value={niche}
                                 onChange={(e) => setNiche(e.target.value)}
                                 className="px-2 py-1 rounded bg-[var(--input)] text-xs text-[var(--foreground)] border border-[var(--border)] focus:outline-none focus:ring-1 focus:ring-purple-500"
-                                placeholder={translations?.niche_placeholder?.translation ?? "My audience is..."}
+                                placeholder={translation?.niche_placeholder?.translation ?? "My audience is..."}
                               />
                             </TooltipTrigger>
                             <TooltipContent side="top" className="text-xs max-w-xs">
-                              {translations?.niche_placeholder?.tooltip ??
+                              {translation?.niche_placeholder?.tooltip ??
                                 "Describe the group of people you want to reach. For example: 'Gamers', 'Startup Founders', 'History Buffs'."}
                             </TooltipContent>
                           </Tooltip>
@@ -393,11 +386,11 @@ export default function UploadSideBar({
                             <Tooltip delayDuration={500}>
                               <TooltipTrigger asChild>
                                 <span>
-                                  {translations?.theme_label?.translation ?? "Theme (Optional)"}
+                                  {translation?.theme_label?.translation ?? "Theme (Optional)"}
                                 </span>
                               </TooltipTrigger>
                               <TooltipContent side="top" className="text-xs max-w-xs">
-                                {translations?.theme_label?.tooltip ??
+                                {translation?.theme_label?.tooltip ??
                                   "The style or mood of your content. Helps AI understand the tone your thumbnail should match."}
                               </TooltipContent>
                             </Tooltip>
@@ -410,11 +403,11 @@ export default function UploadSideBar({
                                 value={theme}
                                 onChange={(e) => setTheme(e.target.value)}
                                 className="px-2 py-1 rounded bg-[var(--input)] text-xs text-[var(--foreground)] border border-[var(--border)] focus:outline-none focus:ring-1 focus:ring-purple-500"
-                                placeholder={translations?.theme_placeholder?.translation ?? "My theme is..."}
+                                placeholder={translation?.theme_placeholder?.translation ?? "My theme is..."}
                               />
                             </TooltipTrigger>
                             <TooltipContent side="top" className="text-xs max-w-xs">
-                              {translations?.theme_placeholder?.tooltip ??
+                              {translation?.theme_placeholder?.tooltip ??
                                 "Describe the overall style or mood (e.g., playful, dramatic, professional)."}
                             </TooltipContent>
                           </Tooltip>
@@ -436,7 +429,7 @@ export default function UploadSideBar({
                   onClick={() => setIsAudienceExpanded(!isAudienceExpanded)}
                 >
                   <div className="flex items-center space-x-1 text-sm">
-                    <span>{translations?.audience_section?.translation ?? "Target Audience"}</span>
+                    <span>{translation?.audience_section?.translation ?? "Target Audience"}</span>
                     <Tooltip delayDuration={500}>
                       <TooltipTrigger asChild>
                         <div className="ml-1 rounded-full bg-[var(--muted)] hover:bg-[var(--accent)] p-1 cursor-pointer">
@@ -444,7 +437,7 @@ export default function UploadSideBar({
                         </div>
                       </TooltipTrigger>
                       <TooltipContent side="top" className="text-xs max-w-xs">
-                        {translations?.audience_section?.tooltip ?? ""}
+                        {translation?.audience_section?.tooltip ?? ""}
                       </TooltipContent>
                     </Tooltip>
                   </div>

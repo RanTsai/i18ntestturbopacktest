@@ -1,7 +1,6 @@
 "use client";
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import ThumbnailGrid from "./thumbnail-grid";
 import { useThumbnailSelection } from "@/hooks/thumbnail-selector/thumbnail-selector";
@@ -12,16 +11,16 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Eye, XCircle } from "lucide-react"; // ✅ 加入 XCircle icon
-import useTranslationStore from "@/lib/global-store/use-translation-store";
+import { Eye, XCircle } from "lucide-react";
+import { PageTranslations } from "@/i18n/interface";
 
-export function ThumbnailSelectorPanel() {
+interface Props {
+  translations?: PageTranslations;
+}
+
+export function ThumbnailSelectorPanel({translations}: Props) {
   const { thumbnails, addThumbnail, removeThumbnail } = useThumbnailSelection();
-  const { selectedVideos, removeVideo } = useVideoSelectionStore(); // ✅ removeVideo 引入
-  const { getTranslation } = useTranslationStore();
-  const { locale } = useParams() as { locale: string };
-  const pageId = "device_preview_page";
-  const translations = getTranslation(pageId, locale) || {};
+  const { selectedVideos, removeVideo } = useVideoSelectionStore(); 
 
   return (
     <div className="max-h-screen overflow-auto p-4 rounded-2xl flex flex-col bg-muted">
@@ -36,16 +35,7 @@ export function ThumbnailSelectorPanel() {
         </TabsList>
 
         <TabsContent value="thumbnails">
-          <ThumbnailGrid
-            onUpload={async (urls: string[]) => {
-              if (urls.length > 0) {
-                sessionStorage.setItem("uploadedImageUrls", JSON.stringify(urls));
-                toast.success("圖片上傳完成！");
-              } else {
-                toast.error("圖片全部上傳失敗");
-              }
-            }}
-          />
+          <ThumbnailGrid translations={translations}/>
         </TabsContent>
 
         <TabsContent value="board">

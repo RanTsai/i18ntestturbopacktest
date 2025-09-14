@@ -1,3 +1,5 @@
+// /lib/loading/spinning-favicon/FaviconLoadingManager.tsx
+
 "use client";
 
 import { useEffect } from "react";

@@ -8,21 +8,19 @@ const intlMiddleware = createMiddleware(routing);
 
 // Clerk 要保護的路徑
 const isProtectedRoute = createRouteMatcher([
-    '/(en|zh|ja)/(dashboard|thumbnails|upgrade)(.*)', // 根據你的 locales 動態語系
-    '/(dashboard|thumbnails|upgrade)(.*)'             // 若有預設語系或 fallback
+    '/(en|zh|ja)/(dashboard|thumbnails|upgrade|new)(.*)', // 根據你的 locales 動態語系
+    '/(dashboard|thumbnails|upgrade|new)(.*)'             // 若有預設語 系或 fallback
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
     const { userId, redirectToSignIn } = await auth()
+    const resHeader = new Headers();
+      resHeader.set('x-mw-hit', 'yes'); // 👈 用這個檢查
     // 若為受保護路由，且尚未登入 → 導向 Clerk 登入頁面
 
     if (
-        req.nextUrl.pathname.startsWith('/api/get-user') ||
-        req.nextUrl.pathname.startsWith('/api/ai-dispatch') ||
-        req.nextUrl.pathname.startsWith('/api/youtube') ||
-        req.nextUrl.pathname.startsWith('/api/youtubeshorts') ||
-        req.nextUrl.pathname.startsWith('/api/upstashredis') ||
-        req.nextUrl.pathname.startsWith('/api/chat')
+        req.nextUrl.pathname.startsWith('/api')     
+
     ) return;
 
     if (isProtectedRoute(req) && !userId) {

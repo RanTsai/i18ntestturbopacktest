@@ -14,6 +14,7 @@ interface Props {
   onClick: () => void
   onDelete: () => void
   onRename: (newLabel: string) => void
+  index: number
 }
 
 export default function SortableSidebarItem({
@@ -23,6 +24,7 @@ export default function SortableSidebarItem({
   onClick,
   onDelete,
   onRename,
+  index
 }: Props) {
   const {
     attributes,
@@ -63,7 +65,7 @@ export default function SortableSidebarItem({
         </div>
 
         {!isEditing ? (
-          <span className="truncate text-sm flex-1">{label}</span>
+          <span className="truncate text-sm flex-1">{index} {label}</span>
         ) : (
           <input
             value={inputValue}

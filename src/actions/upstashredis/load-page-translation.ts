@@ -1,80 +1,99 @@
-// actions/upstashredis/load-page-translation.ts
+//actions/upstashredis/load-page-translation.ts
+"use server"
 import { redis } from './redis'
 import { PageTranslations } from '@/i18n/interface'
 import { GetTranslationFromsupabase } from '../supabase/supabase-page-translation'
 
 export async function LoadPageTranslation(
-    page_title: string,
-    locale: string,
-    fallback = true
+  page_title: string,
+  locale: string,
+  fallback = true
 ): Promise<{
-    found: boolean
-    content: PageTranslations
-    locale: string
-    from: 'redis' | 'supabase' | null
-    fallback?: boolean
+  found: boolean
+  content: PageTranslations & { version?: number }
+  locale: string
+  from: 'redis' | 'supabase' | null
+  fallback?: boolean
 }> {
-    const key = `pagetranslation:${page_title}:${locale}`
+  // 🔧 Redis key 改成不含 version，因為要先查出最新 version
+  const baseKey = `pagetranslation:${page_title}:${locale}`;
 
-    // ✅ 1. Redis 讀取
-    //const data = await redis.get<string>(key);
-    const data = await redis.get(key)
-    //console.log("checking in Redis", data, " key ", key);
+  // ✅ 1. 試著抓出最新版本號
+  const versionKey = `${baseKey}:version`;
+  const currentVersion = await redis.get(versionKey);
+
+  if (currentVersion) {
+    const versionedKey = `${baseKey}:v${currentVersion}`;
+    const data = await redis.get(versionedKey);
+
     if (data) {
-        console.log("found in Redis", data, " key ", key);
-        return {
-            found: true,
-            content: typeof data === 'string' ? JSON.parse(data) : data,
-            locale,
-            from: 'redis'
-        }
-    }
-
-    // 🔁 2. 若 Redis 無資料，查 Supabase
-
-    const { success, data: supaData } = await GetTranslationFromsupabase(page_title);
-
-    if (success && supaData && typeof supaData.translations?.locales === 'object') {
-        const localeMap = supaData.translations.locales as Record<string, any>
-        // ✅ 將每個語言的問卷儲存成 Redis key
-        await Promise.all(
-            Object.entries(localeMap).map(([lang, content]) => {
-                const redisKey = `pagetranslation:${page_title}:${lang}`
-                const stringified = JSON.stringify(content)
-                return redis.set(redisKey, stringified, { ex: 3600 })
-            })
-        )
-
-        // ✅ 回傳指定語言（如未找到，使用 fallback 'en'）
-        const selected = localeMap[locale] || localeMap['en']
-        return {
-            found: !!selected,
-            content: selected || null,
-            locale: selected ? locale : 'en',
-            from: 'supabase',
-            fallback: !localeMap[locale]
-        }
-    }
-    // 🔁 3. fallback 到英文版 Redis（非 Supabase）
-    if (fallback && locale !== 'en') {
-        const fallbackKey = `pagetranslation:${page_title}:en`
-        const fallbackData = await redis.get(fallbackKey)
-        if (fallbackData && typeof fallbackData === 'string') {
-            return {
-                found: true,
-                content: JSON.parse(fallbackData),
-                locale: 'en',
-                from: 'redis',
-                fallback: true
-            }
-        }
-    }
-
-    // ❌ 4. 都沒找到
-    return {
-        found: false,
-        content: {} as PageTranslations,
+      const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+      return {
+        found: true,
+        content: parsed,
         locale,
-        from: null
+        from: 'redis'
+      };
     }
+  }
+
+  // ✅ 2. Supabase fallback
+  const { success, data: supaData } = await GetTranslationFromsupabase(page_title);
+  if (success && supaData?.translations?.locales) {
+    const localeMap = supaData.translations.locales as Record<string, any>;
+    const version = supaData.version ?? 1; // 預設版本
+
+    await Promise.all(
+      Object.entries(localeMap).map(([lang, content]) => {
+        const versionedKey = `pagetranslation:${page_title}:${lang}:v${version}`;
+        const versionRefKey = `pagetranslation:${page_title}:${lang}:version`;
+        const contentWithVersion = { ...content, version };
+
+        return Promise.all([
+          redis.set(versionedKey, JSON.stringify(contentWithVersion), { ex: 3600 }),
+          redis.set(versionRefKey, version, { ex: 3600 }) // 儲存版本號 reference
+        ]);
+      }).flat()
+    );
+
+    const selected = localeMap[locale] || localeMap['en'];
+    return {
+      found: !!selected,
+      content: {
+        ...selected,
+        version
+      },
+      locale: selected ? locale : 'en',
+      from: 'supabase',
+      fallback: !localeMap[locale]
+    };
+  }
+
+// ✅ 3. Fallback Redis 英文
+if (fallback && locale !== 'en') {
+  const fallbackVersion = await redis.get(`pagetranslation:${page_title}:en:version`);
+
+  if (fallbackVersion && typeof fallbackVersion === 'string') {
+    const fallbackKey = `pagetranslation:${page_title}:en:v${fallbackVersion}`;
+    const fallbackData = await redis.get(fallbackKey);
+
+    if (fallbackData && typeof fallbackData === 'string') {
+      return {
+        found: true,
+        content: JSON.parse(fallbackData),
+        locale: 'en',
+        from: 'redis',
+        fallback: true
+      };
+    }
+  }
+}
+
+  // ❌ 4. 都沒找到
+  return {
+    found: false,
+    content: {} as PageTranslations,
+    locale,
+    from: null
+  };
 }

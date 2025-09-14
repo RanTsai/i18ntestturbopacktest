@@ -30,6 +30,33 @@ try{
 }
 }
 
+export const uploadThumbnailAndGetUrlWithPath = async (file:File, path: string) => {
+try {
+    const { data, error } = await supabase.storage
+      .from("thumbnails")
+      .upload(path, file, {
+        upsert: true, // 如果同名檔案存在則覆蓋
+      });
+
+    if (error) throw new Error(error.message);
+
+    const { data: urlResponse } = supabase.storage
+      .from("thumbnails")
+      .getPublicUrl(path);
+
+    return {
+      success: true,
+      url: urlResponse.publicUrl,
+      path,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};
+
 export const getUserImage = async () => {
 try{
        return {

@@ -224,49 +224,57 @@ export async function UpdateUserWorkByID(
   }
 }
 
-// Base function to get user work by public_id
+// Base function to get user work by public_id OLD
 export async function GetUserWorkFromSupabseWithWorkID({
   public_id,
-}: {
-  public_id: string;
-}) {
+}: { public_id: string; }): Promise<{
+  success: boolean;
+  data?: IUserWork | null;
+  code?: string;
+  message?: string;
+}> {
   try {
     const { data, error } = await supabase
       .from("user_work")
-      .select("*")
+      .select(`
+        user_work_id, supabase_user_id, created_at, image_url, title, description,
+        ai_comment, ai_score, view_count, rating_count, public_id, language,
+        versions, tags, titles, topic, theme, user_channel_id, updated_at,
+        is_public, is_deleted, deleted_by, updated_by,
+        user_basic!inner(clerk_user_id)
+      `)
       .eq("public_id", public_id)
-      .single();
-
-    console.log("loaded user work data", data, "error", error);
+      .single(); // ← 單筆
 
     if (error) {
-      console.error(
-        "Failed to fetch user work with user_work_id",
-        error.message
-      );
-      return {
-        success: false,
-        code: "FAILED_TO_FETCH_USER_WORK_WITH_ID",
+      console.error("Failed to fetch user work", {
         message: error.message,
-      };
-    } else {
-      const safeData = UserWorkSchema.parse(data);
-      console.log("parsed user work data", safeData);
-
-      return {
-        success: true,
-        data: safeData,
-      };
+        code: (error as any).code,
+        details: (error as any).details,
+        hint: (error as any).hint,
+      });
+      return { success: false, code: "FAILED_TO_FETCH_USER_WORK_WITH_ID", message: error.message, data: null };
     }
-  } catch (error) {
-    console.error("Zod parse or unexpected error", error);
-    const msg = toErrorMessage(error);
-    return {
-      success: false,
-      message: msg,
-    };
+
+    // 攤平 user_basic.clerk_user_id 到頂層
+    const clerkId = Array.isArray((data as any).user_basic)
+      ? (data as any).user_basic[0]?.clerk_user_id
+      : (data as any).user_basic?.clerk_user_id;
+
+    const flattened = { ...data, clerk_user_id: clerkId };
+    delete (flattened as any).user_basic;
+
+    // 這裡用你之前的 toUserWork 正規化（或用 Zod 也可）
+    const safeData: IUserWork = toUserWork(flattened);
+
+    return { success: true, data: safeData };
+  } catch (e) {
+    const msg = toErrorMessage(e);
+    return { success: false, message: msg, data: null };
   }
 }
+
+
 
 // ----------------------------------------------------- Logic Functions ---------------------------------------------------
 export async function UserWorkWithAIAnalaysisToSupabase(
@@ -516,7 +524,7 @@ function normalizeTags(tags: any): string[] | undefined {
       if (typeof t === "string") return t;
       if (t && typeof t === "object") {
         return t.name ?? t.value ?? t.tag ?? t.title ?? t.text ??
-               (typeof t.id === "string" ? t.id : undefined);
+          (typeof t.id === "string" ? t.id : undefined);
       }
       return undefined;
     })
@@ -531,7 +539,7 @@ function toUserWork(row: any): IUserWork {
     created_at: String(row.created_at),
     image_url: String(row.image_url),
     title: (row.title ?? "") as string,
-    description: String(row.description), 
+    description: String(row.description),
     ai_comment: (row.ai_comment ?? "") as string,
     ai_score: (row.ai_score ?? null) as IAIScore | null,
     view_count: Number(row.view_count ?? 0),

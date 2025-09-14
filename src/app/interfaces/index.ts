@@ -58,6 +58,7 @@ export interface IUserWork{
     is_deleted?:boolean
     deleted_by?:string
     updated_by?:string
+    art_sub_type?:string
 };
 
 

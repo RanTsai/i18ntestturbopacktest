@@ -26,7 +26,7 @@ export interface Question {
     max?: number;
     min?: number;
     answer?: string;
-}
+}   
 
 export interface Section {
     id: string;

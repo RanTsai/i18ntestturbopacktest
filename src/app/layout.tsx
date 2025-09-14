@@ -1,4 +1,3 @@
-
 import ClientClerkProvider from "@/context/clientClerkProvider";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
@@ -11,7 +10,7 @@ export const metadata: Metadata = {
   description: "He helps you to get clicks",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -21,21 +20,20 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head />
       <body>
-        <NextTopLoader height={3} color="#4f46e5" showSpinner={false} crawl />
+        <NextTopLoader height={3} color="#e5d046" showSpinner={false} crawl />
         <FaviconLoadingManager />
         <ClientClerkProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
-            // ✅ 切換主題時關閉轉場避免閃爍（非必要，但體驗更穩）
-            disableTransitionOnChange
+            disableTransitionOnChange             // ✅ 切換主題時關閉轉場避免閃爍（非必要，但體驗更穩）
           >
             {children}
           </ThemeProvider>
         </ClientClerkProvider>
       </body>
     </html>
-
+  
   );
 }

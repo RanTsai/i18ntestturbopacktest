@@ -24,9 +24,7 @@ const useTranslationStore = create<TranslationStore>((set, get) => ({
 
     if (typeof window !== "undefined") {
       const stringified = JSON.stringify(data);
-      // 同步寫入 sessionStorage 
-      //sessionStorage.setItem(`translation_${key}`, stringified);
-      //sessionStorage.clear();
+   
     }
   },
 

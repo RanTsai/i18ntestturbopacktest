@@ -1,38 +1,43 @@
 "use client";
-import { XCircle, ImagePlus, AlertTriangle, GitCompareArrows, RotateCcw } from "lucide-react";
+
+import {
+  XCircle,
+  ImagePlus,
+  AlertTriangle,
+  GitCompareArrows,
+  RotateCcw,
+} from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { useState, useCallback, useEffect } from "react";
 import { toast } from "sonner";
-import useTranslationStore from "@/lib/global-store/use-translation-store";
-import { useParams } from "next/navigation";
-import { uploadThumbnailAndGetUrl } from '@/actions/supabase/supabaseImages';
+import { uploadThumbnailAndGetUrl } from "@/actions/supabase/supabaseImages";
 import { useVideoContext } from "@/context/youtube-video-provider";
 import UserChannelStore from "@/lib/global-store/user-channel-store";
 import VideoSettingStore from "@/lib/global-store/upload-store";
 import useVideoSelectionStore from "@/lib/global-store/video-selection-store";
+import { PageTranslations } from "@/i18n/interface";
+import compressImage from "@/lib/compress-image";
 
 interface Props {
-  onUpload: (urls: string[]) => Promise<void>;
-  onRemix?: (remixFn: (videos: any[], setVideos: (v: any[]) => void) => void) => void;
+  translations?: PageTranslations;
 }
+
 
 const MAX_IMAGES = 4;
 
-const ThumbnailGrid: React.FC<Props> = ({ onUpload, onRemix }) => {
-  
+const ThumbnailGrid: React.FC<Props> = ({ translations }) => {
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
+  const [uploadingIndexes, setUploadingIndexes] = useState<number[]>([]);
   const [errors, setErrors] = useState<string | null>(null);
-  const {selectedChannel, setSelectedChannel} = UserChannelStore();
 
-  const { locale } = useParams() as { locale: string };
-  const { getTranslation } = useTranslationStore();
-  const pageId = "device_preview_page";
-  const translations = getTranslation(pageId, locale) || {};
-  const {selectedTitle, title} = VideoSettingStore();
-  const {} = useVideoSelectionStore();
+  const { selectedChannel } = UserChannelStore();
+  const { selectedTitle, title } = VideoSettingStore();
+  const { } = useVideoSelectionStore();
+  const { getVideosByKey, setVideosByKey, setActiveKey } = useVideoContext();
 
+  // 載入 sessionStorage 中的圖片
   useEffect(() => {
     const savedUrls = sessionStorage.getItem("selected_images");
     if (savedUrls) {
@@ -50,107 +55,134 @@ const ThumbnailGrid: React.FC<Props> = ({ onUpload, onRemix }) => {
     }
   }, []);
 
+  // 同步 Channel 資訊到 remix videos
   useEffect(() => {
-  if (selectedChannel) {
-    console.log("Selected Channel: changed", selectedChannel);
-
-    const currentVideos = getVideosByKey("remixed");
-    if (currentVideos?.length) {
-      const updatedVideos = currentVideos.map((video) => {
-        if (video.id?.startsWith("fake-")) {
-          return {
-            ...video,
-            channelName: selectedChannel.channel_name,
-            channelLogo: selectedChannel.logo,
-          };
-        }
-        return video;
-      });
-      setVideosByKey("remixed", updatedVideos);
-    }
-  }
-}, [selectedChannel]);
-
- useEffect(() => {
-  if (selectedChannel) {
-    console.log("Selected Channel: changed", selectedChannel);
-
-    const currentVideos = getVideosByKey("remixed");
-    if (currentVideos?.length) {
-      const updatedVideos = currentVideos.map((video) => {
-        if (video.id?.startsWith("fake-")) {
-          return {
-            ...video,
-            channelName: selectedChannel.channel_name,
-            channelLogo: selectedChannel.logo,
-          };
-        }
-        return video;
-      });
-      setVideosByKey("remixed", updatedVideos);
-    }
-  }
-}, [selectedChannel]);
-
- useEffect(() => {
-  if (selectedTitle) {
-    console.log("Selected selectedTitle: changed", selectedTitle);
-
-    const currentVideos = getVideosByKey("remixed");
-    if (currentVideos?.length) {
-      const updatedVideos = currentVideos.map((video) => {
-        if (video.id?.startsWith("fake-")) {
-          return {
-            ...video,
-            title: selectedTitle,
-          };
-        }
-        return video;
-      });
-      setVideosByKey("remixed", updatedVideos);
-    }
-  }
-}, [selectedTitle]);
-
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    if (images.length >= MAX_IMAGES) {
-      setErrors(`最多只能上傳 ${MAX_IMAGES} 張圖片`);
-      return;
-    }
-
-    const validFiles = acceptedFiles.filter((file) => file.size <= 2_000_000);
-    const remaining = MAX_IMAGES - images.length;
-    const finalFiles = validFiles.slice(0, remaining);
-
-    if (acceptedFiles.length > remaining) {
-      toast.custom(() => (
-        <div className="flex items-center gap-2 bg-primary text-primary px-4 py-2 rounded-3xl shadow-md">
-          <AlertTriangle className="text-yellow-300" size={20} />
-          <span className="text-sm text-white">最多只能放 {MAX_IMAGES} 張圖片，僅保留前 {remaining} 張</span>
-        </div>
-      ), {
-        duration: 4000,
-        position: "top-left",
-      });
-    }
-
-    setImages((prev) => [...prev, ...finalFiles]);
-
-    const uploaded: string[] = [];
-    for (const file of finalFiles) {
-      const res = await uploadThumbnailAndGetUrl(file);
-      if (res.success && res.url) {
-        uploaded.push(res.url);
-      } else {
-        toast.error(`上傳失敗：${res.message}`, { position: "top-left" });
+    if (selectedChannel) {
+      const currentVideos = getVideosByKey("remixed");
+      if (currentVideos?.length) {
+        const updatedVideos = currentVideos.map((video) =>
+          video.id?.startsWith("fake-")
+            ? {
+              ...video,
+              channelName: selectedChannel.channel_name,
+              channelLogo: selectedChannel.logo,
+            }
+            : video
+        );
+        setVideosByKey("remixed", updatedVideos);
       }
     }
+  }, [selectedChannel]);
 
-    const newUploaded = [...uploadedUrls, ...uploaded];
-    setUploadedUrls(newUploaded);
-    setPreviews((prev) => [...prev, ...uploaded]);
-    sessionStorage.setItem("selected_images", JSON.stringify(newUploaded));
-  }, [images.length, uploadedUrls]);
+  // 同步 Title 到 remix videos
+  useEffect(() => {
+    if (selectedTitle) {
+      const currentVideos = getVideosByKey("remixed");
+      if (currentVideos?.length) {
+        const updatedVideos = currentVideos.map((video) =>
+          video.id?.startsWith("fake-")
+            ? { ...video, title: selectedTitle }
+            : video
+        );
+        setVideosByKey("remixed", updatedVideos);
+      }
+    }
+  }, [selectedTitle]);
+
+  // 🧠 Spinner + 預覽 + 上傳
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      if (images.length >= MAX_IMAGES) {
+        setErrors(`最多只能上傳 ${MAX_IMAGES} 張圖片`);
+        return;
+      }
+
+      const validFiles = acceptedFiles.filter(
+        (file) => file.size <= 2_000_000
+      );
+      const remaining = MAX_IMAGES - images.length;
+      const finalFiles = validFiles.slice(0, remaining);
+
+      if (acceptedFiles.length > remaining) {
+        toast.custom(
+          () => (
+            <div className="flex items-center gap-2 bg-primary text-primary px-4 py-2 rounded-3xl shadow-md">
+              <AlertTriangle className="text-yellow-300" size={20} />
+              <span className="text-sm text-white">
+                最多只能放 {MAX_IMAGES} 張圖片，僅保留前 {remaining} 張
+              </span>
+            </div>
+          ),
+          {
+            duration: 4000,
+            position: "top-left",
+          }
+        );
+      }
+
+      for (const [index, file] of finalFiles.entries()) {
+        const previewIndex = previews.length + index;
+
+        // 建立本地預覽 URL
+        const previewUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = () => reject(new Error("讀取圖片失敗"));
+          reader.readAsDataURL(file);
+        });
+
+        setPreviews((prev) => [...prev, previewUrl]);
+        setImages((prev) => [...prev, file]);
+        setUploadingIndexes((prev) => [...prev, previewIndex]);
+
+        try {
+          // 壓縮兩個版本
+          const mdFile = await compressImage(file, 480, 270);
+          const smFile = await compressImage(file, 320, 180);
+          console.log("uploaded files", { file, mdFile, smFile });
+
+          // 並行上傳三個版本
+          const [resOriginal, resMd, resSm] = await Promise.all([
+            uploadThumbnailAndGetUrl(file),
+            uploadThumbnailAndGetUrl(mdFile),
+            uploadThumbnailAndGetUrl(smFile),
+          ]);
+
+          const allSuccess =
+            resOriginal.success && resMd.success && resSm.success;
+
+          if (allSuccess) {
+            const finalUrl = resMd.url || resOriginal.url;
+
+            if (finalUrl) {
+              setUploadedUrls((prev) => {
+                const updated = [...prev, finalUrl];
+                sessionStorage.setItem(
+                  "selected_images",
+                  JSON.stringify(updated)
+                );
+                return updated;
+              });
+            } else {
+              toast.error("找不到縮圖 URL", { position: "top-left" });
+            }
+          } else {
+            toast.error("圖片上傳失敗，請稍後再試", { position: "top-left" });
+          }
+        } catch (error) {
+          console.error("圖片處理或上傳出錯", error);
+          toast.error("處理圖片時發生錯誤", { position: "top-left" });
+        } finally {
+          setUploadingIndexes((prev) => prev.filter((i) => i !== previewIndex));
+        }
+      }
+    },
+    [images.length, previews.length]
+  );
+
+
+
+
 
   const handleRemove = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
@@ -162,8 +194,6 @@ const ThumbnailGrid: React.FC<Props> = ({ onUpload, onRemix }) => {
     });
   };
 
-  const { getVideosByKey, setVideosByKey, setActiveKey } = useVideoContext();
-
   const handleRemix = () => {
     const saved = sessionStorage.getItem("selected_images");
     if (!saved) return;
@@ -174,7 +204,6 @@ const ThumbnailGrid: React.FC<Props> = ({ onUpload, onRemix }) => {
     const remixCount = Math.min(selectedImages.length, 4);
     const sample = [...selectedImages].slice(0, remixCount);
 
-    
     const fakeVideos = sample.map((url, i) => ({
       id: `fake-${i}-${Date.now()}`,
       thumbnail: url,
@@ -186,7 +215,7 @@ const ThumbnailGrid: React.FC<Props> = ({ onUpload, onRemix }) => {
       uploadedAt: "just now",
     }));
 
-    const baseVideos = getVideosByKey("search"); // 例如 remix 用搜尋結果混合
+    const baseVideos = getVideosByKey("search");
     const shuffled = [...baseVideos];
     fakeVideos.forEach((item) => {
       const index = Math.floor(Math.random() * (shuffled.length + 1));
@@ -213,42 +242,73 @@ const ThumbnailGrid: React.FC<Props> = ({ onUpload, onRemix }) => {
     noClick: true,
   });
 
-
   return (
     <div className="space-y-4 max-w-6xl mx-auto">
       <div
         {...getRootProps()}
-        className="w-full flex flex-col gap-y-2 rounded-lg border border-dashed border-foreground p-2 shadow-sm shadow-foreground "
+        className="w-full flex flex-col gap-y-2 rounded-lg border border-dashed border-foreground p-2 shadow-sm shadow-foreground"
       >
         <div className="grid grid-cols-2 gap-2 w-full">
-          {previews.map((src, i) => (
-            <div key={i} className="relative group">
-              <img
-                src={src}
-                alt={`src-${src}`}
-                className="w-full h-auto object-contain rounded-lg"
-              />
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRemove(i);
-                }}
-                className="absolute top-1 right-1 text-gray-500 text-xs rounded-full opacity-0 group-hover:opacity-100 transition hover:text-red-500 cursor-pointer"
-              >
-                <XCircle size={16} />
-              </button>
-            </div>
-          ))}
+          {previews.map((src, i) => {
+            const isUploading = uploadingIndexes.includes(i);
+            return (
+              <div key={i} className="relative group">
+                <img
+                  src={src}
+                  alt={`src-${src}`}
+                  className={`w-full h-auto object-contain rounded-lg transition-opacity duration-300 ${isUploading ? "opacity-50" : "opacity-100"
+                    }`}
+                />
+                {isUploading && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <svg
+                      className="animate-spin h-6 w-6 text-yellow-400"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-50"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"
+                      />
+                    </svg>
+                  </div>
+                )}
+                {!isUploading && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemove(i);
+                    }}
+                    className="absolute top-1 right-1 text-gray-500 text-xs rounded-full opacity-0 group-hover:opacity-100 transition hover:text-red-500 cursor-pointer"
+                  >
+                    <XCircle size={16} />
+                  </button>
+                )}
+              </div>
+            );
+          })}
 
           {images.length < MAX_IMAGES && (
             <div
               onClick={() => {
                 if (images.length < MAX_IMAGES) {
-                  document.querySelector<HTMLInputElement>("input[type=file]")?.click();
+                  document
+                    .querySelector<HTMLInputElement>("input[type=file]")
+                    ?.click();
                 }
               }}
-              className="aspect-video w-full flex items-center justify-center border-2 border-dashed border-muted-foreground rounded-lg text-muted-foreground hover:bg-muted/50 transition"
+              className="aspect-video w-full flex items-center justify-center border-2 border-dashed border-muted-foreground rounded-lg text-muted-foreground hover:bg-muted/50 transition cursor-pointer"
             >
               <ImagePlus className="size-8" />
             </div>
@@ -270,17 +330,17 @@ const ThumbnailGrid: React.FC<Props> = ({ onUpload, onRemix }) => {
       <div className="flex gap-4">
         <button
           onClick={handleRemix}
-          className="px-4 py-2 bg-primary text-white rounded-md disabled:opacity-50 cursor-pointer hover:bg-blue-500 transition-colors"
+          className="px-4 py-2 bg-blue-500 text-primary rounded-md disabled:opacity-50 cursor-pointer hover:bg-primary transition-colors hover:text-secondary"
         >
           <GitCompareArrows className="inline-block mr-2" />
-          {translations?.remix_button?.translation ?? "Remix2"}
+          {translations?.remix_button?.translation ?? "Remix"}
         </button>
         <button
           onClick={handleReset}
-          className="px-4 py-2 bg-primary text-white rounded-md disabled:opacity-50 cursor-pointer hover:bg-blue-500 transition-colors"
+          className="px-4 py-2 bg-blue-500 text-primary rounded-md disabled:opacity-50 cursor-pointer hover:bg-primary transition-colors hover:text-secondary"
         >
           <RotateCcw className="inline-block mr-2" />
-          {translations?.reset_button?.translation ?? "Reset2"}
+          {translations?.reset_button?.translation ?? "Reset"}
         </button>
       </div>
     </div>

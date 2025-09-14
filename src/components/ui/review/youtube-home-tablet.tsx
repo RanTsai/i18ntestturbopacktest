@@ -3,21 +3,24 @@
 import React from "react";
 import VideoCard from "@/components/ui/review/video-card";
 import ShortsSection from "@/components/ui/review/shorts-section";
-import { useVideoContext } from "@/context/youtube-video-provider";
-import useVideoSelectionStore from "@/lib/global-store/video-selection-store"; // ✅ 引入 store
+import useVideoSelectionStore from "@/lib/global-store/video-selection-store";
+import { YoutubeVideo } from "@/lib/schema/youtube-video-schema";
 
-export default function TabletYouTubeHome() {
-  const { videos, searchTerm } = useVideoContext();
-  const { selectedVideos, addVideo, removeVideo } = useVideoSelectionStore(); // ✅ store hooks
+interface Props {
+  videos: YoutubeVideo[];
+  shorts: YoutubeVideo[];
+}
+
+export default function TabletYouTubeHome({ videos,shorts }: Props) {
+  const { selectedVideos, addVideo, removeVideo } = useVideoSelectionStore();
 
   const mainVideo = videos[0];
-  const recommended = videos.slice(1, 13); // 顯示推薦影片 6 個
+  const recommended = videos.slice(1, 13); // 顯示 12 個推薦影片
   const hasShorts = videos.length > 7;
 
   // ✅ 判斷是否已選取
-  const isVideoSelected = (thumbnail: string) => {
-    return selectedVideos.some((v) => v.thumbnail === thumbnail);
-  };
+  const isVideoSelected = (thumbnail: string) =>
+    selectedVideos.some((v) => v.thumbnail === thumbnail);
 
   // ✅ 處理選取邏輯
   const handleSelect = (video: { title: string; thumbnail: string }) => {
@@ -61,7 +64,7 @@ export default function TabletYouTubeHome() {
         {/* 右：推薦影片清單 */}
         <div className="w-full lg:w-1/3 flex flex-col gap-3">
           {hasShorts && (
-            <ShortsSection variant="horizontal" keyword={searchTerm} />
+            <ShortsSection variant="horizontal" shorts={shorts} />
           )}
           {recommended.map((video) => (
             <div
@@ -83,6 +86,13 @@ export default function TabletYouTubeHome() {
           ))}
         </div>
       </div>
+
+      {/* 無資料提示 */}
+      {videos.length === 0 && (
+        <p className="text-center text-muted-foreground mt-10">
+          No videos found. Try searching something else.
+        </p>
+      )}
     </div>
   );
 }

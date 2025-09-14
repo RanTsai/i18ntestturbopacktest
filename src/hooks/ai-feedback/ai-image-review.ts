@@ -6,7 +6,8 @@ import { DeductUserCredits } from "@/actions/supabase/supabaseCredits";
 import { UserWorkWithAIAnalaysisToSupabase } from "@/actions/supabase/supabase-user-work";
 import VideoSettingStore from "@/lib/global-store/upload-store";
 import UserChannelStore from "@/lib/global-store/user-channel-store";
-import { IUserWork, UploadedVersions } from "@/lib/schema/userwork-schema";
+import { UploadedVersions } from "@/lib/schema/userwork-schema";
+import { IUserWork } from "@/app/interfaces";
 import { AIResponseSchema } from "@/lib/schema/aiscore-schema";
 import userGlobalStore from "@/lib/global-store/users-store";
 interface ReviewResult {
@@ -16,7 +17,7 @@ interface ReviewResult {
 
 export function useThumbnailReview() {
   const [isReviewing, setIsReviewing] = useState(false);
-  const { theme, title, topic, tags, titles, description, video_type } = VideoSettingStore.getState();
+  const { theme, title, topic, tags, titles, description} = VideoSettingStore.getState();
   const { selectedChannel } = UserChannelStore.getState();
   const { theUser } = userGlobalStore();
 
@@ -86,7 +87,7 @@ const reviewThumbnail = async (
       topic,
       tags,
       titles,
-      selectedChannel?.user_channel_id ?? 0,
+       0,
       [newUpload],
       description,
       parsed.data,

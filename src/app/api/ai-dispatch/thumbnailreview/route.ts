@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
         // 🟨 使用 generateObject 並傳入 zod schema
         const result = await generateObject({
             //model: google('gemini-2.5-pro-preview-05-06'),
-            model: openai('gpt-4o'),
+            model: openai('gpt-5'),
             schema: AIResponseSchema,
             messages: multiModalMessages
         });

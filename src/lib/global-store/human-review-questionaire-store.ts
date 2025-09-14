@@ -18,10 +18,17 @@ const useSessionStorage = true;
 
 
 export const useQuestionnaireStore = create<QuestionnaireState>()(
+
   persist(
     (set, get) => ({
       questions: [],
-      setQuestions: (questions) => set({ questions }),
+      setQuestions: (questions) => {
+        const safe = Array.isArray(questions) ? questions : [];
+        console.log("[useQuestionnaireStore] setQuestions called:", questions);
+        console.log("[useQuestionnaireStore] normalized to:", safe);
+        set({ questions: safe });
+      },
+
       addQuestion: (question) => set({ questions: [...get().questions, question] }),
       updateQuestion: (id, partial) =>
         set({

@@ -1,59 +1,48 @@
-// app/actions/supabase/GetFollowingChannelsFromSupabase.ts
+// actions/supabase/supabase_following_channel.ts
 'use server'
 
 import supabase from "@/config/supabase.config"
 import { currentUser } from "@clerk/nextjs/server"
 import { IFollowingChannel } from "@/lib/schema/human-review-schema";
 
-export const GetFollowingChannelsFromSupabase = async (): Promise<{
-  success: boolean
-  data?: IFollowingChannel[]
-  message?: string
-}> => {
+export const GetFollowingChannelsFromSupabase = async (params?: {
+  onlyActive?: boolean;
+  onlyPublic?: boolean;
+  onlyNotUnfollowed?: boolean;
+  limit?: number;
+  offset?: number;
+}): Promise<{ success: boolean; data?: IFollowingChannel[]; message?: string }> => {
   try {
-    const clerkUser = await currentUser()
-    if (!clerkUser) {
-      throw new Error("Clerk user not found")
-    }
+    const clerk = await currentUser();
+    if (!clerk) throw new Error("Clerk user not found");
 
-    const { data, error } = await supabase
-      .from("user_follow_table")
-      .select(`
-        user_channel_id,
-        created_at,
-        clerk_user_id,
-        user_channel: user_channel_id (
-          channel_name,
-          logo,
-          platform
-        )
-      `)
-      .eq("clerk_user_id", clerkUser.id)
+    const { data, error } = await supabase.rpc(
+      "get_following_channels_by_clerk",
+      {
+        p_clerk_user_id: clerk.id,
+        p_only_active: params?.onlyActive ?? true,
+        p_only_public: params?.onlyPublic ?? true,
+        p_only_not_unfollowed: params?.onlyNotUnfollowed ?? true,
+        p_limit: params?.limit ?? 200,
+        p_offset: params?.offset ?? 0,
+      }
+    );
 
-    if (error) {
-      throw new Error(error.message)
-    }
+    if (error) throw new Error(error.message);
 
-    // 整理成 IFollowingChannel[]
-    const parsedData: IFollowingChannel[] = (data || []).map((item: any) => ({
-      clerk_user_id: item.clerk_user_id,
-      created_at: item.created_at,
-      user_channel_id: item.user_channel_id,
-      channel_name: item.user_channel?.channel_name || "",
-      logo: item.user_channel?.logo || "",
-      platform: item.user_channel?.platform || ""
-    }))
+    // 直接對齊你的 IFollowingChannel 介面（欄位名已在 RPC 中對齊）
+    const parsed: IFollowingChannel[] = (data ?? []).map((row: any) => ({
+      clerk_user_id: row.clerk_user_id,
+      created_at: row.created_at,
+      user_channel_id: Number(row.user_channel_id),
+      channel_name: row.channel_name ?? "",
+      logo: row.logo ?? "",
+      platform: row.platform ?? "",
+    }));
 
-    console.log("loaded following table:", parsedData);
-
-    return {
-      success: true,
-      data: parsedData,
-    }
-  } catch (error: any) {
-    return {
-      success: false,
-      message: error.message || "Unknown error occurred",
-    }
+    return { success: true, data: parsed };
+  } catch (err: any) {
+    console.error("GetFollowingChannelsFromSupabase error:", err);
+    return { success: false, message: err.message ?? "Unknown error occurred" };
   }
-}
+};

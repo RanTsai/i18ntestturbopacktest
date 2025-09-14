@@ -9,7 +9,6 @@ function PrivateLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
      <Toaster position="top-left" richColors />
-
       <div>
         <div className="p-4">{children}</div>
       </div>

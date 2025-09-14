@@ -1,43 +1,17 @@
 "use client";
 import React from "react";
 import { MoreVertical } from "lucide-react";
-
-export interface ShortVideo {
-  id: string;
-  title: string;
-  thumbnail: string;
-}
+import { YoutubeVideo } from "@/lib/schema/youtube-video-schema";
 
 interface ShortsSectionProps {
   variant?: "mobile" | "horizontal";
-  shorts?: ShortVideo[]; // 外部可選傳入
-  keyword?: string;      // 傳入 search keyword（只有在沒有 shorts 時才會觸發 fetch）
+  shorts: YoutubeVideo[]; // ✅ 強制外部傳入
 }
 
 export default function ShortsSection({
   variant = "mobile",
-  shorts: externalShorts,
-  keyword = "shorts", // 預設 keyword
+  shorts,
 }: ShortsSectionProps) {
-  const [internalShorts, setInternalShorts] = React.useState<ShortVideo[]>([]);
-
-  const shouldFetch = !externalShorts;
-
-  React.useEffect(() => {
-    if (!shouldFetch) return;
-
-    const fetchShorts = async () => {
-      const query = keyword || "shorts";
-      const res = await fetch(`/api/youtubeshorts?q=${encodeURIComponent(query)}`);
-      const data = await res.json();
-      setInternalShorts(data);
-    };
-
-    fetchShorts();
-  }, [shouldFetch, keyword]);
-
-  const shorts = externalShorts || internalShorts;
-
   return (
     <div className="bg-black text-white px-2 py-2">
       <div className="flex items-center gap-2 mb-2">
@@ -64,11 +38,17 @@ export default function ShortsSection({
   );
 }
 
-function ShortCard({ short }: { short: ShortVideo }) {
+function ShortCard({ short }: { short: YoutubeVideo }) {
   return (
     <div className="relative flex flex-col bg-zinc-900 rounded-md overflow-hidden aspect-[9/16] w-full">
-      <img src={short.thumbnail} alt={short.title} className="w-full h-full object-cover" />
-      <div className="absolute top-1 left-1 text-xs bg-gray-500 rounded px-1">New</div>
+      <img
+        src={short.thumbnail}
+        alt={short.title}
+        className="w-full h-full object-cover"
+      />
+      <div className="absolute top-1 left-1 text-xs bg-gray-500 rounded px-1">
+        New
+      </div>
       <div className="absolute top-1 right-1">
         <MoreVertical className="w-4 h-4 text-white" />
       </div>

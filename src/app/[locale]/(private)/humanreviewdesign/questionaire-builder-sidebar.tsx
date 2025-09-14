@@ -41,7 +41,7 @@ export default function QuestionaireBuilderSideBar({
   } = UserChannelStore()
 
   const {
-    selectedMyChannelId,
+    selectedMyChannelName,
     setMyChannel,
   } = useReviewFilterStore()
 
@@ -171,12 +171,7 @@ export default function QuestionaireBuilderSideBar({
                 <MyChannelSelector
                   expanded={isMyChannelsExpanded}
                   setExpanded={setMyChannelsExpanded}
-                  userChannels={userChannels ?? []}
-                  setSelectedChannel={setSelectedChannel}
-                  pageId={pageId}
-                  selectedId={selectedMyChannelId ? String(selectedMyChannelId) : null}
-                  setSelectedId={(id: string | null) => setMyChannel(id ? Number(id) : null)}
-                  setMyChannel={setMyChannel}
+                  translations={translations!}
                 />
               </div>
 

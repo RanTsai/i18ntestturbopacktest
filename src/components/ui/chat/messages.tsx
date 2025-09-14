@@ -21,7 +21,6 @@ import ShareMessage from "./share-message";
 import { Skeleton } from "@/components/ui/skeleton";
 import { mockChatSession } from "./mockdata";
 import ImageAnnotationLayer from "./image-annotation-layer";
-import Typewriter from "./typewriter";
 import type { FileUIPart } from '@ai-sdk/ui-utils';
 
 

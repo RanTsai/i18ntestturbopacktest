@@ -5,16 +5,16 @@ import { persist } from "zustand/middleware";
 type SortMode = "trending" | "latest";
 
 interface ReviewFilterStore {
-  selectedMyChannelId: number | null;
-  selectedFollowingChannelId: number | null;
+  selectedMyChannelName: string | null;
+  selectedFollowingChannelName: string | null;
   activeFilterGroup: "myChannels" | "following" | null;
 
   selectedTags: string[];
   keyword: string;
   sortMode: SortMode;
 
-  setMyChannel: (id: number | null) => void;
-  setFollowingChannel: (id: number | null) => void;
+  setMyChannel: (channel_name: string | null) => void;
+  setFollowingChannel: (channel_name: string | null) => void;
   setTags: (tags: string[]) => void;
   setKeyword: (keyword: string) => void;
   setSortMode: (mode: SortMode) => void;
@@ -24,8 +24,8 @@ interface ReviewFilterStore {
 const useReviewFilterStore = create<ReviewFilterStore>()(
   persist(
     (set) => ({
-      selectedMyChannelId: null,
-      selectedFollowingChannelId: null,
+      selectedMyChannelName: null,
+      selectedFollowingChannelName: null,
       activeFilterGroup: null,
 
       selectedTags: [],
@@ -34,15 +34,15 @@ const useReviewFilterStore = create<ReviewFilterStore>()(
 
       setMyChannel: (id) =>
         set({
-          selectedMyChannelId: id,
-          selectedFollowingChannelId: null,
+          selectedMyChannelName: id,
+          selectedFollowingChannelName: null,
           activeFilterGroup: id ? "myChannels" : null,
         }),
 
       setFollowingChannel: (id) =>
         set({
-          selectedFollowingChannelId: id,
-          selectedMyChannelId: null,
+          selectedFollowingChannelName: id,
+          selectedMyChannelName: null,
           activeFilterGroup: id ? "following" : null,
         }),
 
@@ -52,8 +52,8 @@ const useReviewFilterStore = create<ReviewFilterStore>()(
 
       resetFilters: () =>
         set({
-          selectedMyChannelId: null,
-          selectedFollowingChannelId: null,
+          selectedMyChannelName: null,
+          selectedFollowingChannelName: null,
           activeFilterGroup: null,
           selectedTags: [],
           keyword: "",
@@ -71,8 +71,8 @@ export default useReviewFilterStore;
 // const {
 //   selectedTags,
 //   keyword,
-//   selectedMyChannelId,
-//   selectedFollowingChannelId,
+//   selectedMyChannelName,
+//   selectedFollowingChannelName,
 //   setTags,
 //   setKeyword,
 //   setMyChannel,

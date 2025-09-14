@@ -2,12 +2,10 @@
 
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
-import { PlusCircle, XCircle, Film, HelpCircle, Images, ChevronsLeft, ChevronsRight } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { PlusCircle, XCircle, HelpCircle, Images, ChevronsLeft, ChevronsRight } from "lucide-react";
 import UserChannelStore from "@/lib/global-store/user-channel-store";
-import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
-import useTranslationStore from "@/lib/global-store/use-translation-store";
 import {
   Tooltip,
   TooltipContent,
@@ -17,68 +15,47 @@ import {
 
 import {
   Home,
-  BarChart,
   ChevronDown,
   ChevronRight,
 } from "lucide-react";
 import Image from "next/image";
 import { UseLoadChannels } from "@/hooks/loading-user-data/load-channels";
 import VideoSettingStore from "@/lib/global-store/upload-store";
-import { PageTranslations } from "@/i18n/interface";
 import { useParams } from "next/navigation";
 import { ThumbnailSelectorPanel } from "@/components/image-select/thumbnail-selector-panel";
 import MyChannelSelector from "@/components/upload/channel-selector";
+import { CachedTranslation } from "@/lib/idb/translation-idb";
+import { useTranslationViewModel } from "@/lib/view-models/use-translation-view-model";
 
-interface UploadSideBarProps {
-  setShowSidebar?: (open: boolean) => void;
-  fallbackTranslations?: PageTranslations;
+interface Props {
+  initialTranslation?: CachedTranslation
 }
 
 export default function DeviceViewSideBar({
-  setShowSidebar,
-  fallbackTranslations,
-}: UploadSideBarProps) {
-  const [loading, setLoading] = useState<boolean>(false);
+  initialTranslation,
+}: Props) {
+  const { locale } = useParams() as { locale: string };
+  const pageId = "device_preview_page";
+  const { translation, hydrateTranslation } = useTranslationViewModel(pageId, locale);
+  useEffect(() => {
+    if (
+      initialTranslation
+    ) {
+      hydrateTranslation(initialTranslation.content, initialTranslation.version);
+    }
+  }, [initialTranslation]);
+
   const [selectedChannelId, setSelectedChannelId] = useState<number | null>(null);
   const [isMyChannelExpanded, setIsMyChannelExpanded] = useState(true);
   const [isAudienceExpanded, setIsAudienceExpanded] = useState(false);
   const [isThumbnailExpanded, setIsThumbnailExpanded] = useState(true);
   const [isTitleExpanded, setIsTitleExpanded] = useState(true);
-  const [isVideoTypeExpanded, setIsVideoTypeExpanded] = useState(true);
 
-  // ✅ 新增：整個 Sidebar 的收納狀態
+  // 整個 Sidebar 的收納狀態
   const [collapsed, setCollapsed] = useState(false);
 
-  const { userChannels, setChannels, selectedChannel, setSelectedChannel } = UserChannelStore();
-  const { getTranslation, setTranslation } = useTranslationStore();
-  const [translations, setTranslations] = useState<PageTranslations | null>(null);
-
-  const { locale } = useParams() as { locale: string };
-  const pageId = "device_preview_page";
-
+  const { userChannels, setSelectedChannel } = UserChannelStore();
   const { titles, setTitles, setSelectedTitle, selectedTitle } = VideoSettingStore();
-
-  const loadAudience = async () => {
-    try {
-      // TODO: Load audience
-    } catch (err: any) {
-      toast.error("發生錯誤：" + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    const cached = getTranslation(pageId, locale);
-    if (cached) {
-      setTranslations(cached);
-    } else if (fallbackTranslations) {
-      setTranslation(pageId, locale, fallbackTranslations);
-      setTranslations(fallbackTranslations);
-    } else {
-      // TODO: call LoadPageTranslation API if needed
-    }
-  }, [locale, fallbackTranslations]);
 
   const handleTitleChange = (index: number, value: string) => {
     const updated = [...titles];
@@ -96,14 +73,6 @@ export default function DeviceViewSideBar({
     const updated = [...titles];
     updated.splice(index, 1);
     setTitles(updated);
-  };
-
-  const handleSelectAudience = async () => {
-    try {
-      // TODO
-    } catch (err: any) {
-      toast.error("發生錯誤：" + err.message);
-    }
   };
 
   UseLoadChannels();
@@ -153,15 +122,7 @@ export default function DeviceViewSideBar({
                 <MyChannelSelector
                   expanded={isMyChannelExpanded}
                   setExpanded={setIsMyChannelExpanded}
-                  userChannels={userChannels ?? []}
-                  selectedId={selectedChannelId !== null ? `my-${selectedChannelId}` : null}
-                  setSelectedId={(id) => {
-                    const numId = id?.startsWith("my-") ? parseInt(id.replace("my-", ""), 10) : null;
-                    setSelectedChannelId(numId);
-                  }}
-                  setMyChannel={setSelectedChannelId}
-                  setSelectedChannel={setSelectedChannel}
-                  pageId="device_preview_page"
+                  translations={translation}
                 />
 
                 <div className="border-t border-[var(--sidebar-border)]" />
@@ -177,11 +138,11 @@ export default function DeviceViewSideBar({
                       <Tooltip delayDuration={300}>
                         <TooltipTrigger asChild>
                           <span className="cursor-help text-sm">
-                            {translations?.thumbnails_section?.translation ?? "Thumbnails"}
+                            {translation?.thumbnails_section?.translation ?? "Thumbnails"}
                           </span>
                         </TooltipTrigger>
                         <TooltipContent side="top" className="text-xs">
-                          {translations?.thumbnails_section?.tooltip ?? "Select or manage your thumbnails"}
+                          {translation?.thumbnails_section?.tooltip ?? "Select or manage your thumbnails"}
                         </TooltipContent>
                       </Tooltip>
                     </div>
@@ -198,7 +159,7 @@ export default function DeviceViewSideBar({
                         transition={{ duration: 0.25, ease: "easeInOut" }}
                         className="overflow-hidden pl-6"
                       >
-                        <ThumbnailSelectorPanel />
+                        <ThumbnailSelectorPanel translations={translation} />
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -217,11 +178,11 @@ export default function DeviceViewSideBar({
                       <Tooltip delayDuration={300}>
                         <TooltipTrigger asChild>
                           <span className="cursor-help text-sm">
-                            {translations?.titles_section?.translation ?? "My Channels"}
+                            {translation?.titles_section?.translation ?? "My Channels"}
                           </span>
                         </TooltipTrigger>
                         <TooltipContent side="top" className="text-xs">
-                          {translations?.titles_section?.tooltip ?? ""}
+                          {translation?.titles_section?.tooltip ?? ""}
                         </TooltipContent>
                       </Tooltip>
                     </div>
@@ -280,7 +241,7 @@ export default function DeviceViewSideBar({
                           className="text-xs text-muted-foreground hover:text-foreground mt-2 flex items-center space-x-1"
                         >
                           <PlusCircle className="w-5 h-5" />
-                          <span>{translations?.add_title_button?.translation ?? "Titles"}</span>
+                          <span>{translation?.add_title_button?.translation ?? "Titles"}</span>
                         </button>
                       </motion.div>
                     )}
@@ -288,7 +249,7 @@ export default function DeviceViewSideBar({
                 </div>
 
 
- {/* Video Type Section
+                {/* Video Type Section
                 <div className="w-full mt-4">
                     <div
                         className="flex items-center justify-between cursor-pointer p-2 rounded hover:bg-[var(--muted)]"
@@ -296,7 +257,7 @@ export default function DeviceViewSideBar({
                     >
                         <div className="flex items-center space-x-2">
                             <Film className="h-4 w-4" />
-                            <span className="text-sm">{translations?.video_type_section?.translation ?? 'Video Type'}</span>
+                            <span className="text-sm">{translation?.video_type_section?.translation ?? 'Video Type'}</span>
                         </div>
                         {isVideoTypeExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                     </div>
@@ -321,12 +282,12 @@ export default function DeviceViewSideBar({
 
 
                 {/* Audience Section */}
-                <div
+                {/* <div
                   className="flex items-center justify-between cursor-pointer p-2 rounded hover:bg-[var(--muted)]"
                   onClick={() => setIsAudienceExpanded(!isAudienceExpanded)}
                 >
                   <div className="flex items-center space-x-1 text-sm">
-                    <span>{translations?.audience_section?.translation ?? "Target Audience"}</span>
+                    <span>{translation?.audience_section?.translation ?? "Target Audience"}</span>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div className="ml-1 rounded-full bg-[var(--muted)] hover:bg-[var(--accent)] p-1 cursor-pointer">
@@ -334,7 +295,7 @@ export default function DeviceViewSideBar({
                         </div>
                       </TooltipTrigger>
                       <TooltipContent side="top" className="text-xs max-w-xs">
-                        {translations?.audience_section?.tooltip ?? ""}
+                        {translation?.audience_section?.tooltip ?? ""}
                       </TooltipContent>
                     </Tooltip>
                   </div>
@@ -356,11 +317,10 @@ export default function DeviceViewSideBar({
                           <TooltipTrigger asChild>
                             <div
                               onClick={() => setSelectedChannelId(channel.user_channel_id)}
-                              className={`flex flex-col items-center justify-center cursor-pointer transition border-2 rounded-xl p-2 w-20 hover:border-purple-400 ${
-                                selectedChannelId === channel.user_channel_id
-                                  ? "border-purple-500"
-                                  : "border-[var(--border)]"
-                              }`}
+                              className={`flex flex-col items-center justify-center cursor-pointer transition border-2 rounded-xl p-2 w-20 hover:border-purple-400 ${selectedChannelId === channel.user_channel_id
+                                ? "border-purple-500"
+                                : "border-[var(--border)]"
+                                }`}
                             >
                               <Image
                                 src={channel.logo}
@@ -379,7 +339,7 @@ export default function DeviceViewSideBar({
                       ))}
                     </motion.div>
                   )}
-                </AnimatePresence>
+                </AnimatePresence> */}
 
                 <div className="border-t border-[var(--sidebar-border)]" />
               </nav>
