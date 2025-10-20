@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { ImagePlus } from "lucide-react";
+import Image from "next/image";
+import { getErrorMessage } from "@/lib/utils/message-utils";
 
 const ImageUploader: React.FC<{ onUpload: (files: File[], title: string) => void }> = ({ onUpload }) => {
     const [preview, setPreview] = React.useState<string | ArrayBuffer | null>("");
@@ -46,9 +48,11 @@ const ImageUploader: React.FC<{ onUpload: (files: File[], title: string) => void
                 reader.readAsDataURL(acceptedFiles[0]);
                 form.setValue("image", acceptedFiles[0]);
                 form.clearErrors("image");
-            } catch (error) {
+            } catch (error:unknown) {
+                const message = getErrorMessage(error);
                 setPreview(null);
                 form.resetField("image");
+                console.error("error in impageuploader", message);
             }
         },
         [form],
@@ -63,7 +67,6 @@ const ImageUploader: React.FC<{ onUpload: (files: File[], title: string) => void
         });
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
         onUpload([values.image], values.title);
     };
 
@@ -109,7 +112,7 @@ const ImageUploader: React.FC<{ onUpload: (files: File[], title: string) => void
                                     className="mx-auto flex cursor-pointer flex-col items-center justify-center gap-y-2 rounded-lg border border-foreground p-8 shadow-sm shadow-foreground"
                                 >
                                     {preview && (
-                                        <img
+                                        <Image
                                             src={preview as string}
                                             alt="Uploaded image"
                                             className="max-h-[400px] rounded-lg"

@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useHumanReviewBundleStore, VersionListItem, HumanReviewBundle } from "@/lib/global-store/use-human-review-bundle-store";
+import { useSearchParams } from "next/navigation";
+import { useHumanReviewBundleStore, HumanReviewBundle } from "@/lib/global-store/use-human-review-bundle-store";
 
 /** 工具：把 bundle + index 轉為 RHF 預設值（跟你現有的 toFormValues 類似） */
 function toDateInput(ts?: string | null): string | null {
@@ -34,13 +34,12 @@ function toFormValues(bundle: HumanReviewBundle, idx: number) {
 /** 工具：把 bundle + index 轉為問題陣列（你現有的 toEditorQuestions 類似） */
 function toEditorQuestions(bundle: HumanReviewBundle, idx: number) {
   const ver = bundle.versions?.[idx];
-  const qs = (ver?.questionnaire as any)?.questions;
+  const qs = ver?.questionnaire;
   if (Array.isArray(qs)) return qs;
   return [];
 }
 
 export function useHumanReviewBundleViewModel() {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   const {
@@ -59,7 +58,6 @@ export function useHumanReviewBundleViewModel() {
     forkFromVersion,
     setDirtyLatest,
     ensureEditableHeadFrom,
-    applyLatestMetaEdits
   } = useHumanReviewBundleStore();
 
   
@@ -70,9 +68,6 @@ export function useHumanReviewBundleViewModel() {
     return v ? Number(v) : null;
   }, [searchParams]);
 
-  const setURLVersion = useCallback((_v: number | null) => {
-    /* intentionally no-op while editing */
-  }, []);
 
   /** 在 Page 首次拿到 bundle 後呼叫：會依 URL version 決定 active */
   const initWithBundle = useCallback((b: HumanReviewBundle | null) => {
@@ -116,67 +111,6 @@ export function useHumanReviewBundleViewModel() {
     return toFormValues(bundle, activeVersionIndex);
   }, [bundle, activeVersionIndex]);
 
-  /** Builder 的「編輯入口」：
-   *  - 若正在看舊版：自動 fork 成最新並切過去，再套用修改
-   *  - 若正在看最新：直接套用修改
-   */
-const beginEditOnActive = useCallback((updater: (prevQuestionnaire: any) => any) => {
-  const s = useHumanReviewBundleStore.getState();
-  if (s.activeVersionIndex == null || !s.bundle) return;
-
-  const hasLocalUnsaved =
-    s.dirtyLatest === true &&
-    s.headIndex != null &&
-    s.bundle.versions?.[s.headIndex] &&
-    s.bundle.versions[s.headIndex].version_number === null;
-
-  if (hasLocalUnsaved) {
-    // ✅ 已有 Unsaved：不 fork、直接把變更套用到 head
-    useHumanReviewBundleStore.getState().applyLatestEdits(updater);
-    return;
-  }
-
-  const isOnHead = s.headIndex != null && s.activeVersionIndex === s.headIndex;
-
-  if (!isOnHead) {
-    // 從舊版開始編輯 → fork 一次
-    s.ensureEditableHeadFrom(s.activeVersionIndex);
-    useHumanReviewBundleStore.getState().applyLatestEdits(updater);
-    return;
-  }
-
-  // 在最新，但尚未 dirty → fork 一次
-  if (!s.dirtyLatest) {
-    s.ensureEditableHeadFrom(s.activeVersionIndex);
-  }
-  useHumanReviewBundleStore.getState().applyLatestEdits(updater);
-}, []);
-
- const beginMetaEditOnActive = useCallback((patch: {
-    review?: any; thumbnail?: any; version?: any;
-  }) => {
-    const s = useHumanReviewBundleStore.getState();
-    if (s.activeVersionIndex == null || !s.bundle) return;
-
-    const isOnHead = s.headIndex != null && s.activeVersionIndex === s.headIndex;
-
-    if (!isOnHead) {
-      // 從舊版開始編輯 → 先 fork 成 head draft
-      s.ensureEditableHeadFrom(s.activeVersionIndex);
-      useHumanReviewBundleStore.getState().applyLatestMetaEdits(patch);
-      // URL 指到最新
-
-      return;
-    }
-
-    // 已在 head
-    if (!s.dirtyLatest) {
-      // 第一次變更 → 先 fork 一份 draft
-      s.ensureEditableHeadFrom(s.activeVersionIndex);
-    }
-
-    useHumanReviewBundleStore.getState().applyLatestMetaEdits(patch);
-  }, []);
 
   return {
     // 原始資料
@@ -198,9 +132,7 @@ const beginEditOnActive = useCallback((updater: (prevQuestionnaire: any) => any)
     currentVersion,
     questionsForActive,
     formValuesForActive,
-    beginEditOnActive,
     ensureEditableHeadFrom,
-    beginMetaEditOnActive,
     
 
     // 初始化
@@ -209,37 +141,3 @@ const beginEditOnActive = useCallback((updater: (prevQuestionnaire: any) => any)
   };
 }
 
-
-
-
-export interface IUpsertHumanReviewNewVersionInput {
-  version: {
-    questionnaire: any;
-    credit_reward?: number;
-    wanted_rating_count?: number;
-    language?: string;
-    creator_message_to_raters?: string;
-    is_latest?: boolean;
-    channel_logo?: string;
-    channel_name?: string;
-    channel_description?: string;
-    platform?: string;
-    view_count?: number;
-    cancel_count?: number;
-    rate_count?: number;
-  };
-  metadata: {
-    is_public?: boolean;
-    closedate?: string;
-    status?: string;
-  };
-  thumbnail: {
-    thumbnails?: any;
-    titles?: string[];
-    tags?: any;
-    niche?: any;
-    platform?: string;
-    user_channel_name: string;
-    target_audience?: number[];
-  };
-}

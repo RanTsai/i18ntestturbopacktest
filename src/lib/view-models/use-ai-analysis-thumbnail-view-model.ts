@@ -5,7 +5,6 @@ import { useState, useCallback } from "react";
 import VideoSettingStore from "@/lib/global-store/upload-store";
 import UserChannelStore from "@/lib/global-store/user-channel-store";
 import userGlobalStore from "@/lib/global-store/users-store";
-import { IUsersWork } from "./use-upload-user-thumbnail-ai-analysis-view-model";
 import toast from "react-hot-toast";
 import { AIResponse, AIResponseSchema } from "@/lib/schema/aiscore-schema";
 
@@ -21,7 +20,7 @@ export const useAIAnalysisThumbnailViewModel = () => {
   const reviewThumbnail = useCallback(
     async (
       image_url: string,
-      userWork?: IUsersWork
+      //userWork?: IUsersWork
     ): Promise<ReviewSingleResult> => {
       const { title } = VideoSettingStore.getState();
       const { selectedChannel } = UserChannelStore.getState();
@@ -45,23 +44,23 @@ export const useAIAnalysisThumbnailViewModel = () => {
           body: prompt,
         });
 
-        console.log("AI review response:", response.formData, "body:", response.body);
+        //console.log("AI review response:", response.formData, "body:", response.body);
 
         if (!response.ok) throw new Error("AI 回覆失敗");
 
         const aiJson = await response.json();
-        console.log("AI review json:", aiJson);
+        //console.log("AI review json:", aiJson);
         const parsed = AIResponseSchema.safeParse(aiJson);
-        console.log("AI review parsed:", parsed);
+        //console.log("AI review parsed:", parsed);
 
         if (!parsed.success) {
-          console.error("AI 回傳格式錯誤", parsed.error);
-          toast.error("AI 回傳格式不符預期");
+          //console.error("AI response format is incorrect", parsed.error);
+          toast.error("AI Response is in incorrect format");
           return { success: false, aiAnalysis: null };
         }
 
         toast.success("✅ AI review done!");
-        console.log("AI review result:", parsed.data);
+        //console.log("AI review result:", parsed.data);
         return { success: true, aiAnalysis: parsed.data };
       } catch (error) {
         console.error("Error during thumbnail review:", error);

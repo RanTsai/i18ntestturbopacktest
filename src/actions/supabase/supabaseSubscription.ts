@@ -1,10 +1,11 @@
 //This file is used to process purchases, add subscriptions with Supabase
 'use server';
-import { IProduct, IUserPurchaseHistory } from "@/app/interfaces";
+import { IProduct } from "@/app/interfaces";
 import supabase from "@/config/supabase.config";
 import {insertNewPurchaseToUserCreditHistory} from "./supabaseCredits";
 import { nanoid } from "nanoid";
 import {auth} from "@clerk/nextjs/server";
+import { getErrorMessage } from "@/lib/utils/message-utils";
 
 //base function to getSubscription from Supabase
 export const getSubscriptionsFromSupabase = async (language: string) => {
@@ -31,10 +32,11 @@ export const getSubscriptionsFromSupabase = async (language: string) => {
             message: 'No subscription found for this language.'
         };
     }
-    catch (error: any) {
+    catch (error: unknown) {
+        const message = getErrorMessage(error);
         return {
             success: false,
-            message: error.message,
+            message: message,
         };
     }
 
@@ -57,13 +59,15 @@ export const saveCreditToUserBalance = async ( user_id: number, user_balance: nu
 
         return {
             success: false,
-            data: null
+            data: null,
+            error: error
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
+                const message = getErrorMessage(error);
         console.log("SAVE CREDIT TO DB ERR => ", error);
         return {
             success: false,
-            message: error.message
+            message: message
         }
     }
 };
@@ -111,7 +115,7 @@ export async function savePurchaseToSupabase(product: IProduct, user_balance: nu
         if (NewBalanceError){
              return {
             success: false,
-            message: NewBalanceError.message,
+            message: NewBalanceError,
         }}
         else{
             console.log("New balance ", NewBalance);
@@ -126,7 +130,7 @@ export async function savePurchaseToSupabase(product: IProduct, user_balance: nu
         }
         } else {
             //console.log("user_purchase_history insert : ", data);
-            const { data: newPurchase } = await insertNewPurchaseToUserCreditHistory(
+            const { success } = await insertNewPurchaseToUserCreditHistory(
                 userData.supabase_user_id, 
                 data.user_purchase_id,
                 product.product_revenue_type,
@@ -138,14 +142,15 @@ export async function savePurchaseToSupabase(product: IProduct, user_balance: nu
             )
             //console.log("New purchase ", newPurchase);
             return {
-                success: true,
+                success: success,
                 data: data,
             }
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const message = getErrorMessage(error);
         return {
             success: false,
-            message: error.message,
+            message: message,
         }
     }
 }

@@ -10,7 +10,8 @@ export async function LoadPageTranslation(
   fallback = true
 ): Promise<{
   found: boolean
-  content: PageTranslations & { version?: number }
+  content: PageTranslations;
+  version?: number;
   locale: string
   from: 'redis' | 'supabase' | null
   fallback?: boolean
@@ -31,6 +32,7 @@ export async function LoadPageTranslation(
       return {
         found: true,
         content: parsed,
+        version: Number(currentVersion),
         locale,
         from: 'redis'
       };
@@ -40,7 +42,7 @@ export async function LoadPageTranslation(
   // ✅ 2. Supabase fallback
   const { success, data: supaData } = await GetTranslationFromsupabase(page_title);
   if (success && supaData?.translations?.locales) {
-    const localeMap = supaData.translations.locales as Record<string, any>;
+    const localeMap = supaData.translations.locales as Record<string, PageTranslations>;
     const version = supaData.version ?? 1; // 預設版本
 
     await Promise.all(
@@ -61,8 +63,9 @@ export async function LoadPageTranslation(
       found: !!selected,
       content: {
         ...selected,
-        version
+        
       },
+      version,
       locale: selected ? locale : 'en',
       from: 'supabase',
       fallback: !localeMap[locale]
@@ -81,6 +84,7 @@ if (fallback && locale !== 'en') {
       return {
         found: true,
         content: JSON.parse(fallbackData),
+        version: Number(fallbackVersion),
         locale: 'en',
         from: 'redis',
         fallback: true

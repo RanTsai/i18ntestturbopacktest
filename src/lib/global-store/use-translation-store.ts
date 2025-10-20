@@ -21,11 +21,6 @@ const useTranslationStore = create<TranslationStore>((set, get) => ({
         [key]: data,
       },
     }));
-
-    if (typeof window !== "undefined") {
-      const stringified = JSON.stringify(data);
-   
-    }
   },
 
   getTranslation: (pageId, locale) => {

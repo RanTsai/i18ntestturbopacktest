@@ -4,8 +4,8 @@
     "locales": {
         "en": {
             "logo": {
-                "label": "Mr. Click",
-                "translation": "Mr. Click",
+                "label": "Thumbnail Analyzer",
+                "translation": "Thumbnail Analyzer",
                 "description": "Indicates this is logo and lead to home page",
                 "tooltip": "Home page"
             },

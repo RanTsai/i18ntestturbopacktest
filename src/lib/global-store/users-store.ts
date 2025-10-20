@@ -8,6 +8,7 @@ export interface IUserGlobalStore {
   isInitialized: boolean;
   setUser: (user: IUser) => void;
   initUserIfNeeded: (isSignedIn: boolean) => Promise<void>;
+  reset: () => void;
 }
 
 const userGlobalStore = create<IUserGlobalStore>((set, get) => ({
@@ -23,13 +24,16 @@ const userGlobalStore = create<IUserGlobalStore>((set, get) => ({
     try {
       const res = await fetch(`${window.location.origin}/api/get-user`);
       const data = await res.json();
+      console.log("[userGlobalStore.initUserIfNeeded] fetched user:", data);
       if (data) {
         set({ theUser: data, isInitialized: true });
       }
     } catch (err) {
       console.error("[userGlobalStore.fetchUser error]", err);
     }
-  }
+  },
+  reset: () => set({ theUser: null, isInitialized: false }),
+
 }));
 
 export default userGlobalStore;

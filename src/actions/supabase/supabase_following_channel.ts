@@ -4,6 +4,7 @@
 import supabase from "@/config/supabase.config"
 import { currentUser } from "@clerk/nextjs/server"
 import { IFollowingChannel } from "@/lib/schema/human-review-schema";
+import { getErrorMessage } from "@/lib/utils/message-utils";
 
 export const GetFollowingChannelsFromSupabase = async (params?: {
   onlyActive?: boolean;
@@ -31,7 +32,7 @@ export const GetFollowingChannelsFromSupabase = async (params?: {
     if (error) throw new Error(error.message);
 
     // 直接對齊你的 IFollowingChannel 介面（欄位名已在 RPC 中對齊）
-    const parsed: IFollowingChannel[] = (data ?? []).map((row: any) => ({
+    const parsed: IFollowingChannel[] = (data ?? []).map((row: IFollowingChannel) => ({
       clerk_user_id: row.clerk_user_id,
       created_at: row.created_at,
       user_channel_id: Number(row.user_channel_id),
@@ -41,8 +42,9 @@ export const GetFollowingChannelsFromSupabase = async (params?: {
     }));
 
     return { success: true, data: parsed };
-  } catch (err: any) {
-    console.error("GetFollowingChannelsFromSupabase error:", err);
-    return { success: false, message: err.message ?? "Unknown error occurred" };
+  } catch (err: unknown) {
+    const message = getErrorMessage(err);
+    console.error("[GetUserChannelsFromSupabase] caught:", message);
+    return { success: false, message };
   }
 };

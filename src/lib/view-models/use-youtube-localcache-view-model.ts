@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { YoutubeVideo } from "@/lib/schema/youtube-video-schema";
 import { useYoutubeLocalCacheStore } from "@/lib/global-store/use-youtube-localcache-store";
 import { createIDBStore } from "@/lib/idb/local-idb";
@@ -93,7 +93,7 @@ export function useYoutubeVideosVM() {
   const term = (lastSearchTerm || "").trim();
 
   const TARGET_COUNT = 12;
-  const isRemixed = useMemo(() => getRemixFlag(term), [term, videos]);
+  const isRemixed = useMemo(() => getRemixFlag(term), [term]);
 
   // --- 搜尋（沿用你的流程） ---
   const fetchVideos = useCallback(
@@ -136,6 +136,7 @@ export function useYoutubeVideosVM() {
       const videosData = (await resVideos.json()) as YoutubeVideo[];
       const shortsData = (await resShorts.json()) as YoutubeVideo[];
 
+      //console.log("videosData", videosData);
       setVideos(keyword, videosData);
       setShortVideos(keyword, shortsData);
       videoIDB.set(keyword, { videos: videosData, shorts: shortsData }).catch(console.error);
@@ -177,7 +178,7 @@ export function useYoutubeVideosVM() {
         length: "3:00",
         views: "1m views",
         uploadedAt: "just now",
-      })) as any;
+      })) as YoutubeVideo[];
 
       const realNeeded = Math.max(0, TARGET_COUNT - fakes.length);
 
@@ -280,7 +281,7 @@ export function useYoutubeVideosVM() {
     if (changed && !shallowEqArr(videos, next)) {
       setVideos(term, next);
     }
-  }, [storeTitle, selectedChannel]);
+  }, [storeTitle, selectedChannel, isRemixed, setVideos, term, videos]);
 
   return {
     // 狀態

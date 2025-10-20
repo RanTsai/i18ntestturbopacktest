@@ -1,33 +1,62 @@
-//components/ui/forms/general-questionaire.
+// components/ui/forms/general-questionaire.tsx
 "use client";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Button } from "@/components/ui/button";
 import { Controller, UseFormRegister, Control } from "react-hook-form";
 import { Star, Plus } from "lucide-react";
 import { useState } from "react";
-import { FormSchema } from "@/lib/schema/questionaire-schema";
+import { FormSchema, QuestionnaireAnswer } from "@/lib/schema/questionaire-schema";
 import { DatePicker } from "../date-picker";
+import Image from "next/image";
+
 interface Props {
   formData: FormSchema;
   loading: boolean;
-  onSubmit: (data: any) => void;
-  control: Control<any>;
-  register: UseFormRegister<any>;
-  displaySubmit?: boolean;
+  control: Control<QuestionnaireAnswer>;
+  register: UseFormRegister<QuestionnaireAnswer>;
+}
+
+function RatingStars({
+  value,
+  onChange,
+  scale = 5,
+}: {
+  value?: string | number;
+  onChange: (v: string) => void;
+  scale?: number;
+}) {
+  const [hoverValue, setHoverValue] = useState<number | null>(null);
+  const currentValue = Number(value ?? 0);
+
+  return (
+    <div className="flex gap-1">
+      {Array.from({ length: scale }).map((_, i) => {
+        const v = i + 1;
+        const isFilled = hoverValue !== null ? v <= hoverValue : v <= currentValue;
+        return (
+          <button
+            key={v}
+            type="button"
+            onClick={() => onChange(String(v))}
+            onMouseEnter={() => setHoverValue(v)}
+            onMouseLeave={() => setHoverValue(null)}
+            className="p-0 cursor-pointer transition-transform hover:scale-125 focus:outline-none"
+          >
+            <Star className={`w-6 h-6 ${isFilled ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`} />
+          </button>
+        );
+      })}
+    </div>
+  );
 }
 
 const GeneralQuestionaire = ({
   formData,
-  loading,
-  onSubmit,
+  loading, // 目前僅為占位，可用於 disable 欄位
   control,
   register,
-  displaySubmit = false
 }: Props) => {
-
-
   return (
     <div className="max-w-2xl mx-auto space-y-10">
       <h1 className="text-2xl font-bold text-center">{formData.title}</h1>
@@ -43,73 +72,61 @@ const GeneralQuestionaire = ({
                 <label className="block font-medium">{q.label}</label>
               )}
 
-              {/* Text input */}
+              {/* Text */}
               {q.type === "text" && (
-                <Input placeholder={q.placeholder} {...register(q.id)} />
+                <Input placeholder={q.placeholder} disabled={loading} {...register(q.id)} />
               )}
 
-              {/* Radio group */}
+              {/* Textarea */}
+              {q.type === "textarea" && (
+                <Textarea placeholder={q.placeholder} disabled={loading} {...register(q.id)} />
+              )}
+
+              {/* Number */}
+              {q.type === "number" && (
+                <Input
+                  type="number"
+                  step={1}
+                  placeholder={q.placeholder}
+                  disabled={loading}
+                   // 將字串轉數字
+                  {...register(q.id, { valueAsNumber: true })}
+                />
+              )}
+
+              {/* Radio */}
               {q.type === "radio" && q.options && (
                 <Controller
                   control={control}
                   name={q.id}
                   render={({ field }) => (
-                    <RadioGroup onValueChange={field.onChange} value={field.value}>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      value={field.value !== undefined ? String(field.value) : ""}
+                    >
                       {q.options!.map((opt) => (
                         <div key={`${q.id}_${opt.value}`} className="flex items-center gap-2">
-                          <RadioGroupItem
-                            key={opt.value}
-                            value={opt.value}
-                            id={`${q.id}-${opt.value}`}
-                          />
+                          <RadioGroupItem value={opt.value} id={`${q.id}-${opt.value}`} />
                           <label htmlFor={`${q.id}-${opt.value}`}>{opt.label}</label>
                         </div>
                       ))}
                     </RadioGroup>
-
                   )}
                 />
               )}
 
-              {/* Rating stars */}
+              {/* Rating */}
               {q.type === "rating" && (
                 <Controller
                   name={q.id}
                   control={control}
-                  render={({ field }) => {
-                    const scale = q.scale || 5;
-                    const currentValue = parseInt(field.value || "0");
-                    const [hoverValue, setHoverValue] = useState<number | null>(null);
-
-                    return (
-                      <div className="flex gap-1">
-                        {[...Array(scale)].map((_, i) => {
-                          const value = i + 1;
-                          const isFilled = hoverValue !== null
-                            ? value <= hoverValue
-                            : value <= currentValue;
-
-                          return (
-                            <button
-                              key={value}
-                              type="button"
-                              onClick={() => field.onChange(value.toString())}
-                              onMouseEnter={() => setHoverValue(value)}
-                              onMouseLeave={() => setHoverValue(null)}
-                              className="p-0 cursor-pointer transition-transform hover:scale-125 focus:outline-none"
-                            >
-                              <Star
-                                className={`w-6 h-6 ${isFilled
-                                  ? "text-yellow-400 fill-yellow-400"
-                                  : "text-gray-300"
-                                  }`}
-                              />
-                            </button>
-                          );
-                        })}
-                      </div>
-                    );
-                  }}
+                  render={({ field }) => (
+                    <RatingStars
+                      value={Number(field.value)}
+                      onChange={field.onChange}
+                      scale={q.scale || 5}
+                    />
+                  )}
                 />
               )}
 
@@ -119,7 +136,16 @@ const GeneralQuestionaire = ({
                   name={q.id}
                   control={control}
                   render={({ field }) => {
-                    const values = field.value || [];
+                    // 🔒 型別窄化：只在 value 是陣列時使用，否則給空陣列
+                    const values = Array.isArray(field.value) ? (field.value as string[]) : [];
+
+                    const toggle = (checked: boolean, optionValue: string) => {
+                      const set = new Set(values);
+                      if (checked) set.add(optionValue);
+                      else set.delete(optionValue);
+                      field.onChange(Array.from(set));
+                    };
+
                     return (
                       <div className="flex flex-col gap-1">
                         {q.options!.map((opt) => {
@@ -129,16 +155,8 @@ const GeneralQuestionaire = ({
                               <input
                                 type="checkbox"
                                 checked={isChecked}
-                                onChange={(e) => {
-                                  const newValue = [...values];
-                                  if (e.target.checked) {
-                                    newValue.push(opt.value);
-                                  } else {
-                                    const index = newValue.indexOf(opt.value);
-                                    if (index > -1) newValue.splice(index, 1);
-                                  }
-                                  field.onChange(newValue);
-                                }}
+                                onChange={(e) => toggle(e.target.checked, opt.value)}
+                                disabled={loading}
                               />
                               {opt.label}
                             </label>
@@ -147,20 +165,6 @@ const GeneralQuestionaire = ({
                       </div>
                     );
                   }}
-                />
-              )}
-
-              {/* Checkbox: single boolean */}
-              {q.type === "textarea" && (
-                <Textarea placeholder={q.placeholder} {...register(q.id)} />
-              )}
-
-              {q.type === "number" && (
-                <Input
-                  type="number"
-                  step={1} // 限定為整數
-                  placeholder={q.placeholder}
-                  {...register(q.id, { valueAsNumber: true })}
                 />
               )}
 
@@ -175,6 +179,7 @@ const GeneralQuestionaire = ({
                         type="checkbox"
                         checked={!!field.value}
                         onChange={(e) => field.onChange(e.target.checked)}
+                        disabled={loading}
                       />
                       {q.label}
                     </label>
@@ -182,44 +187,49 @@ const GeneralQuestionaire = ({
                 />
               )}
 
-
-
-              {/* Thumbnail Select */}
+              {/* Image Select */}
               {q.type === "image-select" && formData.thumbnails && (
                 <Controller
                   name={q.id}
                   control={control}
                   render={({ field }) => (
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                      {formData.thumbnails!.map((thumb) => (
-                        <button
-                          key={thumb.id}
-                          type="button"
-                          onClick={() => field.onChange(thumb.id)}
-                          className={`relative border rounded-lg overflow-hidden transition-all hover:shadow-md ${field.value === thumb.id
-                            ? "ring-2 ring-blue-500 border-blue-500"
-                            : "border-gray-300"
+                      {formData.thumbnails!.map((thumb) => {
+                        const selected = String(field.value ?? "") === thumb.id;
+                        return (
+                          <button
+                            key={thumb.id}
+                            type="button"
+                            onClick={() => field.onChange(thumb.id)}
+                            className={`relative border rounded-lg overflow-hidden transition-all hover:shadow-md ${
+                              selected ? "ring-2 ring-blue-500 border-blue-500" : "border-gray-300"
                             }`}
-                        >
-                          <img src={thumb.url} alt={thumb.url} className="w-full object-cover" />
-
-                          {/* <div className="absolute bottom-0 w-full bg-black bg-opacity-60 text-white text-sm p-1 text-center">
-                            {thumb.title}
-                          </div> */}
-                        </button>
-                      ))}
+                            disabled={loading}
+                          >
+                            <Image
+                              src={thumb.url}
+                              alt={thumb.title}
+                              width={400}
+                              height={225}
+                              className="w-full h-auto object-cover"
+                            />
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
                 />
               )}
 
+              {/* Multi-text */}
               {q.type === "multi-text" && (
                 <Controller
                   name={q.id}
                   control={control}
                   defaultValue={[]}
                   render={({ field }) => {
-                    const values: string[] = field.value || [];
+                    const values: string[] = Array.isArray(field.value) ? field.value : [];
+
                     const handleChange = (index: number, value: string) => {
                       const updated = [...values];
                       updated[index] = value;
@@ -227,7 +237,7 @@ const GeneralQuestionaire = ({
                     };
 
                     const addQuestion = () => {
-                      if (values.length < (q.max || 5)) {
+                      if (values.length < (q.max ?? 5)) {
                         field.onChange([...values, ""]);
                       }
                     };
@@ -246,29 +256,31 @@ const GeneralQuestionaire = ({
                               placeholder={q.placeholder || `Question ${i + 1}`}
                               value={val}
                               onChange={(e) => handleChange(i, e.target.value)}
+                              disabled={loading}
                             />
-                            <Button
-                              variant="ghost"
+                            <button
+                              type="button"
+                              className="px-2 rounded border"
                               onClick={() => removeQuestion(i)}
-                              disabled={values.length <= (q.min || 1)}
+                              disabled={values.length <= (q.min ?? 1)}
                             >
                               Remove
-                            </Button>
+                            </button>
                           </div>
                         ))}
-                        <Button
-                          variant="secondary"
+                        <button
+                          type="button"
+                          className="px-3 py-1 rounded border"
                           onClick={addQuestion}
-                          disabled={values.length >= (q.max || 5)}
+                          disabled={values.length >= (q.max ?? 5)}
                         >
                           <Plus />
-                        </Button>
+                        </button>
                       </div>
                     );
                   }}
                 />
               )}
-
 
               {/* Title Select */}
               {q.type === "title-select" && formData.thumbnails && (
@@ -278,21 +290,18 @@ const GeneralQuestionaire = ({
                   render={({ field }) => (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {formData.thumbnails!.map((thumb) => {
-                        const isSelected = field.value === thumb.id;
+                        const isSelected = String(field.value ?? "") === thumb.id;
                         return (
                           <button
                             key={thumb.id}
                             type="button"
                             onClick={() => field.onChange(thumb.id)}
-                            className={`border rounded-lg p-3 text-left transition-all hover:shadow-md ${isSelected
-                              ? "border-blue-500 ring-2 ring-blue-300"
-                              : "border-gray-300"
-                              }`}
+                            className={`border rounded-lg p-3 text-left transition-all hover:shadow-md ${
+                              isSelected ? "border-blue-500 ring-2 ring-blue-300" : "border-gray-300"
+                            }`}
+                            disabled={loading}
                           >
-                            <p
-                              className={`mt-1 text-shadow-2xs ${isSelected ? "font-semibold text-blue-700" : "font-normal text-gray-800"
-                                }`}
-                            >
+                            <p className={`mt-1 text-shadow-2xs ${isSelected ? "font-semibold text-blue-700" : "font-normal text-gray-800"}`}>
                               {thumb.title}
                             </p>
                           </button>
@@ -303,29 +312,26 @@ const GeneralQuestionaire = ({
                 />
               )}
 
-              {/* Date Picker */}
+              {/* Date */}
               {q.type === "date" && (
                 <Controller
                   control={control}
                   name={q.id}
-                  render={({ field }) => (
-                    <DatePicker
-                      value={field.value ? new Date(field.value) : undefined}
-                      onChange={(date) => field.onChange(date?.toISOString())}
-                    />
-                  )}
+                  render={({ field }) => {
+                    const valueStr = typeof field.value === "string" ? field.value : undefined;
+                    return (
+                      <DatePicker
+                        value={valueStr ? new Date(valueStr) : undefined}
+                        onChange={(date) => field.onChange(date?.toISOString())}
+                      />
+                    );
+                  }}
                 />
               )}
             </div>
           ))}
         </div>
       ))}
-
-      {displaySubmit && (
-        <Button type="submit" disabled={loading} className="w-full">
-          {loading ? "Submitting..." : "Submit"}
-        </Button>
-      )}
     </div>
   );
 };

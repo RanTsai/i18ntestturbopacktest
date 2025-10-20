@@ -10,7 +10,7 @@ export type QuestionType =
     | "multi-text"
     | "number";
 
-export interface OptionItem {    
+export interface OptionItem {
     value: string;       // ✅ 不變的 ID，如 "hobby"
     label: string;       // ✅ 顯示文字（可多語言）
 }
@@ -22,11 +22,11 @@ export interface Question {
     placeholder?: string;
     options?: OptionItem[];
     scale?: number;
-    required?: boolean;    
+    required?: boolean;
     max?: number;
     min?: number;
-    answer?: string;
-}   
+    answer?: string | number | boolean | string[] | null;
+}
 
 export interface Section {
     id: string;
@@ -53,4 +53,4 @@ export interface FormSchema {
 }
 
 
-
+export type QuestionnaireAnswer = Record<string, string | number | boolean | string[] | undefined>;

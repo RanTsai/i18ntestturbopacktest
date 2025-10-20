@@ -3,6 +3,7 @@
 "use server";
 import supabase from "@/config/supabase.config";
 import { PageTranslations } from "@/i18n/interface";
+import { getErrorMessage } from "@/lib/utils/message-utils";
 
 export type SupabasePageTranslation = {
   translations: {
@@ -40,13 +41,9 @@ export const GetTranslationFromsupabase = async (page_title: string
       },
       cached: false
     }
-  } catch (error: any) {
-    return { success: false, message: error.message || "Unknown error" };
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+    return { success: false, message: message || "Unknown error" };
   }
 };
-
-interface Props {
-  page_title: string,
-  language: string
-}
 

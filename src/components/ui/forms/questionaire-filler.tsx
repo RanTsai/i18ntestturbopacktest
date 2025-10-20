@@ -1,9 +1,9 @@
 "use client"
 
 import { Button } from "../button"
-import { FormSchema } from "@/lib/schema/questionaire-schema"
+import { FormSchema, QuestionnaireAnswer } from "@/lib/schema/questionaire-schema"
 import { useEffect, useState } from "react"
-import { useForm, useWatch } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { useParams } from "next/navigation"
 import { PageTranslations } from "@/i18n/interface"
 import useTranslationStore from "@/lib/global-store/use-translation-store"
@@ -37,10 +37,10 @@ export default function QuestionnaireFiller({
 }: Props) {
     const { getTranslation } = useTranslationStore()
     const [translations, setTranslations] = useState<PageTranslations | null>(null)
-    const [loading, setLoading] = useState(false)
+    const [loading] = useState(false)
     const { locale } = useParams() as { locale: string }
 
-    const defaultValues: Record<string, any> = {}
+    const defaultValues: QuestionnaireAnswer = {}
     const questions = humanReview!.questionaire
     const [errorQuestionIds, setErrorQuestionIds] = useState<string[]>([]);
 
@@ -63,7 +63,7 @@ export default function QuestionnaireFiller({
         })
     })
 
-    const { control, register, handleSubmit, getValues, setValue, setError, clearErrors, formState: { errors }, } = useForm<Record<string, any>>({
+    const { control, register, getValues, setValue } = useForm<QuestionnaireAnswer>({
         defaultValues,
     })
 
@@ -74,7 +74,7 @@ export default function QuestionnaireFiller({
         if (cached) {
             setTranslations(cached)
         }
-    }, [locale])
+    }, [locale, getTranslation, pageId])
 
 
     return (
@@ -132,7 +132,6 @@ export default function QuestionnaireFiller({
                     control={control}
                     register={register}
                     loading={loading}
-                    onSubmit={handleSubmit(() => { })}
                 />
             </div>
 
@@ -157,7 +156,7 @@ export default function QuestionnaireFiller({
                                         }
 
                                         if (q.required) {
-                                            if (q.type === "text" || q.type === "textarea") return !value?.trim();
+                                            if (q.type === "text" || q.type === "textarea") return value;
                                             if (q.type === "radio" || q.type === "number" || q.type === "rating") return value === undefined || value === null;
                                             if (q.type === "checkbox") return !Array.isArray(value) || value.length === 0;
                                         }
@@ -226,7 +225,7 @@ export default function QuestionnaireFiller({
 
 export function buildHumanAnswerPayload(
     formData: FormSchema,
-    values: Record<string, any>,
+    values: QuestionnaireAnswer,
     questions: Question[],
 ): IHumanAnswer {
 
@@ -256,7 +255,7 @@ export function buildHumanAnswerPayload(
         created_at: "",
         reviewer_clerk_id: "",
         questionaire: questionsWithAnswers, // ✅ 正確含 answer 的版本
-        message_to_creator: extract("message_to_creator") ?? "",
+        message_to_creator: String(extract("message_to_creator") ?? ""),
         credit_reward: extract("accept_reward") === "yes",
         is_deleted: false,
         deleted_at: "",
@@ -271,7 +270,7 @@ export function buildHumanAnswerPayload(
 export const extractAnswerFromForm = (
     formSchema: FormSchema,
     id: string
-): any => {
+): string | number | boolean | string[] | null => {
     for (const section of formSchema.sections) {
         const found = section.questions.find(q => q.id === id);
         if (found) return found.answer ?? null;
@@ -283,7 +282,7 @@ export const extractAnswerFromForm = (
 // ✅ 將 flat values 寫回 FormSchema 中的每個 Question.answer
 export function assignAnswersToQuestionsInFormSchema(
     formSchema: FormSchema,
-    values: Record<string, any>
+    values: QuestionnaireAnswer
 ): FormSchema {
     return {
         ...formSchema,

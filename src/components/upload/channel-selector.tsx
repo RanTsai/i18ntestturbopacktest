@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, ChevronDown, ChevronRight, TvMinimalPlay } from "lucide-react";
+import { ChevronDown, ChevronRight, TvMinimalPlay } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import {
@@ -33,13 +33,11 @@ export default function MyChannelSelector({
     : null;
 
   const handleSelect = (channelName: string) => {
-    console.log("Selecting channel:", channelName);
     const matchedChannel = userChannels?.find(
       (c) => c.channel_name === channelName
     );
     if (matchedChannel) {
       setSelectedChannel(matchedChannel); 
-      console.log("Mateched", matchedChannel);
     }
   };
 

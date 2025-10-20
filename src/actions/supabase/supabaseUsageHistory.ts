@@ -2,6 +2,7 @@
 
 "use server";
 import supabase from "@/config/supabase.config";
+import { getErrorMessage } from "@/lib/utils/message-utils";
 import { nanoid } from "nanoid";
 
 //Base function to insert new usage to user credit history
@@ -33,16 +34,17 @@ export async function InsertUsageHistoryToSupabase(
                 message: error.message,
             }
         } else {
-            console.log("user_work insert : ", data);
+            //console.log("user_work insert : ", data);
             return {
                 success: true,
                 data: data,
             }
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const message = getErrorMessage(error);
         return {
             success: false,
-            message: error.message,
+            message: message,
         }
     }
 }

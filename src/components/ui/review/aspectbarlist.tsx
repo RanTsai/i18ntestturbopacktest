@@ -28,7 +28,7 @@ export default function AspectBarList({ aspects }: AspectBarListProps) {
     <div className="space-y-3">
       <h4 className="text-sm font-semibold text-white">Aspect Ratings:</h4>
       {aspects.map((aspect, idx) => {
-        const barWidth = `${(aspect.value / 5) * 100}%`;
+        const barWidth = `${(aspect.value / 100) * 100}%`;
         const barColor = aspect.color
           ? aspect.color
           : fallbackColors[idx % fallbackColors.length];

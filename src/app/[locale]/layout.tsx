@@ -1,40 +1,36 @@
-//app/[locale]/layout.tsx
+// app/[locale]/layout.tsx
 "use server";
 
-import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { notFound } from 'next/navigation';
-import { routing } from '@/i18n/routing';
-import { redirect } from "next/navigation";
+import { NextIntlClientProvider, hasLocale } from "next-intl";
+import { notFound } from "next/navigation";
+import { routing } from "@/i18n/routing";
+import TopNavigationBar from "@/components/navigation/topnavigationbar";
+import { auth } from "@clerk/nextjs/server";
+import { loadUserData } from "@/actions/upstashredis/load-user";
 
-import LocaleClientLayout from '../../components/navigation/localeclientlayout';
-import TopNavigationBar from '@/components/navigation/topnavigationbar';
-import { currentUser } from "@clerk/nextjs/server";
 export default async function LocaleLayout({
-    children,
-    params
+  children,
+  params,
 }: {
-    children: React.ReactNode;
-    params: Promise<{ locale: string }>;
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
-    const resolvedParams = await params;
-    const locale = resolvedParams.locale;
+  const { locale } = await params; // ← Promise 版需 await
 
-    if (!hasLocale(routing.locales, locale)) {
-        notFound();
-    }
+  const { userId } = await auth();
+  let user = null;
 
-    const theUser = await currentUser();
-    if (!theUser) {
-        redirect(`/sign-in?redirect_url=/${locale}`);
-    }
-    return (
-        <NextIntlClientProvider locale={locale}>
-            <TopNavigationBar />
-            <LocaleClientLayout>
-                <main>{children}</main>
-            </LocaleClientLayout>
-        </NextIntlClientProvider>
-    );
+  if (userId) {
+    const result = await loadUserData(userId);
+    user = result.content;
+  }
 
+  if (!hasLocale(routing.locales, locale)) notFound();
 
+  return (
+    <NextIntlClientProvider locale={locale}>
+      <TopNavigationBar theUser={user} />
+      <main>{children}</main>
+    </NextIntlClientProvider>
+  );
 }

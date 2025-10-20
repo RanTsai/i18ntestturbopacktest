@@ -12,7 +12,7 @@ export interface IUserStuff {
   // Metadata
   name: string | null;
   description: string | null;
-  content: Record<string, any> | null; // JSONB
+  content: Record<string, string> | null; // JSONB
   mime_type: string | null;
   public_id: string | null;
   user_note: string | null;

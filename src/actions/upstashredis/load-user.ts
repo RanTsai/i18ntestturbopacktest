@@ -1,7 +1,7 @@
 // actions/upstashredis/load-user.ts
 import { redis } from '@/actions/upstashredis/redis'
 import { IUser } from '@/app/interfaces'
-import { getClerkUserFromSupabase } from '@/actions/supabase/supabaseUser';
+import { getClerkUserFromSupabase } from '@/actions/supabase/supabase-user';
 
 export async function loadUserData(
     clerk_user_id: string,
@@ -16,7 +16,6 @@ export async function loadUserData(
     // ✅ 1. Redis 讀取
     const data = await redis.get(key)
     if (data) {
-        console.log("redis user data: ", data);
         return {
             found: true,
             content: typeof data === 'string' ? JSON.parse(data) : data,
@@ -30,7 +29,6 @@ export async function loadUserData(
     if (success && supaData) {
         const redisKey = `user:${clerk_user_id}`
         await redis.set(redisKey, JSON.stringify(supaData), { ex: 3600 })
-        console.log("supabase user data: ", supaData);
         return {
             found: true,
             content: supaData,

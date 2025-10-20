@@ -6,23 +6,28 @@ import "./globals.css";
 import NextTopLoader from "nextjs-toploader";
 
 export const metadata: Metadata = {
-  title: "Mr. Click",
-  description: "He helps you to get clicks",
+  icons: { icon: '/favicon.ico' },
+  title: "Thumbnail analyzer",
+  description: "An AI tool to help you analyze and optimize your YouTube video thumbnails.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params,
+
 }: Readonly<{
   children: React.ReactNode;
+  params?: Promise<Record<string, string>>;
 }>) {
-
+  const p = params ? await params : {};
+  const locale = p?.locale ?? "en"; // 根層通常拿不到 locale，給預設值
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head />
       <body>
         <NextTopLoader height={3} color="#e5d046" showSpinner={false} crawl />
         <FaviconLoadingManager />
-        <ClientClerkProvider>
+        <ClientClerkProvider locale={locale}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -34,6 +39,6 @@ export default function RootLayout({
         </ClientClerkProvider>
       </body>
     </html>
-  
+
   );
 }

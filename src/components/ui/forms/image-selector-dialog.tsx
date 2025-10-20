@@ -2,9 +2,9 @@
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
-import { getUserImage } from "@/actions/supabase/supabaseImages"; // 你自己的 API
 import { useParams } from "next/navigation";
 import useTranslationStore from "@/lib/global-store/use-translation-store";
+import Image from "next/image";
 
 interface Props {
   pageId: string;
@@ -25,11 +25,10 @@ export function ImageSelectorDialog({ pageId, open, onClose, onSelect }: Props) 
     if (!open) return;
 
     const fetchImages = async () => {
-      const { url: supabaseImages } = await getUserImage(); // Supabase 中抓取
       const sessionImages = JSON.parse(
         sessionStorage.getItem("selected_images") || "[]"
       ); // 本地暫存圖片
-      setImages([...supabaseImages!, ...sessionImages]);
+      setImages([...sessionImages]);
     };
 
     fetchImages();
@@ -41,7 +40,7 @@ export function ImageSelectorDialog({ pageId, open, onClose, onSelect }: Props) 
         <DialogTitle>{translations?.image_select_dialog?.translation ?? "Choose an image"}</DialogTitle>
         <div className="grid grid-cols-3 gap-3 mt-4">
           {images.map((url, idx) => (
-            <img
+            <Image
               key={idx}
               src={url}
               alt="Choose an image"

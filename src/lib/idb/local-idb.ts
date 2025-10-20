@@ -36,7 +36,7 @@ export function createIDBStore<T>(
     let db = await openDB(dbName, version, {
       upgrade(db) {
         if (!db.objectStoreNames.contains(storeName)) {
-          console.log(`🔨 Creating object store: ${storeName}`)
+          //console.log(`🔨 Creating object store: ${storeName}`)
           db.createObjectStore(storeName)
         }
       },
@@ -48,7 +48,7 @@ export function createIDBStore<T>(
       db = await openDB(dbName, version, {
         upgrade(upgradeDB) {
           if (!upgradeDB.objectStoreNames.contains(storeName)) {
-            console.log(`🔨 Creating object store: ${storeName}`)
+            //console.log(`🔨 Creating object store: ${storeName}`)
             upgradeDB.createObjectStore(storeName)
           }
         },
@@ -80,7 +80,7 @@ export function createIDBStore<T>(
     async clear(): Promise<void> {
       const db = await getDBEnsured()
       await db.clear(storeName)
-      console.log(`[IDB] Cleared store: ${storeName}`)
+      //console.log(`[IDB] Cleared store: ${storeName}`)
     },
 
     /** 取得所有 key（用於 debug 或清理） */

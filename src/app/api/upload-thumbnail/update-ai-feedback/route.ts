@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { updateUsersWorkVersionAI } from "@/actions/supabase/supabase_users_work";
+import { getErrorMessage } from "@/lib/utils/message-utils";
 
 /**
  * 以 Server Action 執行 RPC：
@@ -9,7 +10,7 @@ import { updateUsersWorkVersionAI } from "@/actions/supabase/supabase_users_work
 export async function POST(req: Request) {
     try {
         const { work_public_id, version_number, ai_comment, ai_score } = await req.json();
-        console.log("Received update-ai-feedback request:", { work_public_id, version_number, ai_comment, ai_score });
+        //console.log("Received update-ai-feedback request:", { work_public_id, version_number, ai_comment, ai_score });
 
         // 呼叫你已存在的 Server Action（action 內部自己使用 server-side Supabase client）
         const result = await updateUsersWorkVersionAI({
@@ -19,7 +20,7 @@ export async function POST(req: Request) {
             ai_score,
         });
 
-        console.log("updateUsersWorkVersionAI RPC result:", result);
+        //console.log("updateUsersWorkVersionAI RPC result:", result);
 
         // 若你的 action 會回傳 { success, rowsUpdated }
         if (!result?.success) {
@@ -32,10 +33,11 @@ export async function POST(req: Request) {
             success: true,
             rowsUpdated: result.rowsUpdated ?? 1,
         });
-    } catch (e: any) {
+    } catch (e: unknown) {
         // 若 action 是用 throw error 的風格，會落到這裡
+        const message = getErrorMessage(e);
         return NextResponse.json(
-            { success: false, error: e?.message ?? "Unexpected error" },
+            { success: false, error: message ?? "Unexpected error" },
             { status: 500 }
         );
     }

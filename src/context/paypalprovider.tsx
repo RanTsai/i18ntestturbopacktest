@@ -1,13 +1,7 @@
 "use client";
 
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
-const initialOptions = {
-    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
-    currency: "USD",
-    locale: "en_US",
-    intent: "capture",
-};
 
 interface PaypalProviderProps {
   children: React.ReactNode;

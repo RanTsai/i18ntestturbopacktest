@@ -6,7 +6,8 @@ export type AspectRating = {
 
 export type ThumbnailReview = {
   id: string;
-  version: string;
+  version?: string;
+  title:string
   imageUrl: string;
   aiCommentMarkdown: string;
   aspectRatings: Record<string, AspectRating>; // ✅ 改為 string key

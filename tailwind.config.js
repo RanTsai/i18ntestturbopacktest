@@ -1,8 +1,13 @@
 /** @type {import('tailwindcss').Config} */
-const config = {
-  content: ["./src/**/*.{js,ts,jsx,tsx}"],
+export default {
+  content: [
+    "./app/**/*.{ts,tsx,js,jsx,md,mdx}",
+    "./components/**/*.{ts,tsx,js,jsx,md,mdx}",
+    "./src/**/*.{ts,tsx,js,jsx,md,mdx}",
+  ],
   theme: { extend: {} },
-  plugins: [require('tailwind-scrollbar-hide')],
+  plugins: [
+    require("tailwind-scrollbar-hide"),
+    require("@tailwindcss/typography"),
+  ],
 };
-export default config;
-    

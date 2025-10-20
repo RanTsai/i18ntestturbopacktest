@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import { Question } from '@/lib//schema/questionaire-schema'
+import { ITags } from "../schema/user-channel-schema";
 
 
 type MetaPatch = {
@@ -28,10 +29,10 @@ export type HumanReviewBundle = {
   };
   thumbnail?: {
     user_channel_name?: string | null;
-    thumbnails: any;
+    thumbnails: string[];
     titles?: string[] | null;
-    tags?: any;
-    niche?: any;
+    tags?: ITags[] | null;
+    niche?: string;
     platform?: string | null;
     target_audience?: number[] | null;
   } | null;
@@ -79,7 +80,7 @@ type Actions = {
   ensureEditableHeadFrom: (index: number) => void;
 
   /** 把修改套用到最新版本（head） */
-  applyLatestEdits: (updater: (prevQuestionnaire: any) => any) => void;
+  applyLatestEdits: (updater: (prevQuestionnaire: Question[] | null) => Question[] | null) => void;
 
   openLatest: () => void;
   loadMoreVersions: () => Promise<void>;
@@ -127,7 +128,7 @@ export const useHumanReviewBundleStore = create<State & Actions>((set, get) => (
     }
 
     // headIndex：若有本地 draft → 0；否則找 is_latest / 最大號 / 0
-    let headIndex =
+    const headIndex =
       keepLocalDraft
         ? 0
         : ((): number => {
@@ -259,8 +260,46 @@ export const useHumanReviewBundleStore = create<State & Actions>((set, get) => (
     if (!bundle || headIndex == null) return;
 
     const nextReview = patch.review ? { ...bundle.review, ...patch.review } : bundle.review;
-    const nextThumbnail =
-      patch.thumbnail ? { ...(bundle.thumbnail ?? {}), ...patch.thumbnail } : bundle.thumbnail;
+
+    // 型別安全地合併 thumbnail（注意 thumbnails 必須存在）
+    let nextThumbnail: HumanReviewBundle["thumbnail"] = bundle.thumbnail ?? null;
+    if (patch.thumbnail) {
+      nextThumbnail = {
+        thumbnails:
+          patch.thumbnail.thumbnails ??
+          nextThumbnail?.thumbnails ??
+          [],
+
+        user_channel_name:
+          patch.thumbnail.user_channel_name ??
+          nextThumbnail?.user_channel_name ??
+          null,
+
+        titles:
+          patch.thumbnail.titles ??
+          nextThumbnail?.titles ??
+          null,
+
+        tags:
+          patch.thumbnail.tags ??
+          nextThumbnail?.tags ??
+          null,
+
+        niche:
+          patch.thumbnail.niche ??
+          nextThumbnail?.niche,
+
+        platform:
+          patch.thumbnail.platform ??
+          nextThumbnail?.platform ??
+          null,
+
+        target_audience:
+          patch.thumbnail.target_audience ??
+          nextThumbnail?.target_audience ??
+          null,
+      };
+    }
 
     const updatedHead = patch.version
       ? { ...bundle.versions[headIndex], ...patch.version, is_latest: true }
@@ -271,11 +310,10 @@ export const useHumanReviewBundleStore = create<State & Actions>((set, get) => (
     const nextBundle: HumanReviewBundle = {
       ...bundle,
       review: nextReview,
-      thumbnail: nextThumbnail as any,
+      thumbnail: nextThumbnail,
       versions: nextVersions,
     };
 
-    // Sidebar 總覽不需要 questionnaire，所以只同步必要欄位
     const versions: VersionListItem[] = nextVersions.map((v) => ({
       version_number: v.version_number,
       created_at: v.created_at,
@@ -289,6 +327,7 @@ export const useHumanReviewBundleStore = create<State & Actions>((set, get) => (
       dirtyLatest: true,
     });
   },
+
   openLatest: () => {
     const { headIndex } = get();
     if (headIndex == null) return;

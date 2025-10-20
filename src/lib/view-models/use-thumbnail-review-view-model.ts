@@ -1,11 +1,11 @@
 "use client";
-import { updateUsersWorkVersionAI } from "@/actions/supabase/supabase_users_work";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { IUsersWorkVersion } from "./use-upload-user-thumbnail-ai-analysis-view-model";
 import { useAIAnalysisThumbnailViewModel } from "./use-ai-analysis-thumbnail-view-model";
 import { useThumbnailReviewStore } from "@/lib/global-store/thumbnail-review-store";
 import toast from "react-hot-toast";
 import { createIDBStore } from "@/lib/idb/local-idb";
+import { getErrorMessage } from "../utils/message-utils";
 
 /** ✅ 專用 IDB，存的是 IUsersWorkVersion[] */
 export const thumbnailReviewIDB = createIDBStore<IUsersWorkVersion[]>(
@@ -93,7 +93,7 @@ export const useThumbnailReviewViewModel = (storageKey: string) => {
           body: JSON.stringify({
             work_public_id: workId,
             version_number: v.version_number,
-            ai_comment: typeof v.ai_comment === "string" ? v.ai_comment : null,
+            ai_comment: v.ai_comment,
             ai_score: v.ai_score ?? null,
           }),
         });
@@ -117,11 +117,12 @@ export const useThumbnailReviewViewModel = (storageKey: string) => {
             )
           );
         }
-      } catch (e: any) {
+      } catch (e: unknown) {
+        const message = getErrorMessage(e)
         setUploads((prev) =>
           prev.map((it) =>
             it.version_number === v.version_number
-              ? { ...it, __dirty: true, __syncError: e?.message }
+              ? { ...it, __dirty: true, __syncError: message }
               : it
           )
         );
@@ -142,14 +143,14 @@ export const useThumbnailReviewViewModel = (storageKey: string) => {
       const { success, aiAnalysis } = await reviewThumbnail(file.medium_url);
       if (success && aiAnalysis) {
         let updated: IUsersWorkVersion | null = null;
-
+        //console.log("AI Analysis result:", aiAnalysis);
         // 樂觀更新（含 ai_feedback 僅供本地渲染）
         setUploads((prev) =>
           prev.map((it, i) => {
             if (i !== index) return it;
             updated = {
               ...it,
-              ai_comment: String(aiAnalysis),
+              ai_comment: aiAnalysis,
               ai_feedback: aiAnalysis, // local only
               ai_score: aiAnalysis.scores,
               isLoading: false,

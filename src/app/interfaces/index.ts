@@ -90,7 +90,7 @@ export interface IUserPurchaseHistory{
     user_purchase_id: number;
     created_at:string;
     supabase_user_id: number;
-    subscription_plan_id: Number;
+    subscription_plan_id: number;
     amount: number;
     currency: string;
     credit_amount: number;

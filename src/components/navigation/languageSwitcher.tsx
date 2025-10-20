@@ -3,7 +3,6 @@
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTransition } from 'react';
-import Image from 'next/image';
 
 const locales = [
   { code: 'en', label: 'English' },

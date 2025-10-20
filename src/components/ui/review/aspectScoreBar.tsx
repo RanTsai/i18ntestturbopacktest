@@ -1,9 +1,9 @@
 import React from 'react'
-import { AspectKey, AspectRating } from './types'
+import { AspectRating } from './types'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
 type Props = {
-  aspectKey: AspectKey
+  aspectKey: string
   rating: AspectRating
 }
 

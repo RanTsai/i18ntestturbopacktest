@@ -1,24 +1,22 @@
 // /lib/view-models/use-upload-image-view-model.ts
 "use client";
-// /lib/view-models/use-upload-image-view-model.ts
 import { createThumbnail } from "@/lib/utils/image-utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createIDBStore } from "@/lib/idb/local-idb";
 
 export type StoredImageRecord = {
-  original: Blob;     // 原檔
-  thumb400: Blob;     // 400px 縮圖
-  thumb200: Blob;     // 200px 縮圖
+  original: Blob;
+  thumb400: Blob;
+  thumb200: Blob;
   name: string;
   type: string;
-  size: number;       // 原檔大小
+  size: number;
   createdAt: number;
 };
 
-// 只建 1 個 store：用 file name 當 key，值是 { blob + meta }
 export const createImageStore = (
   storeName = "upload-images-v1",
-  dbName = "thumbnail-expert-images", // 👈 新的 DB 名稱
+  dbName = "thumbnail-expert-images",
   version = 1
 ) => createIDBStore<StoredImageRecord>(storeName, dbName, version);
 
@@ -30,15 +28,16 @@ export function useUploadImageViewModel({ max = 6 }: { max?: number }) {
   const imageStore = useMemo(() => createImageStore(), []);
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]); // 這裡用 200px 縮圖 URL
+  const [previews, setPreviews] = useState<string[]>([]); // 200px 預覽 URL
   const [metas, setMetas] = useState<PersistedItem[]>([]);
   const [restoredTitle, setRestoredTitle] = useState("");
   const [hasRestored, setHasRestored] = useState(false);
 
+  const KEY_SEP = "__";
   const makeUrl = (blob: Blob) => URL.createObjectURL(blob);
   const revokeUrl = (url?: string) => url && URL.revokeObjectURL(url);
 
-  const keyForFile = (f: File) => `${f.name}__${f.size}`; // 避免檔名重複
+  const keyForFile = (f: File) => `${f.name}${KEY_SEP}${f.size}`;
 
   /** restore from session + IDB */
   const restoreFromSession = useCallback(async () => {
@@ -56,7 +55,7 @@ export function useUploadImageViewModel({ max = 6 }: { max?: number }) {
         const rec = await imageStore.get(m.key);
         if (!rec) continue;
         const file = new File([rec.original], rec.name, { type: rec.type });
-        const url = makeUrl(rec.thumb200); // 預覽用 200px
+        const url = makeUrl(rec.thumb200); // 200px 預覽
         files.push(file);
         urls.push(url);
         okMetas.push({ key: m.key, name: rec.name, type: rec.type, size: rec.size });
@@ -118,7 +117,7 @@ export function useUploadImageViewModel({ max = 6 }: { max?: number }) {
     return { merged, mergedPreviews: mergedUrls, mergedMetas };
   }, [selectedFiles, previews, metas, max, imageStore]);
 
-  /** 移除 */
+  /** 移除單張 */
   const removeAt = useCallback(async (index: number) => {
     const url = previews[index];
     const meta = metas[index];
@@ -143,78 +142,164 @@ export function useUploadImageViewModel({ max = 6 }: { max?: number }) {
     sessionStorage.setItem(imageStorageKey, JSON.stringify(payload));
   }, [hasRestored, metas]);
 
-  /** 用檔名取預覽
- *  variant = "200" | "400" | "original"
- */
-const getPreviewByFileName = useCallback(
-  async (
-    name: string,
-    variant: "200" | "400" | "original" = "200"
-  ) => {
-    const key = `${name}`; // 要和 addFiles 的 keyForFile 一致
-    const rec = await imageStore.get(key);
+  /** 以 key 取得不同尺寸預覽（建議優先用這組 API） */
+  const getPreviewByKey = useCallback(
+    async (key: string, variant: "200" | "400" | "original" = "200") => {
+      const rec = await imageStore.get(key);
+      if (!rec) return null;
+      switch (variant) {
+        case "200": return URL.createObjectURL(rec.thumb200);
+        case "400": return URL.createObjectURL(rec.thumb400);
+        case "original": return URL.createObjectURL(rec.original);
+        default: return URL.createObjectURL(rec.thumb200);
+      }
+    },
+    [imageStore]
+  );
 
-    if (!rec) return null;
+  /** 舊版相容：以檔名找第一個 meta，再轉 key 使用 */
+  const getPreviewByFileName = useCallback(
+    async (name: string, variant: "200" | "400" | "original" = "200") => {
+      const meta = metas.find(m => m.name === name);
+      if (!meta) return null;
+      return getPreviewByKey(meta.key, variant);
+    },
+    [metas, getPreviewByKey]
+  );
 
-    switch (variant) {
-      case "200":
-        return URL.createObjectURL(rec.thumb200);
-      case "400":
-        return URL.createObjectURL(rec.thumb400);
-      case "original":
-        return URL.createObjectURL(rec.original);
-      default:
-        return URL.createObjectURL(rec.thumb200);
+  /** 刪 Original（以 key） */
+  const deleteOriginalByKey = useCallback(
+    async (key: string) => {
+      const rec = await imageStore.get(key);
+      if (!rec) return false;
+      const newRecord: StoredImageRecord = { ...rec, original: new Blob([], { type: rec.type }) };
+      await imageStore.set(key, newRecord);
+      return true;
+    },
+    [imageStore]
+  );
+
+  /** 舊版相容：以檔名刪 Original */
+  const deleteOriginalByFileName = useCallback(
+    async (name: string) => {
+      const meta = metas.find(m => m.name === name);
+      if (!meta) return false;
+      return deleteOriginalByKey(meta.key);
+    },
+    [metas, deleteOriginalByKey]
+  );
+
+  /** 取得所有尺寸（以 key） */
+  const getAllVariantsByKey = useCallback(
+    async (key: string) => {
+      const rec = await imageStore.get(key);
+      if (!rec) return null;
+      return { original: rec.original, thumb400: rec.thumb400, thumb200: rec.thumb200 };
+    },
+    [imageStore]
+  );
+
+  /** 舊版相容：以檔名取所有尺寸 */
+  const getAllVariantsByFileName = useCallback(
+    async (name: string) => {
+      const meta = metas.find(m => m.name === name);
+      if (!meta) return null;
+      return getAllVariantsByKey(meta.key);
+    },
+    [metas, getAllVariantsByKey]
+  );
+
+  /* ---------------------------  NEW: reset / clear  --------------------------- */
+
+  /** 只清「前端狀態 + 預覽 URL」 */
+  const clearState = useCallback(() => {
+    previews.forEach(revokeUrl);
+    setSelectedFiles([]);
+    setPreviews([]);
+    setMetas([]);
+    setRestoredTitle("");
+    // hasRestored 保持 true，避免再次 restore
+  }, [previews]);
+
+  /** 只清本頁 session（保留 IDB） */
+  const clearSession = useCallback(() => {
+    try { sessionStorage.removeItem(imageStorageKey); } catch {}
+  }, []);
+
+  /** 只刪除 IDB 內「目前 session 的這些檔案」 */
+  const clearIDBForSession = useCallback(async () => {
+    for (const m of metas) {
+      if (m?.key) await imageStore.delete(m.key);
     }
-  },
-  [imageStore]
-);
+  }, [metas, imageStore]);
 
-/** 刪掉某檔案的 Original，保留縮圖 */
-const deleteOriginalByFileName = useCallback(
-  async (name: string) => {
-    const key = `${name}`; // 必須和 addFiles 的 keyForFile 規則一致
-    const rec = await imageStore.get(key);
-    if (!rec) return false;
+  /** ⚠️刪除整個 IDB store（會清掉所有頁面存的圖片） */
+  const clearIDBAll = useCallback(async () => {
+    if (imageStore.clear) {
+      await imageStore.clear();
+    } else {
+      // fallback：逐一刪（若你的 createIDBStore 沒有 clear API）
+      for (const m of metas) {
+        if (m?.key) await imageStore.delete(m.key);
+      }
+    }
+  }, [imageStore, metas]);
 
-    // 重新存，只留縮圖
-    const newRecord: StoredImageRecord = {
-      ...rec,
-      original: new Blob([], { type: rec.type }), // 空的 original
-    };
+  /**
+   * 一鍵重置：預設清「前端狀態 + session + 目前 session 的 IDB」
+   * @param opts.clearState           預設 true
+   * @param opts.clearSession         預設 true
+   * @param opts.clearIDBForSession   預設 true
+   * @param opts.clearIDBAll          預設 false（除非你真的想全部砍）
+   */
+  const resetAll = useCallback(
+    async (opts?: {
+      clearState?: boolean;
+      clearSession?: boolean;
+      clearIDBForSession?: boolean;
+      clearIDBAll?: boolean;
+    }) => {
+      const {
+        clearState: doState = true,
+        clearSession: doSession = true,
+        clearIDBForSession: doIDBSession = true,
+        clearIDBAll: doIDBAll = false,
+      } = opts || {};
 
-    await imageStore.set(key, newRecord);
-    return true;
-  },
-  [imageStore]
-);
-
-const getAllVariantsByFileName = useCallback(
-  async (name: string) => {
-    const key = `${name}`; // 與 addFiles 的 key 規則一致
-    const rec = await imageStore.get(key);
-    if (!rec) return null;
-
-    return {
-      original: rec.original,
-      thumb400: rec.thumb400,
-      thumb200: rec.thumb200,
-    };
-  },
-  [imageStore]
-);
+      if (doState) clearState();
+      if (doSession) clearSession();
+      if (doIDBAll) await clearIDBAll();
+      else if (doIDBSession) await clearIDBForSession();
+    },
+    [clearState, clearSession, clearIDBForSession, clearIDBAll]
+  );
 
   return {
     selectedFiles,
-    previews,       // 200px Blob URL
+    previews,            // 200px Blob URL
     metas,
     hasRestored,
     restoredTitle,
+
     addFiles,
     removeAt,
     saveToSession,
+
+    // key-based（建議）
+    getPreviewByKey,
+    deleteOriginalByKey,
+    getAllVariantsByKey,
+
+    // name-based（相容）
     getPreviewByFileName,
     deleteOriginalByFileName,
-    getAllVariantsByFileName
+    getAllVariantsByFileName,
+
+    // NEW
+    clearState,
+    clearSession,
+    clearIDBForSession,
+    clearIDBAll,
+    resetAll,
   };
 }

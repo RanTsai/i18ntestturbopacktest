@@ -14,6 +14,7 @@ import { ImagePlus, XCircle } from "lucide-react";
 import { useParams } from 'next/navigation';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { PageTranslations } from "@/i18n/interface";
+import Image from "next/image";
 type PersistedFile = { name: string; type: string; size: number; preview: string };
 type PersistedState = { title: string; files: PersistedFile[] };
 
@@ -229,7 +230,7 @@ const MultiImageUploader: React.FC<{
                       <div className="grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 w-full">
                         {previews.map((src, i) => (
                           <div key={i} className="relative group">
-                            <img
+                            <Image
                               src={src}
                               alt={`preview-${i}`}
                               className="max-h-[120px] w-full object-cover rounded-lg"

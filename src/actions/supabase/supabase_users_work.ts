@@ -1,5 +1,4 @@
 import supabase from "@/config/supabase.config";
-import { IUsersWork, IUsersWorkVersion } from "@/lib/view-models/use-upload-user-thumbnail-ai-analysis-view-model";
 
 export async function GetUsersWorkVersionsFromSupabseWithWorkID(){
 }
@@ -24,10 +23,25 @@ export async function updateUsersWorkVersionAI(args: Args) {
       return { success: false, rowsUpdated: 0, error: error.message };
     }
 
-    console.log("updateUsersWorkVersionAI RPC data:", data);
+    //console.log("updateUsersWorkVersionAI RPC data:", data);
     return { success: (data ?? 0) > 0, rowsUpdated: data ?? 0 };
-  } catch (e: any) {
+  } catch (e: unknown) {
+    const error = e as Error;
     console.error("updateUsersWorkVersionAI unexpected error:", e);
-    return { success: false, rowsUpdated: 0, error: e?.message ?? "Unknown error" };
+    return { success: false, rowsUpdated: 0, error: error?.message ?? "Unknown error" };
   }
+}
+
+export interface IUsersWork {
+  created_at?: string;              // TIMESTAMPTZ (ISO string)
+  public_id: string | null;        // TEXT
+  clerk_user_id?: number;        // BIGINT (FK -> user_basic)
+  worktype: string | null;         // TEXT
+  description: string | null;      // TEXT
+  current_version: number | null;  // INT
+  status: string | null;           // TEXT
+  deleted_at: string | null;       // TIMESTAMPTZ
+  deleted_by: string | null;       // TEXT
+  is_deleted: boolean;             // BOOLEAN DEFAULT false
+  is_public: boolean;              // BOOLEAN DEFAULT false
 }

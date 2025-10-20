@@ -2,6 +2,7 @@
 
 "use server";
 import supabase from "@/config/supabase.config";
+import { getErrorMessage } from "@/lib/utils/message-utils";
 
 export async function insertUserFeedback(
     title: string,
@@ -29,17 +30,18 @@ export async function insertUserFeedback(
         if (error) {
             throw new Error(error.message);
         }
-        console.log("user_feedback inserted: ", data?.[0]);
+        //console.log("user_feedback inserted: ", data?.[0]);
 
         return {
             success: true,
             data: data[0],
         }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const message = getErrorMessage(error);
         return {
             success: false,
-            message: error.message,
+            message: message,
         }
     }
 }

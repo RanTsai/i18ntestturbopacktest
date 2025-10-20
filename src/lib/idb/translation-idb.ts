@@ -33,5 +33,5 @@ export async function setTranslationToIDB(key: string, value: CachedTranslation 
 export async function clearAllTranslationsFromIDB(): Promise<void> {
   const db = await getDB();
   await db.clear(STORE_NAME);
-  console.log("[IDB] translation-db cleared");
+  
 }

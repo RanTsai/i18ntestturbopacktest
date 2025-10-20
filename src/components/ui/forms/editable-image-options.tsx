@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { Plus, X, ImagePlus } from "lucide-react";
 import { toast } from "sonner";
 import { Question } from "@/lib/schema/questionaire-schema";
-import { uploadThumbnailAndGetUrl } from "@/actions/supabase/supabaseImages";
+import { uploadThumbnailAndGetUrlFreeUser } from "@/actions/supabase/supabase-images"; //Change to withPath if needed
 import { ImageSelectorDialog } from "./image-selector-dialog";
 import { useParams } from "next/navigation";
 import useTranslationStore from "@/lib/global-store/use-translation-store";
@@ -14,6 +14,7 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "@/components/ui/tooltip";
+import Image from "next/image";
 
 export function EditableImageOptions({
   pageId,
@@ -67,7 +68,7 @@ export function EditableImageOptions({
       return;
     }
 
-    const result = await uploadThumbnailAndGetUrl(file);
+    const result = await uploadThumbnailAndGetUrlFreeUser(file);
 
     if (!result.success) {
       toast.error(`上傳失敗：${result.message}`);
@@ -86,7 +87,7 @@ export function EditableImageOptions({
     const file = e.target.files?.[0];
     if (!file || !file.type.startsWith("image/")) return;
 
-    const result = await uploadThumbnailAndGetUrl(file);
+    const result = await uploadThumbnailAndGetUrlFreeUser(file);
     if (!result.success) {
       toast.error(`上傳失敗：${result.message}`);
       return;
@@ -164,7 +165,7 @@ export function EditableImageOptions({
                   isSelected ? "border-2 border-purple-500" : ""
                 }`}
               >
-                <img
+                <Image
                   src={opt.label}
                   alt="image"
                   className="w-full h-full object-cover pointer-events-none transform transition-transform duration-200 ease-in-out group-hover:scale-105"

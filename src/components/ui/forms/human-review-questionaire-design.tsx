@@ -7,20 +7,21 @@ import GeneralQuestionaire from "@/components/ui/forms/general-questionare";
 import { AnimatePresence, motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { FormSchema } from "@/lib/schema/questionaire-schema";
+import { QuestionnaireAnswer } from "@/lib/schema/questionaire-schema";
 
 interface Props {
   formData: FormSchema;
 }
 
 export default function HumanReviewQuestionaireDesignForm({ formData }: Props) {
-  const [isQuestionnaireOpen, setIsQuestionnaireOpen] = useState(true);
+  const [isQuestionnaireOpen] = useState(true);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
 
-  const { control, register, handleSubmit } = useForm();
+  const { control, register, handleSubmit } = useForm<QuestionnaireAnswer>();
 
-  const onQuestionnaireSubmit = async (values: any) => {
+  const onQuestionnaireSubmit = async (values: QuestionnaireAnswer) => {
     setLoading(true);
     console.log("👤 Human Feedback Submitted", values);
     // TODO: 可串接 Supabase 儲存問卷答案
@@ -52,7 +53,6 @@ export default function HumanReviewQuestionaireDesignForm({ formData }: Props) {
                 control={control}
                 register={register}
                 loading={loading}
-                onSubmit={handleSubmit(onQuestionnaireSubmit)}
               />
             </form>
           </motion.div>

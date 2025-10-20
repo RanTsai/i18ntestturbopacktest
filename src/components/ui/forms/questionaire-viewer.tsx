@@ -103,7 +103,6 @@ export default function QuestionnaireViewer({
                     control={form.control}
                     register={form.register}
                     loading={false}
-                    onSubmit={() => { }}
 
                 />
             </div>

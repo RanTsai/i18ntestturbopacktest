@@ -4,10 +4,32 @@ import { auth } from "@clerk/nextjs/server";
 import { IInsertHumanReviewInput } from "@/lib/view-models/use-questionnaire-submit-view-model";
 import { IInsertHumanAnswerInput } from "@/lib/view-models/use-human-answer-submit-view-model";
 import supabase from "@/config/supabase.config";
-import { HumanReviewCardDTO } from "@/lib/view-models/rate-community/types";
 import { ITags } from "@/lib/schema/user-channel-schema";
-import { IHumanAnswersAnalysisReport } from "@/lib/view-models/thumbnail-analysis-report/thumbnail-analysis-report-view-model";
+import { getErrorMessage } from "@/lib/utils/message-utils";
 
+export interface HumanReviewCardDTO {
+  public_id: string;
+  closedate: string | null;          // ISO
+  approve_method: string | null;
+  language: string | null;
+  titles: string[];
+  thumbnails: string[];        // 卡片封面使用第一張
+  channel_logo: string;
+  channel_name: string;
+  channel_description: string | null;
+  platform: string | null;
+  wanted_rating_count: number | null;
+  user_is_owner: boolean;
+
+  tags: ITags[];
+  view_count: number;
+  rate_count: number;
+  like_count: number;
+  credit_reward: number;
+  created_at: string;          // ISO
+  reviewedByMe: boolean;       // 後端計算或前端推斷
+  trend_score: number | null;  // 後端計算
+}
 /**
  * HumanReviewDesign page用的上傳human_reviews
  * @param input 
@@ -52,12 +74,13 @@ export async function insertHumanReviewsToSupabaseRPC(input: IInsertHumanReviewI
       message: "Human Review inserted successfully",
       data,
     };
-  } catch (err: any) {
-    console.error("caught error insert_human_review_with_versions ", err?.message);
+  } catch (err: unknown) {
+    const message = getErrorMessage(err);
+    console.error("caught error insert_human_review_with_versions ", message);
 
     return {
       success: false,
-      message: err.message ?? "Unknown error",
+      message: message ?? "Unknown error",
       data: null,
     };
   }
@@ -107,12 +130,13 @@ export async function fetchHumanReviewByPublicId(public_id: string) {
       message: "Human Review fetched successfully",
       data,
     };
-  } catch (err: any) {
-    console.error("caught error fetch_human_review_with_versions ", err?.message);
+  } catch (err: unknown) {
+    const message = getErrorMessage(err);
+    console.error("caught error fetch_human_review_with_versions ", message);
 
     return {
       success: false,
-      message: err.message ?? "Unknown error",
+      message: message ?? "Unknown error",
       data: null,
     };
   }
@@ -162,12 +186,13 @@ export async function fetchHumanReviewByPublicIdCheckReviewed(public_id: string)
       message: "Human Review fetched successfully",
       data,
     };
-  } catch (err: any) {
-    console.error("caught error fetch_human_review_with_versions ", err?.message);
+  } catch (err: unknown) {
+    const message = getErrorMessage(err);
+    console.error("caught error fetch_human_review_with_versions ", message);
 
     return {
       success: false,
-      message: err.message ?? "Unknown error",
+      message: message ?? "Unknown error",
       data: null,
     };
   }
@@ -212,10 +237,11 @@ export async function upsertHumanReviewNewVersion(
       message: "New version created successfully",
       data: data?.[0], // { version_number, created_at }
     };
-  } catch (e: any) {
+  } catch (e: unknown) {
+    const message = getErrorMessage(e);
     return {
       success: false,
-      message: e.message ?? "Unknown error",
+      message: message ?? "Unknown error",
       data: null,
     };
   }
@@ -257,10 +283,11 @@ export async function fetchHumanReviewToAnswerByPublicId(
       message: "Fetched human_review questionnaire successfully",
       data: data, // { version_number, created_at }
     };
-  } catch (e: any) {
+  } catch (e: unknown) {
+    const message = getErrorMessage(e);
     return {
       success: false,
-      message: e.message ?? "Unknown error",
+      message: message ?? "Unknown error",
       data: null,
     };
   }
@@ -310,18 +337,17 @@ export async function insertHumanAnswersToSupabaseRPC(input: IInsertHumanAnswerI
       message: "Human Review inserted successfully",
       data,
     };
-  } catch (err: any) {
-    console.error("caught error insert_human_answer_with_input ", err?.message);
+  } catch (err: unknown) {
+    const message = getErrorMessage(err);
+    console.error("caught error insert_human_answer_with_input ", message);
 
     return {
       success: false,
-      message: err.message ?? "Unknown error",
+      message: message ?? "Unknown error",
       data: null,
     };
   }
 }
-
-
 
 export type FeedSort = "latest" | "trending";
 
@@ -339,17 +365,23 @@ export type FeedOutput = {
   items: HumanReviewCardDTO[];
   next_cursor: string | null;
 };
+type LatestCursor = { created_at: string; id?: number };
+type TrendingCursor = { score: number | null; id?: number };
+type FeedCursor = LatestCursor | TrendingCursor;
 
-function encodeCursor(payload: Record<string, any> | null): string | null {
+function encodeCursor<T extends object>(payload: T | null): string | null {
   if (!payload) return null;
   return Buffer.from(JSON.stringify(payload)).toString("base64");
 }
-function decodeCursor<T = any>(cursor: string | null): T | null {
-  if (!cursor) return null;
-  try { return JSON.parse(Buffer.from(cursor, "base64").toString("utf8")); }
-  catch { return null; }
-}
 
+function decodeCursor<T>(cursor: string | null): T | null {
+  if (!cursor) return null;
+  try {
+    return JSON.parse(Buffer.from(cursor, "base64").toString("utf8")) as T;
+  } catch {
+    return null;
+  }
+}
 /**
  * Review community page用filter讀取資料的 server action，呼叫RPC
  * @param params 
@@ -371,8 +403,10 @@ export async function FetchHumanReviewsFeedAction(params: FeedInput): Promise<{
       cursor = null,
     } = params;
 
-    const decoded = decodeCursor(cursor);
+    const decoded = decodeCursor<FeedCursor>(cursor);
     const clerkUser = await auth();
+
+
 
     const { data, error } = await supabase.rpc("rate_community_human_reviews_feed", {
       p_locale: locale,
@@ -393,24 +427,28 @@ export async function FetchHumanReviewsFeedAction(params: FeedInput): Promise<{
 
     function parseTagValue(v: unknown): ITags | null {
       try {
+        // 1) 如果是字串，嘗試 JSON.parse
         if (typeof v === "string") {
-          const obj = JSON.parse(v);
-          if (obj && typeof obj.label === "string" && typeof obj.language === "string") {
-            return { label: obj.label, language: obj.language };
-          }
-          return null;
+          const parsed = JSON.parse(v) as unknown;
+          return parseTagValue(parsed); // 直接重用邏輯
         }
+
+        // 2) 如果是物件，驗證結構
         if (v && typeof v === "object") {
-          const obj = v as any;
-          if (typeof obj.label === "string" && typeof obj.language === "string") {
-            return { label: obj.label, language: obj.language };
+          const obj = v as Record<string, unknown>;
+          const label = obj["label"];
+          const language = obj["language"];
+          if (typeof label === "string" && typeof language === "string") {
+            return { label, language };
           }
         }
-      } catch { }
+      } catch {
+        // ignore parse errors
+      }
       return null;
     }
 
-    function normalizeTags(raw: any): ITags[] {
+    function normalizeTags(raw: unknown): ITags[] {
       if (!Array.isArray(raw)) return [];
       const out: ITags[] = [];
       for (const t of raw) {
@@ -420,8 +458,7 @@ export async function FetchHumanReviewsFeedAction(params: FeedInput): Promise<{
       return out;
     }
 
-
-    const items: HumanReviewCardDTO[] = (data || []).map((r: any) => ({
+    const items: HumanReviewCardDTO[] = (data || []).map((r: HumanReviewCardDTO) => ({
       public_id: r.public_id,
       closedate: r.closedate ?? null,
       approve_method: r.approve_method ?? null,
@@ -443,7 +480,8 @@ export async function FetchHumanReviewsFeedAction(params: FeedInput): Promise<{
       user_is_owner: r.user_is_owner ?? false,
 
       created_at: r.created_at,          // 供排序/游標用
-      trend_score: r.trend_score ?? null,
+      trend_score: r.trend_score ?? null,  // 供排序/游標用
+      reviewedByMe: r.reviewedByMe || false,
     }));
 
     // 生成下一頁 cursor
@@ -464,41 +502,8 @@ export async function FetchHumanReviewsFeedAction(params: FeedInput): Promise<{
     }
 
     return { success: true, data: { items, next_cursor } };
-  } catch (e: any) {
-    return { success: false, message: e?.message ?? "Failed to fetch feed" };
+  } catch (e: unknown) {
+    const message = getErrorMessage(e);
+    return { success: false, message: message ?? "Failed to fetch feed" };
   }
-}
-
-//---------------------------------------Thumbnail分析頁面
-// AnalysisReportPayload（前端唯一要吃的結構）
-// /actions/supabase/fetch-human-answers-by-public-id.ts
-
-
-
-
-export async function fetchHumanAnswersByHumanReviewPublicId(publicId: string): Promise<IHumanAnswersAnalysisReport> {
-  const { data, error } = await supabase
-    .rpc("fetch_human_answers_by_human_review_public_id", { p_public_id: publicId });
-
-  if (error || !data) {
-    return {
-      success: false,
-      code: "RPC_ERROR",
-      message: error?.message ?? "No data",
-      data: {
-        meta: {
-          public_id: publicId,
-          created_at: "",
-          closedate: null,
-          is_closed: false,
-          status: null,
-          approve_method: null,
-          current_version: null,
-        },
-        versions: [],
-      },
-    };
-  }
-
-  return data as IHumanAnswersAnalysisReport;
 }

@@ -36,12 +36,10 @@ export const QuestionCard = ({
   onDelete,
   onCopy,
   dragHandleProps,
-  onFocus
 }: Props) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [hoveredStar, setHoveredStar] = useState<number | null>(null);
   const [selectedStar, setSelectedStar] = useState<number>(0);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const { locale } = useParams() as { locale: string }
 
   const { getTranslation } = useTranslationStore();

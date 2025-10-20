@@ -1,5 +1,6 @@
 let rafId: number | null = null;
 let origHref: string | null = null;
+let currentHref: string | null = null; // ✅ 追蹤目前已設定的 href，避免重複寫入
 
 export type SpinnerOptions = {
   size?: number;        // 圖像大小 (px)
@@ -12,6 +13,8 @@ export type SpinnerOptions = {
 };
 
 function setFaviconUrl(href: string) {
+  // ✅ 只有在不同時才改 href，避免觸發瀏覽器重新抓取
+  if (href === currentHref) return;
   const links = document.querySelectorAll<HTMLLinkElement>("link[rel*='icon']");
   if (links.length === 0) {
     const link = document.createElement("link");
@@ -21,6 +24,7 @@ function setFaviconUrl(href: string) {
   } else {
     links.forEach((l) => (l.href = href));
   }
+  currentHref = href;
 }
 
 function getOrCreateAnyFaviconLink() {
@@ -37,16 +41,17 @@ export function startFaviconSpinner(opts: SpinnerOptions = {}) {
   const {
     size = 64,
     lineWidth = 10,
-    color = "#9CA3AF", // 灰色（Tailwind gray-400）
+    color = "#9CA3AF",
     speed = 1.25,
     fps = 12,
-    gapAngle = 40,   // 度數
+    gapAngle = 40,
     ringMargin = 2,
   } = opts;
 
-  // 記住原始 href（Next 會自動把 app/favicon.ico 注入成 <link rel="icon">）
+  // 記住原始 href（Next 會把 public/favicon.ico 注入）
   const link = getOrCreateAnyFaviconLink();
-  if (!origHref) origHref = link.href || "";
+  if (!origHref) origHref = link.href || "/favicon.ico";
+  if (currentHref === null) currentHref = link.href || "";
 
   const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
   const canvas = document.createElement("canvas");
@@ -55,30 +60,27 @@ export function startFaviconSpinner(opts: SpinnerOptions = {}) {
   const ctx = canvas.getContext("2d")!;
   ctx.scale(dpr, dpr);
 
-  // 載入原始 favicon，畫在中心
+  // 載入原始 favicon（只會請求一次）
   const iconImg = new Image();
-  // 同網域的 /favicon.ico 不需要 CORS 設定；若改用外域圖片才需要加 crossOrigin
   iconImg.decoding = "async";
   iconImg.src = origHref || "/favicon.ico";
-
   let iconReady = false;
-  iconImg.onload = () => {
-    iconReady = true;
-  };
+  iconImg.onload = () => { iconReady = true; };
+  iconImg.onerror = () => { iconReady = false; }; // 載不到也照常轉
 
   let angle = 0;
   let last = performance.now();
   const frameInterval = 1000 / fps;
   let acc = 0;
 
-  const gapRad = (Math.max(0, Math.min(330, gapAngle))) * Math.PI / 180; // 限制 0~330 度
-  const outerR = size / 2 - lineWidth / 2;    // 外圈中心半徑
-  const innerR = outerR - lineWidth / 2 - ringMargin; // 內部圖示最大圓半徑
+  const gapRad = Math.max(0, Math.min(330, gapAngle)) * Math.PI / 180;
+  const outerR = size / 2 - lineWidth / 2;
+  const innerR = Math.max(0, outerR - lineWidth / 2 - ringMargin);
 
   function draw(a: number) {
     ctx.clearRect(0, 0, size, size);
 
-    // 1) 先畫中間的原始 favicon（裁成圓形以避免四角外露）
+    // 1) 畫中間原始 favicon（裁成圓形）
     if (iconReady && innerR > 0) {
       ctx.save();
       ctx.beginPath();
@@ -86,43 +88,35 @@ export function startFaviconSpinner(opts: SpinnerOptions = {}) {
       ctx.closePath();
       ctx.clip();
 
-      // 以 cover 方式塞滿圓內正方形
-      const targetSize = innerR * 2;
-      const iw = iconImg.naturalWidth || targetSize;
-      const ih = iconImg.naturalHeight || targetSize;
+      const target = innerR * 2;
+      const iw = iconImg.naturalWidth || target;
+      const ih = iconImg.naturalHeight || target;
       const srcRatio = iw / ih;
-      const dstRatio = 1; // 圓內的方形是 1:1
 
       let sx = 0, sy = 0, sw = iw, sh = ih;
-      if (srcRatio > dstRatio) {
-        // 源圖偏寬：裁左右
-        const newW = ih * dstRatio;
-        sx = (iw - newW) / 2;
-        sw = newW;
-      } else if (srcRatio < dstRatio) {
-        // 源圖偏高：裁上下
-        const newH = iw / dstRatio;
-        sy = (ih - newH) / 2;
-        sh = newH;
+      if (srcRatio > 1) { // 源圖偏寬：裁左右
+        const newW = ih * 1;
+        sx = (iw - newW) / 2; sw = newW;
+      } else if (srcRatio < 1) { // 源圖偏高：裁上下
+        const newH = iw / 1;
+        sy = (ih - newH) / 2; sh = newH;
       }
 
       ctx.drawImage(
         iconImg,
         sx, sy, sw, sh,
-        size / 2 - targetSize / 2,
-        size / 2 - targetSize / 2,
-        targetSize,
-        targetSize
+        size / 2 - target / 2,
+        size / 2 - target / 2,
+        target, target
       );
       ctx.restore();
     }
 
-    // 2) 畫外圈「帶缺口的圓弧」，並讓整個圓弧旋轉
+    // 2) 旋轉外圈弧
     ctx.save();
     ctx.translate(size / 2, size / 2);
     ctx.rotate(a);
     ctx.beginPath();
-    // 畫 (2π - gapRad) 長度的弧；留下 gapRad 的缺口
     ctx.arc(0, 0, outerR, 0, Math.PI * 2 - gapRad, false);
     ctx.strokeStyle = color;
     ctx.lineWidth = lineWidth;
@@ -130,6 +124,7 @@ export function startFaviconSpinner(opts: SpinnerOptions = {}) {
     ctx.stroke();
     ctx.restore();
 
+    // ✅ 使用 dataURL：純本地，不會打網路
     setFaviconUrl(canvas.toDataURL("image/png"));
   }
 
@@ -145,8 +140,9 @@ export function startFaviconSpinner(opts: SpinnerOptions = {}) {
     }
   }
 
+  // 尊重「減少動效」
   if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
-    draw(0); // 尊重減少動效：只畫靜態版
+    draw(0);
     return () => stopFaviconSpinner();
   }
 
@@ -159,6 +155,11 @@ export function stopFaviconSpinner() {
     cancelAnimationFrame(rafId);
     rafId = null;
   }
-  if (origHref) setFaviconUrl(origHref);
+  // ✅ 只在不同時才還原，避免再次觸發載入
+  if (origHref && currentHref !== origHref) {
+    setFaviconUrl(origHref);
+  }
+  // 清理追蹤（下次啟動時可再次記錄）
+  currentHref = origHref;
   origHref = null;
 }

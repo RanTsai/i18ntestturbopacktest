@@ -1,5 +1,5 @@
-import { ITags, ITarget_audience } from "./user-channel-schema"
-import { FormSchema, Question } from "./questionaire-schema";
+import {  ITarget_audience } from "./user-channel-schema"
+import { Question } from "./questionaire-schema";
 
 export interface IHumanReview {
     human_review_id?:number;

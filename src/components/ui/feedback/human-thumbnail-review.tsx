@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React from "react";
 
 interface ThumbnailFeedback {
@@ -49,7 +50,8 @@ export default function DummyThumbnailFeedback() {
                             <h3 className="font-semibold text-lg">{feedback.name}</h3>
                             <span className="text-xs text-gray-400">{feedback.timeAgo}</span>
                         </div>
-                        <img src={feedback.imgurl || "/v36.png"} alt={feedback.thumbnailTitle} className="w-full h-auto rounded mb-2" />
+                        <Image src={feedback.imgurl || "/v36.png"} alt={feedback.thumbnailTitle} width={400}
+                            height={225} className="w-full h-auto rounded mb-2" />
                         <p className="text-sm text-gray-400 italic">
                             Thumbnail: {feedback.thumbnailTitle}
                         </p>

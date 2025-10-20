@@ -6,22 +6,47 @@ import { ChevronRight } from "lucide-react"; // Lucide React icons
 export default function FAQSection() {
   const faqs = [
     {
-      question: "Do yearly plans receive all their credits at once?",
-      answer: "Yes, subscribers to yearly plans receive their full credit allocation immediately upon subscription."
+      question: "Is this really built by just one person?",
+      answer:
+        "Yup. It’s literally just me, a laptop, and way too much coffee ☕. I’m building this project in public — every bug, every update, all of it. You can think of this site as my open lab for creators."
     },
     {
-      question: "Can I purchase extra credits if I run out of the ones in my current plan?",
-      answer: "Absolutely. You can buy additional credits anytime."
+      question: "Why are your building this?",
+      answer:
+        "Because I’m a creator who got tired of guessing what works. I built this to solve my own pain — and decided to share the journey (and maybe cover my hosting bills along the way)."
     },
     {
-      question: "Do credits expire? Can they be rolled over to the future?",
-      answer: "Credits expire 12 months after being issued. They cannot be rolled over."
+      question: "Is it free to use?",
+      answer:
+        "Yup! The main tools — Analyse and Live View — are free, and they’ll stay that way forever. I might add premium stuff later (hey, caffeine isn’t free ☕), but the essentials will always be open for everyone."
     },
     {
-      question: "How do I cancel or manage my subscription?",
-      answer: "You can manage your subscription from your account settings page."
-    }
+      question: "Will there be new features?",
+      answer:
+        "Oh yes. I’ve got plenty more creator pains to fix — expect more tools coming soon! (If I survive enough coffee refills ☕)"
+    },
+    {
+      question: "Can I use this for my channel or clients?",
+      answer:
+        "Absolutely. You can use everything here commercially — tweak your thumbnails (coming soon), test for clients, show off your results. Just don’t claim you coded it 😉."
+    },
+    {
+      question: "How do I support the project?",
+      answer:
+        "You can share it, tweet about it, or buy me a coffee ☕. Every bit helps me keep the servers running and my caffeine addiction alive."
+    },
+    {
+      question: "Is my data safe?",
+      answer:
+        "Yes. Your account data is stored securely so your uploads and history stay connected to you (you can delete them anytime). I don’t use your data to train any AI, and I’ll always ask first if I ever plan to."
+    },
+    {
+      question: "Can I join the beta test?",
+      answer:
+        "Heck yes. Early testers get sneak peeks and help shape the next features. Keep an eye out for the 'Beta Test' badge or announcements"
+    },
   ];
+
 
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -49,7 +74,7 @@ export default function FAQSection() {
               />
               <span
                 className={`font-semibold text-left transition-colors duration-300
-                  ${openIndex === index ? "text-teal-400" : "text-white"}`}
+                  ${openIndex === index ? "text-yellow-500" : "text-white"}`}
               >
                 {faq.question}
               </span>

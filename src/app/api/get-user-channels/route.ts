@@ -1,6 +1,7 @@
 // app/api/get-user-channels/route.ts
 import { NextResponse } from "next/server";
 import { GetUserChannelsFromSupabase } from "@/actions/supabase/supabase_user_channel";
+import { getErrorMessage } from "@/lib/utils/message-utils";
 
 // 若你擔心被快取，可開這行
 export const dynamic = "force-dynamic";
@@ -18,12 +19,13 @@ export async function GET() {
         data: response.data ?? null,
         message: response.message ?? null,
       },
-      { status: response.success ? 200 : 404 }
+      { status: response.success ? 200 : 500 }
     );
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = getErrorMessage(err);
     console.error("❌ Error in /api/get-user-channels:", err);
     return NextResponse.json(
-      { success: false, data: null, message: err?.message ?? "internal_error" },
+      { success: false, data: null, message: message ?? "internal_error" },
       { status: 500 }
     );
   }

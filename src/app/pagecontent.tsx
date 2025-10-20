@@ -1,18 +1,17 @@
 "use client";
 
-import { useTranslations } from 'next-intl';
 import UserFeedbackList, { UserReview } from "@/components/ui/feedback/user-feedback-list";
 import FAQSection from '@/components/ui/faq/faq-section';
 import Radarchart from '@/components/ui/review/radarchart';
 import AspectBarList from '@/components/ui/review/aspectbarlist';
 import Markdown from 'react-markdown';
-import ThumbnailRankingBoard from '@/components/ui/review/thumbnailRankingBoard';
+//import ThumbnailRankingBoard from '@/components/ui/review/thumbnailRankingBoard';
 import DummyThumbnailFeedback from '@/components/ui/feedback/human-thumbnail-review';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import Image from "next/image";
 
 export default function PageContent() {
-  const t = useTranslations(); 
 
   const reviewers: UserReview[] = [
     {
@@ -73,25 +72,26 @@ export default function PageContent() {
         </h2>
         {/* 上方：左右分割 */}
         <div className="flex flex-col md:flex-row gap-4">
-
-          {/* 左側：Thumbnail + Title */}
-          <div className="flex flex-col md:w-1/2 gap-4">
-            <img
-              src="/v36.png"
-              alt="Thumbnail Creator"
-              className="w-full h-auto rounded shadow"
-            />
+          {/* 左側：移除 md:w-1/2，改成固定寬；加 shrink-0 避免被 flex 拉伸 */}
+          <div className="flex flex-col gap-4 md:w-auto">
+              <Image
+  src="/v36.png"
+  alt="Thumbnail Creator"
+  className="rounded shadow object-contain w-full h-full max-w-[256px] max-h-[256px]"
+  width={256}
+  height={256}
+/>
             <input
               type="text"
               value={"How A man accidentally destroyed America's economy"}
               readOnly
-              className="p-2 text-white bg-gray-800 border border-gray-700 rounded"
+              className="w-64 p-2 text-white bg-gray-800 border border-gray-700 rounded"
             />
           </div>
 
-          {/* 右側：Radar Chart + Aspects */}
-          <div className="flex flex-col md:w-1/2 gap-4">
-            <div className="flex flex-col h-[300px] w-[500px] items-center"> {/* 你可以改成其他高度 */}
+          {/* 右側：讓它吃剩下空間 */}
+          <div className="flex flex-col md:flex-1 gap-4">
+            <div className="flex flex-col h-[300px] w-[500px] items-center">
               <Radarchart data={[3, 3.5, 4, 5, 1]} />
             </div>
             <div className="h-[300px]">
@@ -99,6 +99,7 @@ export default function PageContent() {
             </div>
           </div>
         </div>
+
 
         {/* 下方：Comment 橫跨 */}
         <div className="bg-gray-900 p-4 rounded shadow">
@@ -121,12 +122,7 @@ This thumbnail is super cool because it pulls you right into a story! 🎬 ...
 `}
           </Markdown>
         </div>
-        <div>
-          <h2 className="text-2xl font-semibold text-center mb-4">
-            Which one is better?
-          </h2>
-          <ThumbnailRankingBoard thumbnails={[]} />
-        </div>
+      
 
         <div>
           <h2 className="text-2xl font-semibold text-center mb-4">
@@ -142,7 +138,7 @@ This thumbnail is super cool because it pulls you right into a story! 🎬 ...
           <UserFeedbackList reviewers={reviewers} />
         </div>
 
-        <Link href="/thumbnails/uploadpage" className="flex justify-center">
+        <Link href="/thumbnails/thumbnail-analyzer" className="flex justify-center">
           <Button className=' bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-[50px] items-center justify-center mx-auto'>
             Start
           </Button>

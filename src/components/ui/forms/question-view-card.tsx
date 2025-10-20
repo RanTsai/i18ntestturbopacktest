@@ -1,23 +1,21 @@
 "use client"
 import { useEffect, useState } from "react"
-import { Question } from "@/lib/schema/questionaire-schema"
+import { Question, QuestionnaireAnswer } from "@/lib/schema/questionaire-schema"
 import { Label } from "@/components/ui/label"
 import { Star } from "lucide-react"
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import {
-  Control,
-  useWatch,
-  UseFormSetValue,
-} from "react-hook-form"
+import { Control, useWatch, UseFormSetValue, FieldPath, FieldPathValue, } from "react-hook-form"
+
+type QPath = FieldPath<QuestionnaireAnswer>;
 
 interface Props {
   question: Question
   index: number
   mode?: "fill" | "review"
-  control?: Control<any>
-  setValue?: UseFormSetValue<any>
+  control?: Control<QuestionnaireAnswer>
+  setValue?: UseFormSetValue<QuestionnaireAnswer>
   invalid?: boolean
 }
 
@@ -30,15 +28,21 @@ export default function QuestionViewCard({
   invalid = false,
 }: Props) {
   const answer = question.answer
-  const watchedValue = useWatch({ control, name: question.id })
+  // 讓 useWatch 也帶上表單泛型，回傳值就會是 AnswerValue
+  const watchedValue = useWatch<QuestionnaireAnswer>({
+    control,
+    name: question.id as QPath,
+  });
+
   const isReview = mode === "review"
 
   const [localinvalid, setInvalid] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
 
-  const toSafeString = (v: any): string =>
+  const toSafeString = (v: unknown): string =>
     v === undefined || v === null ? "" : String(v)
-  const toStringArray = (v: any): string[] =>
+
+  const toStringArray = (v: unknown): string[] =>
     Array.isArray(v) ? v.map(toSafeString) : []
 
   useEffect(() => {
@@ -52,10 +56,14 @@ export default function QuestionViewCard({
     else setInvalid(true)
   }, [watchedValue, hasInteracted, invalid])
 
-  const handleSetValue = (name: string, value: any) => {
-    if (!hasInteracted) setHasInteracted(true)
-    setValue?.(name, value)
-  }
+  // 包一層，集中處理 RHF 對動態 key 的型別限制
+  const handleSetValue = <N extends QPath>(
+    name: N,
+    value: FieldPathValue<QuestionnaireAnswer, N>
+  ) => {
+    if (!hasInteracted) setHasInteracted(true);
+    setValue?.(name, value);
+  };
 
   return (
     <div
@@ -80,10 +88,8 @@ export default function QuestionViewCard({
         ) : (
           <Input
             placeholder={question.placeholder ?? "輸入文字…"}
-            value={watchedValue ?? ""}
-            onChange={(e) => {
-              handleSetValue?.(question.id, e.target.value)
-            }}
+            value={(watchedValue as string) ?? ""}
+            onChange={(e) => handleSetValue(question.id as QPath, e.target.value)}
             className="input-interactive hover:!border-purple-300 focus:!border focus:!border-purple-500 focus:!ring-purple-500"
           />
         )
@@ -98,28 +104,26 @@ export default function QuestionViewCard({
             placeholder={question.placeholder ?? "輸入內容…"}
             rows={3}
             className="w-full p-2 text-sm resize-none input-interactive hover:!border-purple-300 focus:!border focus:!border-purple-500 focus:!ring-purple-500"
-            value={watchedValue ?? ""}
-            onChange={(e) => {
-              handleSetValue?.(question.id, e.target.value)
-            }}
+            value={(watchedValue as string) ?? ""}
+            onChange={(e) => handleSetValue(question.id as QPath, e.target.value)}
           />
         )
       )}
 
-      {/* ✅ 星星評分 */}
+      {/* ✅ 星星評分（1~5） */}
       {question.type === "rating" && (
         <div className="flex gap-1 mt-1">
           {Array.from({ length: 5 }).map((_, i) => {
             const starIndex = i + 1
             const isActive = isReview
               ? starIndex <= Number(answer ?? 0)
-              : starIndex <= Number(watchedValue ?? 0)
+              : starIndex <= Number((watchedValue as number) ?? 0)
 
             return (
               <Star
                 key={i}
                 onClick={() => {
-                  if (!isReview) handleSetValue?.(question.id, starIndex)
+                  if (!isReview) handleSetValue(question.id as QPath, starIndex)
                 }}
                 className={cn(
                   "w-6 h-6 transition",
@@ -138,7 +142,7 @@ export default function QuestionViewCard({
       {question.type === "radio" && question.options?.length && (
         <div className="space-y-1">
           {question.options.map((opt) => {
-            const checked = isReview ? answer === opt.value : watchedValue === opt.value
+            const checked = isReview ? answer === opt.value : (watchedValue as string) === opt.value
             return (
               <label key={opt.value} className="flex items-center gap-2 text-sm">
                 <input
@@ -148,7 +152,7 @@ export default function QuestionViewCard({
                   disabled={isReview}
                   checked={checked}
                   onChange={() => {
-                    if (!isReview) handleSetValue?.(question.id, opt.value)
+                    if (!isReview) handleSetValue(question.id as QPath, opt.value)
                   }}
                   className="accent-purple-600"
                 />
@@ -172,7 +176,7 @@ export default function QuestionViewCard({
             const handleChange = () => {
               const base = toStringArray(watchedValue)
               const newValue = checked ? base.filter((v) => v !== val) : [...base, val]
-              handleSetValue(question.id, newValue)
+              handleSetValue(question.id as QPath, newValue)
             }
 
             return (
@@ -192,13 +196,13 @@ export default function QuestionViewCard({
         </div>
       )}
 
-      {/* ✅ 圖片選擇（卡片可 hover/focus 出紫框） */}
+      {/* ✅ 圖片選擇 */}
       {question.type === "image-select" && question.options?.length && (
         <div className="grid grid-cols-2 gap-3">
           {question.options.map((opt) => {
             const isSelected = isReview
               ? answer === opt.value
-              : watchedValue === opt.value
+              : (watchedValue as string) === opt.value
 
             return (
               <div
@@ -209,12 +213,12 @@ export default function QuestionViewCard({
                   isSelected ? "!border-2 !border-purple-500" : "border-gray-200 cursor-pointer"
                 )}
                 onClick={() => {
-                  if (!isReview) handleSetValue?.(question.id, opt.value)
+                  if (!isReview) handleSetValue(question.id as QPath, opt.value)
                 }}
                 onKeyDown={(e) => {
                   if (!isReview && (e.key === "Enter" || e.key === " ")) {
                     e.preventDefault()
-                    handleSetValue?.(question.id, opt.value)
+                    handleSetValue(question.id as QPath, opt.value)
                   }
                 }}
               >
@@ -231,13 +235,13 @@ export default function QuestionViewCard({
         </div>
       )}
 
-      {/* ✅ 標題選擇（卡片可 hover/focus 出紫框；選取仍沿用藍色） */}
+      {/* ✅ 標題選擇 */}
       {question.type === "title-select" && question.options?.length && (
         <div className="grid gap-2">
           {question.options.map((opt) => {
             const isSelected = isReview
               ? answer === opt.value
-              : watchedValue === opt.value
+              : (watchedValue as string) === opt.value
 
             return (
               <div
@@ -251,12 +255,12 @@ export default function QuestionViewCard({
                   !isReview ? "cursor-pointer" : ""
                 )}
                 onClick={() => {
-                  if (!isReview) handleSetValue?.(question.id, opt.value)
+                  if (!isReview) handleSetValue(question.id as QPath, opt.value)
                 }}
                 onKeyDown={(e) => {
                   if (!isReview && (e.key === "Enter" || e.key === " ")) {
                     e.preventDefault()
-                    handleSetValue?.(question.id, opt.value)
+                    handleSetValue(question.id as QPath, opt.value)
                   }
                 }}
               >

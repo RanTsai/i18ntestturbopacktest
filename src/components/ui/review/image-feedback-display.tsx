@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 
 export type ImageAnnotation = {
   id: string;

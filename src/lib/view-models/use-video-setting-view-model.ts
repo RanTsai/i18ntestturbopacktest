@@ -2,7 +2,6 @@
 "use client";
 
 import VideoSettingStore from "../global-store/upload-store";
-import { ITags } from "@/lib/schema/user-channel-schema";
 
 export const useVideoSettingViewModel = () => {
   const {

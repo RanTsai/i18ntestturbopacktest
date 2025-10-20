@@ -1,7 +1,3 @@
-// ------------------------------------------------------------
-// 1️⃣ 主 ViewModel：useThumbnailUploadFlowViewModel
-// ------------------------------------------------------------
-// ✅ 建議的 ViewModel 拆分架構 for ImageUploaderClient 頁面
 
 // ------------------------------------------------------------
 // 1️⃣ 主 ViewModel：useThumbnailUploadFlowViewModel
@@ -16,10 +12,15 @@ import userGlobalStore from "../global-store/users-store";
 import { useThumbnailReviewViewModel }from "./use-thumbnail-review-view-model";
 import { useUserChannelStore } from "../global-store/use-user-channel-store";
 import { useVideoSettingViewModel } from "./use-video-setting-view-model";
-import { uploadThumbnailAndGetUrlWithPath } from "@/actions/supabase/supabaseImages";
+import { uploadThumbnailAndGetUrlWithPath } from "@/actions/supabase/supabase-images";
 import { insertUserThumbnailWorkToSupabaseRPC } from "@/actions/supabase/supabase-upload-thumbnail-user-work";
 import { useUploadImageViewModel } from "./use-upload-image-view-model"; // ✅ 新增
 import { AIResponse } from "../schema/aiscore-schema";
+
+export interface ITags {
+  label: string;
+  language: string;
+}
 
 export function useUploadUserThumbnailAIAnalysisViewModel(storageKey: string) {
   const { uploads, setUploads } = useThumbnailReviewViewModel(storageKey);
@@ -32,12 +33,9 @@ export function useUploadUserThumbnailAIAnalysisViewModel(storageKey: string) {
   const { getAllVariantsByFileName } = useUploadImageViewModel({ max: 6 }); // ✅ 新增
 
   const handleUpload = async (files: File[], formtitle: string) => {
+    //console.log("handleUpload called with files:", files, "and title:", formtitle);
     if (files.length > 6) {
       toast.error("selected_too_many");
-      return;
-    }
-    if (!theUser?.clerk_user_id) {
-      toast.error("Not authenticated");
       return;
     }
 
@@ -52,14 +50,14 @@ export function useUploadUserThumbnailAIAnalysisViewModel(storageKey: string) {
       for (const [index, file] of files.entries()) {
         const versionNumber = index + 1;
         const cleanName = file.name.replace(/\s+/g, "_");
-        const basePath = `thumbnails/${theUser.clerk_user_id}/${publicWorkId}/${versionNumber}`;
+        const basePath = `thumbnails/${theUser?.clerk_user_id?? "freeUser"}/${publicWorkId}/${versionNumber}`;
 
         // 2) 嘗試從 IDB 取三尺寸；取不到就 fallback 用原始檔（確保 Card 立刻可顯示）
         const rec = await getAllVariantsByFileName(`${file.name}__${file.size}`);
         const originalBlob = rec?.original ?? file;
         const mediumBlob   = rec?.thumb400 ?? file;
         const smallBlob    = rec?.thumb200 ?? file;
-
+//console.log("Retrieved blobs from IDB:", rec);
         const toFile = (blob: Blob, name: string, type: string) =>
           blob instanceof File ? blob : new File([blob], name, { type });
 
@@ -79,6 +77,7 @@ export function useUploadUserThumbnailAIAnalysisViewModel(storageKey: string) {
           smallFile, `${basePath}/small/${cleanName}`
         );
 
+        
         // 4) 填 versions（UI 用 medium_url；沒有中圖就退回 original）
         newUploads.push({
           version_number: versionNumber,
@@ -127,7 +126,7 @@ export function useUploadUserThumbnailAIAnalysisViewModel(storageKey: string) {
           version_number: v.version_number,
           image_url: v.medium_url ?? "",
           ai_score: v.ai_score,
-          ai_comment: v.ai_comment,
+          ai_comment: v.ai_comment?? null,
         })),
         thumbnail: {
           medium_url: newUploads[0]?.medium_url ?? "",
@@ -142,8 +141,11 @@ export function useUploadUserThumbnailAIAnalysisViewModel(storageKey: string) {
       };
 
       const result = await insertUserThumbnailWorkToSupabaseRPC(input);
-      console.log("InsertUserWorkToSupabaseRPC result:", result);
+      //console.log("InsertUserWorkToSupabaseRPC result:", result);
 
+      if(result.success === false){
+        toast.error("failed to upload：" + result.message);
+      }
       toast.success("✅ All files uploaded!");
     } catch (err) {
       console.error(err);
@@ -166,39 +168,6 @@ export function useUploadUserThumbnailAIAnalysisViewModel(storageKey: string) {
     deleteVersion,
   };
 }
-
-
-//AUTOSAVE 範例，暫時不需要
-// import { useEffect } from "react";
-// import { debounce } from "lodash"; // or自己寫
-
-// const syncWorkVersions = async (uploads: UploadedVersions[], userWorkId: number) => {
-//   await supabase.rpc("sync_user_work_versions", {
-//     p_work_id: userWorkId,
-//     p_versions: uploads.map((v, idx) => ({
-//       version_number: idx + 1,
-//       image_url: v.image_url,
-//       ai_score: v.ai_score,
-//       ai_comment: v.ai_feedback,
-//     })),
-//   });
-// };
-
-// export function useAutoSave(uploads: UploadedVersions[], userWorkId: number) {
-//   useEffect(() => {
-//     if (!userWorkId || uploads.length === 0) return;
-
-//     const debounced = debounce(() => {
-//       console.log("Autosaving versions to DB...");
-//       syncWorkVersions(uploads, userWorkId);
-//     }, 3000); // 停止操作 3 秒後自動保存
-
-//     debounced();
-//     return () => debounced.cancel();
-//   }, [uploads, userWorkId]);
-// }
-
-
 
 // ===========================
 // TABLE: users_work
@@ -237,8 +206,8 @@ export interface IUsersWorkVersion {
   is_latest?: boolean;            // BOOLEAN DEFAULT false
   summary: string | null;        // TEXT
   user_note: string | null;      // TEXT
-  ai_score?: Record<string, any> | null; // JSONB
-  ai_comment?: string | null;     // TEXT
+  ai_score?: Record<string, number> | null; // JSONB
+  ai_comment?: AIResponse | null;     // TEXT
   stuff_public_id: string | null; // number
   status: string | null;         // TEXT
   isLoading?: boolean;      // LOCAL USE ONLY
@@ -256,7 +225,7 @@ export interface IThumbnailWork {
   user_note: string | null;      // TEXT
   titles: string[] | null;       // TEXT[]
   user_channel_id: number | null;   // number
-  tags: Record<string, any> | null; // JSONB
+  tags: Record<string, string> | null; // JSONB
   target_audience: number[] | null; // INT[]
   video_category: string | null;  // TEXT[]
 }
@@ -267,24 +236,17 @@ export interface IUserThumbnailStuff {
   original_url: string;             // TEXT (not null)
   name: string | null;              // TEXT
   description: string | null;       // TEXT
-  content: Record<string, any> | null; // JSONB
+  content: Record<string, string> | null; // JSONB
   mime_type: string | null;         // TEXT
   public_id: string | null;         // TEXT
   user_note: string | null;         // TEXT
-  tags: Record<string, any> | null; // JSONB
+  tags: ITags[] | null; // JSONB
   source: string; //"uploaded" | "generated" | "created" | "bookmarked"; // TEXT with check constraint
   type: string; //"thumbnail" | "cover" | "icon" | "intext";             // TEXT with check constraint
   category: string | null;          // TEXT
   is_deleted: boolean;              // BOOLEAN DEFAULT false
   deleted_at: string | null;        // TIMESTAMPTZ
   created_at: string;               // TIMESTAMPTZ DEFAULT now()
-}
-
-interface IUserWorkWithDetails {
-  work: IUsersWork;
-  versions: IUsersWorkVersion[];
-  thumbnail: IThumbnailWork;
-  counter: IUsersWorkCounter;
 }
 
 export interface IInsertUserWorkInput {
@@ -298,15 +260,15 @@ export interface IInsertUserWorkInput {
   versions: {
     version_number: number;
     image_url: string;
-    ai_score?: Record<string, any> | null;
-    ai_comment?: string | null;
+    ai_score?: Record<string, number> | null;
+    ai_comment?: AIResponse | null;
   }[];
   thumbnail: {
     medium_url: string;
     title: string;
     description: string | null;
     platform: string | null;
-    tags: Record<string, any> | null;
+    tags: ITags[] | null;
     titles: string[];
     user_channel_name: string | null;
   };

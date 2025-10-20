@@ -1,7 +1,7 @@
 // lib/view-models/use-translation-view-model.ts
 import { useEffect, useState } from "react";
 import useTranslationStore from "@/lib/global-store/use-translation-store";
-import { getTranslationFromIDB, setTranslationToIDB, clearAllTranslationsFromIDB } from "@/lib/idb/translation-idb";
+import { getTranslationFromIDB, setTranslationToIDB } from "@/lib/idb/translation-idb";
 import { PageTranslations } from "@/i18n/interface";
 
 export function useTranslationViewModel(pageId: string, locale: string) {
@@ -61,7 +61,7 @@ export function useTranslationViewModel(pageId: string, locale: string) {
           setIsLoading(false);
         });
     }
-  }, [pageId, locale]);
+  }, [pageId, locale, isLoading, setTranslation, translation]);
 
   return {
     t: (key: string) => translation?.[key]?.translation ?? key,

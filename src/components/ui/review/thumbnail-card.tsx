@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { Star, Download, CheckSquare, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+
 
 export interface ThumbnailCardProps {
   id: string;
@@ -36,8 +38,8 @@ const ThumbnailCard: React.FC<ThumbnailCardProps> = ({
   const borderClass = isSelected
     ? "border-purple-500"
     : highlightType === "ai"
-    ? "border-yellow-500"
-    : "border-gray-300";
+      ? "border-yellow-500"
+      : "border-gray-300";
 
   return (
     <div
@@ -47,12 +49,12 @@ const ThumbnailCard: React.FC<ThumbnailCardProps> = ({
       onClick={() => onSelect(id, !isSelected)} // 整張圖片選擇
     >
       {/* 圖片本體 */}
-      <img
+      <Image
         src={imageUrl}
         alt={`Thumbnail ${id}`}
-        className={`w-full h-full object-cover transition duration-300 ${
-          isHoveringCard ? "blur-sm brightness-75" : ""
-        }`}
+        fill   // 取代 w-full h-full
+        className={`object-cover transition duration-300 ${isHoveringCard ? "blur-sm brightness-75" : ""
+          }`}
       />
 
       {/* 提示標籤：用戶選擇 / AI選擇 */}

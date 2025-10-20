@@ -1,9 +1,10 @@
 // src/lib/view-models/use-human-answer-submit-vm.ts
 "use client";
-import type { Question } from "@/lib/schema/questionaire-schema";
+import type { Question, QuestionnaireAnswer } from "@/lib/schema/questionaire-schema";
 import { useCallback, useMemo } from "react";
 import { insertHumanAnswersToSupabaseRPC } from "@/actions/supabase/supabase-human-reviews";
 import { useQuestionnaireStore } from "@/lib/global-store/human-review-questionaire-store";
+import { getErrorMessage } from "../utils/message-utils";
 
 /**
  * 前端在「提交當下」組裝好的輸入。
@@ -38,18 +39,18 @@ export interface HumanAnswerSubmitResult {
 export interface BuildPayloadParams {
   humanReviewsPublicId: string;
   /** GeneralQuestionnaire 的扁平值（RHF.getValues()） */
-  formValues: Record<string, any>;
+  formValues: QuestionnaireAnswer;
   /** 若不想用 store，也可覆蓋傳入題目 */
   questionsOverride?: Question[];
 }
 
-function yes(v: any) { return String(v ?? "").toLowerCase() === "yes"; }
-function toNonNegativeInt(v: any) {
+function yes(v: unknown) { return String(v ?? "").toLowerCase() === "yes"; }
+function toNonNegativeInt(v: unknown) {
   const n = Number(v);
   if (!Number.isFinite(n) || Number.isNaN(n)) return 0;
   return n < 0 ? 0 : Math.floor(n);
 }
-function mapFormValuesToTopFields(formValues: Record<string, any>) {
+function mapFormValuesToTopFields(formValues: QuestionnaireAnswer) {
   return {
     is_public: yes(formValues?.allow_public_display),
     accept_reward: yes(formValues?.accept_reward),
@@ -59,17 +60,6 @@ function mapFormValuesToTopFields(formValues: Record<string, any>) {
   };
 }
 
-function sanityCheck(questions: Question[]) {
- 
-  if (!Array.isArray(questions) || questions.length === 0) {
-    return { ok: false as const, code: "EMPTY_QUESTIONNAIRE", message: "Questionnaire is empty." };
-  }
-  return { ok: true as const };
-}
-
-function useQuestionsFromStore(): Question[] {
-  return useQuestionnaireStore((s) => s.questions);
-}
 
 export function clearHumanAnswerDraft() {
   try {
@@ -78,6 +68,7 @@ export function clearHumanAnswerDraft() {
     // ignore
   }
 }
+type AnswerValue = QuestionnaireAnswer[keyof QuestionnaireAnswer];
 
 export function useHumanAnswerSubmitViewModel() {
   const questionsStore = useQuestionnaireStore((s) => s.questions);
@@ -93,12 +84,18 @@ export function useHumanAnswerSubmitViewModel() {
         : questionsStore;
 
       // ★ 關鍵修正：把 RHF 的值寫進每題的 answer，一起送到 DB
-      const questionsWithAnswers: Question[] = rawQuestions.map((q) => ({
-        ...q,
-        answer: Object.prototype.hasOwnProperty.call(formValues, q.id)
-          ? formValues[q.id]
-          : (q as any).answer ?? null,
-      }));
+        const questionsWithAnswers: Question[] = rawQuestions.map((q) => {
+        const hasValue = Object.prototype.hasOwnProperty.call(formValues, q.id);
+        const existing = (q as { answer?: AnswerValue | null }).answer ?? null;
+
+        return {
+          ...q,
+          // 明確告訴 TS 這是 AnswerValue | null
+          answer: (hasValue ? (formValues[q.id] as AnswerValue) : existing), 
+          // ↑ 若你已把 Question.answer 改成 union，可去掉最後的 `as unknown as any`
+          //   並直接寫：answer: hasValue ? (formValues[q.id] as AnswerValue) : existing,
+        };
+      });
 
       const top = mapFormValuesToTopFields(formValues);
 
@@ -134,11 +131,11 @@ export function useHumanAnswerSubmitViewModel() {
             : (res.data?.[0]?.human_answer_id as number | undefined);
 
         return { ok: true, human_answer_id: newId };
-      } catch (err: any) {
+      } catch (err: unknown) {
         return {
           ok: false,
           code: "RPC_FAILED",
-          message: err?.message ?? "RPC exception",
+          message: getErrorMessage(err) ?? "RPC exception",
         };
       }
     },

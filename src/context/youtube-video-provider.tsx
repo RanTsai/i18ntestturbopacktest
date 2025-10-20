@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { YoutubeVideo } from "@/lib/schema/youtube-video-schema";
 
 type VideoGroupKey = string;
@@ -69,23 +69,22 @@ export const VideoProvider = ({ children }: { children: React.ReactNode }) => {
     sessionStorage.setItem("activeKey", activeKey);
   }, [activeKey]);
 
-  const setVideosByKey = (key: VideoGroupKey, videos: YoutubeVideo[]) => {
-    setVideoGroups((prev) => ({
-      ...prev,
-      [key]: videos,
-    }));
-  };
+   const setVideosByKey = useCallback((key: VideoGroupKey, videos: YoutubeVideo[]) => {
+    setVideoGroups(prev => ({ ...prev, [key]: videos }));
+  }, []);
 
-  const getVideosByKey = (key: VideoGroupKey): YoutubeVideo[] => {
-    return videoGroups[key] || [];
-  };
+  const getVideosByKey = useCallback((key: VideoGroupKey) => {
+    return (videoGroups[key] ?? []);
+  }, [videoGroups]);
 
-  const removeKey = (key: VideoGroupKey) => {
-    setVideoGroups((prev) => {
-      const { [key]: _, ...rest } = prev;
+  const removeKey = useCallback((key: VideoGroupKey) => {
+    setVideoGroups(prev => {
+      const rest = { ...prev };
+      delete rest[key];
       return rest;
     });
-  };
+  }, []);
+
 
   const videos = videoGroups[activeKey] || [];
 

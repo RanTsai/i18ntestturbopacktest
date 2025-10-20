@@ -8,4 +8,5 @@ export interface TranslationItem {
 
 export type PageTranslations = {
   [key: string]: TranslationItem;
+  
 };
